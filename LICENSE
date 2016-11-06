@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+----  end of standard MIT license  ----
+
+Note added to the MIT license for the software project "corpsblog"
+
+Some components of this directory hierarchy come from other sources, and
+may be covered by a different license.  In this event, the author has made
+a good-faith effort to provide the appropriate license, in the base directory
+of the imported component, where possible, or through other documentary means.
