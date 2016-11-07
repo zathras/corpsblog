@@ -2,7 +2,7 @@
 -------
 
 # This is not working software!
--> ![Danger Image](docs/images/danger.jpg "Danger!") <-
+![Danger Image](docs/images/danger.jpg "Danger!")
 
 As of this writing, this is not functional software.  I'm just working
 on it.

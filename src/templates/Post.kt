@@ -4,6 +4,7 @@ import com.jovial.blog.model.Config
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.html
+import java.text.SimpleDateFormat
 
 /**
  * Created by w.foote on 11/3/2016.
@@ -11,45 +12,47 @@ import com.jovial.lib.html.html
 
 
 class Post(val config : Config, val content: Content) {
+  private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
   public fun generate() : HTML = html {
     head {
       CommonHead(config, content).generate(this)
     }
     body {
       BodyHeader(config, content).generate(this)
-      // @@<#include "header.ftl">
       div("content-wrapper") {
         div("content-wrapper__inner") {
            article("post-container post-container--single") {
             header("post-header") {
               div("post-meta") {
-                // @@ <time datetime="${content.date?string("yyyy-MM-dd")}" class="post-meta__date date">${content.date?string("dd MMMM yyyy")}</time> &#8226;
-
-                // @@ <#if content.tags??>
-                  // @@ <span class="post-meta__tags">tags
-                  // @@ <#list content.tags as tag>
-                  // @@ <a href="<#if (content.rootpath)??>${content.rootpath}<#else></#if>tags/${tag}.html">${tag}</a>
-                  // @@ </#list>
-                  // @@ </span>
-                // @@ </#if>
+                time(datetime = content.date, class_ = "post-meta__date date") {
+                  +ddMMMMyyyyDateFormat.format(content.date)
+                  +"&#8226;"
+                }
+                if (content.tags.size > 0) {
+                  span(class_ = "post-meta__tags") {
+                    +"tags"
+                    for (t in content.tags) {
+                      a(href = "${content.rootPath}tags/$t.html") { +t }
+                    }
+                  }
+                }
               }
-              // @@j  <h1 class="post-title"><#escape x as x?xml>${content.title}</#escape></h1>
+              h1(class_="post-title") {
+                content.title
+              }
             }
             section("post") {
               p(style="margin-right: 50px; margin-left: 30px") {
                 em {
                   +content.synopsis
                 }
-                // @@<em>
-                  // @@${content.synopsis}
-                // @@</em>
               }
-              literal { +content.bodyHTML }
+              literal { +content.body }
             }
-            // <#include "disqus.ftl">
+            Disqus(config, content).generate(this)
           }
         }
-        // @@ <#include "footer.ftl">
+        Footer(config, content).generate(this)
       }
     }
   }

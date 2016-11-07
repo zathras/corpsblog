@@ -13,4 +13,14 @@ class Config {
         get() = "@@ to do site author"
     public val siteBaseURL : String
         get() = "@@ siteBaseURL"
+    public val siteTitle: String
+        get() = "@@ siteTitle"
+    public val shareTwitter = "@@ shareTwitter"
+    public val shareLinkedIn = "@@ shareLinkedIn"
+    public val shareGitHub = "@@ shareGitHub"
+    public val shareFlickr = "@@ shareFlickr"
+    public val shareGarmin = "@@ shareGarmin"
+    public val shareEmail = "@@ shareEmail"
+    public val shareDisqus = "@@ shareDisqus"
+    public val googleAnalyticsAccount : String? = null
 }

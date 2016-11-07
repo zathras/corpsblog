@@ -7,6 +7,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.util.*
 
 /**
  * Created by w.foote on 11/3/2016.
@@ -23,9 +24,10 @@ fun main(args : Array<String>) {
     val config = Config()
     val content = Content(
             rootPath = "./",
-            bodyHTML = r,
+            body = r,
             title = "Test HTML",
-            synopsis = "This is the synopsis"
+            synopsis = "This is the synopsis",
+            date = Date()
     )
     val p = Post(config, content)
     val f = File("out/production/corpsblog/out.html")
