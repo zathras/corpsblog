@@ -41,6 +41,13 @@ class GalleryExtension (val site: Site) : TxtmarkExtension() {
                     img(src = p.smallImage!!)
                 }
             }
+            bad {
+                +"@@ a"
+                p {
+                    +"@@ b"
+                }
+                +"@@ c"
+            }
         }
         doc.render(out, "")
         return true

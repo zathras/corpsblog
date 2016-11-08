@@ -5,7 +5,6 @@ import com.jovial.blog.model.Content
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.Head
 import com.jovial.lib.html.Title
-import com.jovial.lib.html.head
 
 /**
  * Created by w.foote on 11/3/2016.

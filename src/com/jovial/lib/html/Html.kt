@@ -12,20 +12,25 @@ import java.util.*
 
 private val yymmddDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
-interface Element {
-    fun render(builder: StringBuilder, indent: String)
+abstract class Element (val parent: Element?) {
+    var initLevel : Int = 0;    // Reduce visibility
+
+    protected fun root() : Element = if (parent != null) parent.root() else this
+    fun depth() : Int = if (parent == null) 0 else parent.depth() + 1
+
+    abstract fun render(builder: StringBuilder, indent: String)
 }
 
 /**
  * An element that consists only of text, like the body of a paragraph.
  */
-class TextElement(val text: String) : Element {
+class TextElement(parent: Element?, val text: String) : Element(parent) {
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("$indent$text\n")
     }
 }
 
-abstract class Tag(val name: String) : Element {
+abstract class Tag(parent: Element?, val name: String) : Element(parent) {
     val children = arrayListOf<Element>()
     val attributes = arrayListOf<Pair<String, String>>()
         // key/value pairs, kept in order to avoid weird-looking HTML
@@ -42,10 +47,13 @@ abstract class Tag(val name: String) : Element {
     protected open fun noEndTag() : Boolean = false         // like <img src="foo.png">
 
     protected fun <T : Element> initTag(tag: T, init: (T.() -> Unit)?): T {
+        root().initLevel++  // @@ clean this up
+        assert(root().initLevel == tag.depth())
         if (init != null) {
             tag.init()
         }
         children.add(tag)
+        root().initLevel--
         return tag
     }
 
@@ -83,16 +91,19 @@ abstract class Tag(val name: String) : Element {
     }
 }
 
-abstract class TagWithText(name: String) : Tag(name) {
+abstract class TagWithText(parent: Element?, name: String) : Tag(parent, name) {
     operator fun String.unaryPlus() {
-        children.add(TextElement(this))
+        children.add(TextElement(this@TagWithText, this))
     }
+    fun bad(init: Bad.() -> Unit) = initTag(Bad(this), init)
 }
 
-class HTML() : TagWithText("html") {
-    fun head(init: Head.() -> Unit) = initTag(Head(), init)
+class Bad(parent: Element?) : TagWithText(parent, "bad")
 
-    fun body(init: Body.() -> Unit) = initTag(Body(), init)
+class HTML() : TagWithText(null, "html") {
+    fun head(init: Head.() -> Unit) = initTag(Head(this), init)
+
+    fun body(init: Body.() -> Unit) = initTag(Body(this), init)
 
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("<!DOCTYPE html>\n")
@@ -100,7 +111,7 @@ class HTML() : TagWithText("html") {
     }
 }
 
-abstract class HeadTag(name: String) : TagWithText(name) {
+abstract class HeadTag(parent: Element?, name: String) : TagWithText(parent, name) {
     fun include(expr: HeadTag.() -> Unit) {
         expr()
     }
@@ -109,7 +120,7 @@ abstract class HeadTag(name: String) : TagWithText(name) {
              name: String? = null,
              author: String? = null,
              content: String? = null) {
-        val t = initTag(Meta(), {})
+        val t = initTag(Meta(this), {})
         t.addAttribute("charset", charset)
         t.addAttribute("name", name)
         t.addAttribute("author", author)
@@ -120,35 +131,35 @@ abstract class HeadTag(name: String) : TagWithText(name) {
              title: String? = null,
              type: String? = null)
     {
-        val t = initTag(Link(), {})
+        val t = initTag(Link(this), {})
         t.attributes += Pair("href", href)
         t.attributes += Pair("rel", rel)
         t.addAttribute("title", title)
         t.addAttribute("type", type)
     }
-    fun title(init: Title.() -> Unit) = initTag(Title(), init)
+    fun title(init: Title.() -> Unit) = initTag(Title(this), init)
     fun script(src: String? = null,
                type: String? = null,
                init: (ScriptInHead.() -> Unit)? = null)
     {
-        val t = initTag(ScriptInHead(), init)
+        val t = initTag(ScriptInHead(this), init)
         t.addAttribute("src", src)
         t.addAttribute("type", type)
     }
 }
 
-class Head() : HeadTag("head")
-class Title() : HeadTag("title")
-class Meta() : HeadTag("meta") {
+class Head(parent: Element?) : HeadTag(parent, "head")
+class Title(parent: Element?) : HeadTag(parent, "title")
+class Meta(parent: Element?) : HeadTag(parent, "meta") {
     override protected fun isSelfClosing() : Boolean = true
 }
-class Link() : HeadTag("link") {
+class Link(parent: Element?) : HeadTag(parent, "link") {
     override protected fun isSelfClosing() : Boolean = true
 }
 
-class ScriptInHead() : HeadTag("script")
+class ScriptInHead(parent: Element?) : HeadTag(parent, "script")
 
-abstract class BodyTag(name: String) : TagWithText(name) {
+abstract class BodyTag(parent: Element?, name: String) : TagWithText(parent, name) {
     fun include(expr: BodyTag.() -> Unit) {
         expr()
     }
@@ -156,85 +167,85 @@ abstract class BodyTag(name: String) : TagWithText(name) {
                type: String? = null,
                init: (Script.() -> Unit)? = null)
     {
-        val t = initTag(Script(), init)
+        val t = initTag(Script(this), init)
         t.addAttribute("src", src)
         t.addAttribute("type", type)
     }
-    fun b(init: B.() -> Unit) = initTag(B(), init)
-    fun em(init: Em.() -> Unit) = initTag(Em(), init)
+    fun b(init: B.() -> Unit) = initTag(B(this), init)
+    fun em(init: Em.() -> Unit) = initTag(Em(this), init)
     fun p(style: String? = null,
           name: String? = null,
           content: String? = null,
           class_: String? = null,
           init: P.() -> Unit)
     {
-        val t = initTag(P(), init)
+        val t = initTag(P(this), init)
         t.addAttribute("style", style)
         t.addAttribute("name", name)
         t.addAttribute("content", content)
         t.addAttribute("class", class_)
     }
     fun div(class_: String? = null, id: String? = null, init: Div.() -> Unit) {
-        val t = initTag(Div(), init)
+        val t = initTag(Div(this), init)
         t.addAttribute("id", id)
         t.addAttribute("class", class_)
     }
     fun nav(class_: String, init: Nav.() -> Unit) {
-        val t = initTag(Nav(), init)
+        val t = initTag(Nav(this), init)
         t.attributes += Pair("class", class_)
     }
     fun article(class_: String, init: Article.() -> Unit) {
-        val t = initTag(Article(), init)
+        val t = initTag(Article(this), init)
         t.attributes += Pair("class", class_)
     }
     fun section(class_: String, init: Section.() -> Unit) {
-        val t = initTag(Section(), init)
+        val t = initTag(Section(this), init)
         t.attributes += Pair("class", class_)
     }
     fun header(class_: String, style: String? = null, init: Header.() -> Unit) {
-        val t = initTag(Header(), init)
+        val t = initTag(Header(this), init)
         t.attributes += Pair("class", class_)
         t.addAttribute("style", style)
     }
     fun span(class_: String, init: Span.() -> Unit) {
-        val t = initTag(Span(), init)
+        val t = initTag(Span(this), init)
         t.attributes += Pair("class", class_)
     }
     fun i(class_: String? = null, init: I.() -> Unit) {
-        val t = initTag(I(), init)
+        val t = initTag(I(this), init)
         t.addAttribute("class", class_)
     }
     fun time(datetime: Date, class_: String? = null, init: Time.() -> Unit) {
-        val t = initTag(Time(), init)
+        val t = initTag(Time(this), init)
         t.addAttribute("datetime", yymmddDateFormat.format(datetime))
         t.addAttribute("class", class_)
     }
     fun h1(class_: String? = null, init: H1.() -> Unit) {
-        val t = initTag(H1(), init)
+        val t = initTag(H1(this), init)
         t.addAttribute("class", class_)
     }
     fun h2(class_: String? = null, init: H2.() -> Unit) {
-        val t = initTag(H2(), init)
+        val t = initTag(H2(this), init)
         t.addAttribute("class", class_)
     }
     fun ul(class_: String? = null, init: Ul.() -> Unit) {
-        val t = initTag(Ul(), init)
+        val t = initTag(Ul(this), init)
         t.addAttribute("class", class_)
     }
     fun li(class_: String? = null, init: Li.() -> Unit) {
-        val t = initTag(Li(), init)
+        val t = initTag(Li(this), init)
         t.addAttribute("class", class_)
     }
     fun a(href: String, title: String? = null, target: String? = null,
           class_: String? = null, init: A.() -> Unit) {
-        val t = initTag(A(), init)
+        val t = initTag(A(this), init)
         t.addAttribute("href", href)
         t.addAttribute("title", title)
         t.addAttribute("target", target)
         t.addAttribute("class", class_)
     }
     fun img(src: String, class_: String? = null, alt: String? = null) {
-        val t = initTag(Img(), {})
+        val t = initTag(Img(this), {})
         t.addAttribute("src", src)
         t.addAttribute("class", class_)
         if (alt == null) {
@@ -244,48 +255,48 @@ abstract class BodyTag(name: String) : TagWithText(name) {
         }
     }
     fun hr(class_: String?) {
-        val t = initTag(Hr(), {})
+        val t = initTag(Hr(this), {})
         t.addAttribute("class", class_)
     }
-    fun noscript(init: Noscript.() -> Unit) = initTag(Noscript(), init)
+    fun noscript(init: Noscript.() -> Unit) = initTag(Noscript(this), init)
     fun footer(class_: String, init: Footer.() -> Unit) {
-        val t = initTag(Footer(), init)
+        val t = initTag(Footer(this), init)
         t.attributes += Pair("class", class_)
     }
 }
 
-class Body() : BodyTag("body")
-class Script() : BodyTag("script")
-class B() : BodyTag("b")
-class Em : BodyTag("em")
-class P() : BodyTag("p")
-class H1() : BodyTag("h1")
-class H2() : BodyTag("h2")
-class Ul() : BodyTag("ul")
-class Li() : BodyTag("li")
+class Body(parent: Element?) : BodyTag(parent, "body")
+class Script(parent: Element?) : BodyTag(parent, "script")
+class B(parent: Element?) : BodyTag(parent, "b")
+class Em(parent: Element?) : BodyTag(parent, "em")
+class P(parent: Element?) : BodyTag(parent, "p")
+class H1(parent: Element?) : BodyTag(parent, "h1")
+class H2(parent: Element?) : BodyTag(parent, "h2")
+class Ul(parent: Element?) : BodyTag(parent, "ul")
+class Li(parent: Element?) : BodyTag(parent, "li")
 
-class Div() : BodyTag("div")
-class Nav() : BodyTag("nav")
+class Div(parent: Element?) : BodyTag(parent, "div")
+class Nav(parent: Element?) : BodyTag(parent, "nav")
 
-class Header() : BodyTag("header")
-class Span() : BodyTag("span")
-class I() : BodyTag("i")
-class Time() : BodyTag("time")
+class Header(parent: Element?) : BodyTag(parent, "header")
+class Span(parent: Element?) : BodyTag(parent, "span")
+class I(parent: Element?) : BodyTag(parent, "i")
+class Time(parent: Element?) : BodyTag(parent, "time")
 
-class Article() : BodyTag("article")
+class Article(parent: Element?) : BodyTag(parent, "article")
 
-class Section() : BodyTag("section")
+class Section(parent: Element?) : BodyTag(parent, "section")
 
 
-class A() : BodyTag("a")
-class Img() : BodyTag("img") {
+class A(parent: Element?) : BodyTag(parent, "a")
+class Img(parent: Element?) : BodyTag(parent, "img") {
     override protected fun noEndTag() : Boolean = true
 }
-class Hr() : BodyTag("hr") {
+class Hr(parent: Element?) : BodyTag(parent, "hr") {
     override protected fun noEndTag() : Boolean = true
 }
-class Noscript() : BodyTag("noscript")
-class Footer() : BodyTag("footer")
+class Noscript(parent: Element?) : BodyTag(parent, "noscript")
+class Footer(parent: Element?) : BodyTag(parent, "footer")
 
 
 
@@ -295,13 +306,15 @@ fun html(init: HTML.() -> Unit): HTML {
     return html
 }
 
+/*
 fun head(init: Head.() -> Unit) : Head {
-    val head = Head()
+    val head = Head(this)
     head.init()
     return head
 }
+*/
 
-class BodyFragment : BodyTag("") {
+class BodyFragment : BodyTag(null, "") {
     override fun render(builder: StringBuilder, indent: String) {
         for (c in children) {
             c.render(builder, indent)
