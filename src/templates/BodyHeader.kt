@@ -1,13 +1,13 @@
 package templates
 
-import com.jovial.blog.model.Config
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.Body
 
 /**
  * Created by w.foote on 11/4/2016.
  */
-class BodyHeader (val config: Config, val content: Content) {
+class BodyHeader (val config: BlogConfig, val content: Content) {
   public fun generate(body: Body): Unit = body.include {
     span(class_ = "mobile btn-mobile-menu") {
       i(class_ = "icon icon-list btn-mobile-menu__icon") { }

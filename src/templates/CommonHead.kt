@@ -1,6 +1,6 @@
 package templates
 
-import com.jovial.blog.model.Config
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.Head
@@ -11,7 +11,7 @@ import com.jovial.lib.html.head
  * Created by w.foote on 11/3/2016.
  */
 
-class CommonHead(val config: Config, val content: Content) {
+class CommonHead(val config: BlogConfig, val content: Content) {
   public fun generate(head : Head) : Unit =  head.include {
     meta(charset="utf-8")
     title {
@@ -24,6 +24,7 @@ class CommonHead(val config: Config, val content: Content) {
     meta(name="keywords", content="")
     meta(name="generator", content="CorpsBlog")
     link(rel="stylesheet", href="${content.rootPath}css/main.css")
+    link(rel="stylesheet", href="${content.rootPath}css/photogrid.css")
     link(rel="stylesheet", href="${content.rootPath}photoswipe/photoswipe.css")
     link(rel="stylesheet", href="${content.rootPath}photoswipe/default-skin/default-skin.css")
 
@@ -36,11 +37,9 @@ class CommonHead(val config: Config, val content: Content) {
     }
 
     //  HTML5 shim, for IE6-8 support of HTML5 elements
-    literal {
-      +"<!--[if lt IE 9]>"
-    }
+    +"<!--[if lt IE 9]>"
     script(src="${content.rootPath}/html5shim.min.js")
-    literal { +"<![endif]-->" }
+    +"<![endif]-->"
 
     /*
     The following was commented out in jbake-uno.  Maybe it'll be useful someday?

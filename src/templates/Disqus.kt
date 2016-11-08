@@ -1,6 +1,6 @@
 package templates
 
-import com.jovial.blog.model.Config
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.Body
 import com.jovial.lib.html.BodyTag
@@ -12,7 +12,7 @@ import com.jovial.lib.html.Tag
  *
  * Created by billf on 11/6/16.
  */
-class Disqus (val config: Config, val content: Content) {
+class Disqus (val config: BlogConfig, val content: Content) {
   public fun generate(tag: BodyTag): Unit = tag.include {
     if (config.shareDisqus != null) {
       div (id="disqus_thread") { }

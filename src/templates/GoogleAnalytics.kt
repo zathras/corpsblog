@@ -1,6 +1,6 @@
 package templates
 
-import com.jovial.blog.model.Config
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.BodyTag
 
@@ -8,7 +8,7 @@ import com.jovial.lib.html.BodyTag
  * Created by billf on 11/6/16.
  */
 
-class GoogleAnalytics(config: Config, content: Content) {
+class GoogleAnalytics(config: BlogConfig, content: Content) {
   private val account : String? = config.googleAnalyticsAccount
 
   public fun generate(tag: BodyTag): Unit = tag.include {

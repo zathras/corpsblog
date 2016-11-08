@@ -1,6 +1,6 @@
 package templates
 
-import com.jovial.blog.model.Config
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.html
@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
  */
 
 
-class Post(val config : Config, val content: Content) {
+class Post(val config : BlogConfig, val content: Content) {
   private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
   public fun generate() : HTML = html {
     head {
@@ -47,7 +47,7 @@ class Post(val config : Config, val content: Content) {
                   +content.synopsis
                 }
               }
-              literal { +content.body }
+              +content.body
             }
             Disqus(config, content).generate(this)
           }

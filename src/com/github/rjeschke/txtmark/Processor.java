@@ -40,6 +40,7 @@ import java.io.StringReader;
  */
 public class Processor
 {
+    private int foo = 0; // @@
     /** The reader. */
     private final Reader  reader;
     /** The emitter. */
@@ -794,7 +795,8 @@ public class Processor
     {
         Block block, list;
         Line line = root.lines;
-
+foo++; // @@
+System.out.println("@@ Block level " + foo);
         if (listMode)
         {
             root.removeListIndent(this.config);
@@ -810,11 +812,14 @@ public class Processor
         }
         if (line == null)
         {
+            System.out.println("@@ End of block level " + foo + "\n");
+            foo--; // @@
             return;
         }
 
         while (line != null)
         {
+            System.out.println("  @@ line " + line.value);
             final LineType type = line.getLineType(this.config);
             switch (type)
             {
@@ -986,6 +991,8 @@ public class Processor
                 break;
             }
         }
+        System.out.println("@@ End of block level " + foo + " (2)\n");
+        foo--; // @@
     }
 
     /**

@@ -62,8 +62,8 @@ abstract class Tag(val name: String) : Element {
                 for (c in children) {
                     c.render(builder, indent + "  ")
                 }
+                builder.append("$indent</$name>\n")
             }
-            builder.append("$indent</$name>\n")
         }
     }
 
@@ -83,35 +83,6 @@ abstract class Tag(val name: String) : Element {
     }
 }
 
-open class HtmlLiteral() : Element {
-    val children = arrayListOf<TextElement>()
-
-    operator fun String.unaryPlus() {
-        children.add(TextElement(this))
-    }
-
-    override fun render(builder: StringBuilder, indent: String) {
-        for (c in children) {
-            c.render(builder, indent)   // No added indent
-        }
-    }
-
-    override fun toString(): String {
-        val builder = StringBuilder()
-        render(builder, "")
-        return builder.toString()
-    }
-}
-
-class HtmlComment() : HtmlLiteral() {
-    override fun render(builder: StringBuilder, indent: String) {
-        builder.append("$indent<!--\n")
-        super.render(builder, indent)
-        builder.append("-->\n")
-    }
-}
-
-
 abstract class TagWithText(name: String) : Tag(name) {
     operator fun String.unaryPlus() {
         children.add(TextElement(this))
@@ -129,23 +100,8 @@ class HTML() : TagWithText("html") {
     }
 }
 
-abstract class HeadOrBody(name: String) : TagWithText(name) {
-    fun literal(init: HtmlLiteral.() -> Unit) {
-        initTag(HtmlLiteral(), init)
-    }
-    fun script(src: String? = null,
-               type: String? = null,
-               init: (Script.() -> Unit)? = null)
-    {
-        val t = initTag(Script(), init)
-        t.addAttribute("src", src)
-        t.addAttribute("type", type)
-    }
-    fun noscript(init: Noscript.() -> Unit) = initTag(Noscript(), init)
-}
-
-class Head() : HeadOrBody("head") {
-    fun include(expr: Head.() -> Unit) {
+abstract class HeadTag(name: String) : TagWithText(name) {
+    fun include(expr: HeadTag.() -> Unit) {
         expr()
     }
 
@@ -171,22 +127,38 @@ class Head() : HeadOrBody("head") {
         t.addAttribute("type", type)
     }
     fun title(init: Title.() -> Unit) = initTag(Title(), init)
+    fun script(src: String? = null,
+               type: String? = null,
+               init: (ScriptInHead.() -> Unit)? = null)
+    {
+        val t = initTag(ScriptInHead(), init)
+        t.addAttribute("src", src)
+        t.addAttribute("type", type)
+    }
 }
 
-class Title() : TagWithText("title")
-class Meta() : TagWithText("meta") {
+class Head() : HeadTag("head")
+class Title() : HeadTag("title")
+class Meta() : HeadTag("meta") {
     override protected fun isSelfClosing() : Boolean = true
 }
-class Link() : TagWithText("link") {
+class Link() : HeadTag("link") {
     override protected fun isSelfClosing() : Boolean = true
 }
 
-class Script() : TagWithText("script")
-class Noscript() : TagWithText("noscript")
+class ScriptInHead() : HeadTag("script")
 
-abstract class BodyTag(name: String) : HeadOrBody(name) {
+abstract class BodyTag(name: String) : TagWithText(name) {
     fun include(expr: BodyTag.() -> Unit) {
         expr()
+    }
+    fun script(src: String? = null,
+               type: String? = null,
+               init: (Script.() -> Unit)? = null)
+    {
+        val t = initTag(Script(), init)
+        t.addAttribute("src", src)
+        t.addAttribute("type", type)
     }
     fun b(init: B.() -> Unit) = initTag(B(), init)
     fun em(init: Em.() -> Unit) = initTag(Em(), init)
@@ -261,16 +233,21 @@ abstract class BodyTag(name: String) : HeadOrBody(name) {
         t.addAttribute("target", target)
         t.addAttribute("class", class_)
     }
-    fun img(src: String, class_: String? = null, alt: String?) {
+    fun img(src: String, class_: String? = null, alt: String? = null) {
         val t = initTag(Img(), {})
         t.addAttribute("src", src)
         t.addAttribute("class", class_)
-        t.addAttribute("alt", alt)
+        if (alt == null) {
+            t.addAttribute("alt", "*")
+        } else {
+            t.addAttribute("alt", alt)
+        }
     }
     fun hr(class_: String?) {
         val t = initTag(Hr(), {})
         t.addAttribute("class", class_)
     }
+    fun noscript(init: Noscript.() -> Unit) = initTag(Noscript(), init)
     fun footer(class_: String, init: Footer.() -> Unit) {
         val t = initTag(Footer(), init)
         t.attributes += Pair("class", class_)
@@ -278,6 +255,7 @@ abstract class BodyTag(name: String) : HeadOrBody(name) {
 }
 
 class Body() : BodyTag("body")
+class Script() : BodyTag("script")
 class B() : BodyTag("b")
 class Em : BodyTag("em")
 class P() : BodyTag("p")
@@ -306,6 +284,7 @@ class Img() : BodyTag("img") {
 class Hr() : BodyTag("hr") {
     override protected fun noEndTag() : Boolean = true
 }
+class Noscript() : BodyTag("noscript")
 class Footer() : BodyTag("footer")
 
 
@@ -320,4 +299,18 @@ fun head(init: Head.() -> Unit) : Head {
     val head = Head()
     head.init()
     return head
+}
+
+class BodyFragment : BodyTag("") {
+    override fun render(builder: StringBuilder, indent: String) {
+        for (c in children) {
+            c.render(builder, indent)
+        }
+    }
+}
+
+fun bodyFragment(init: BodyFragment.() -> Unit) : BodyFragment {
+    val fragment = BodyFragment()
+    fragment.init()
+    return fragment
 }

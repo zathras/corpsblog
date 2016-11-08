@@ -23,7 +23,7 @@ import java.util.HashMap;
  *
  * @author René Jeschke <rene_jeschke@yahoo.de>
  */
-class Emitter
+public class Emitter
 {
     /** Link references. */
     private final HashMap<String, LinkRef> linkRefs      = new HashMap<String, LinkRef>();
@@ -63,6 +63,12 @@ class Emitter
     public void emit(final StringBuilder out, final Block root)
     {
         root.removeSurroundingEmptyLines();
+
+        for (TxtmarkExtension e : config.extensions) {
+            if (e.emitIfHandled(this, out, root)) {
+                return;
+            }
+        }
 
         switch (root.type)
         {
@@ -732,6 +738,14 @@ class Emitter
         }
         return -1;
     }
+
+    /**
+     * A service for extensions to emit markdown text.
+     */
+    public void extensionEmitText(final StringBuilder out, final String in) {
+        recursiveEmitLine(out, in, 0, MarkToken.NONE);
+    }
+
 
     /**
      * Turns every whitespace character into a space character.

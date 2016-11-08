@@ -15,6 +15,9 @@
  */
 package com.github.rjeschke.txtmark;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Txtmark configuration.
  *
@@ -31,6 +34,7 @@ public class Configuration
     final boolean                     forceExtendedProfile;
     final boolean                     allowSpacesInFencedDelimiters;
     final SpanEmitter                 specialLinkEmitter;
+    final List<TxtmarkExtension>      extensions;
 
     /**
      * <p>
@@ -65,9 +69,10 @@ public class Configuration
      * Constructor.
      */
     Configuration(final boolean safeMode, final String encoding, final Decorator decorator,
-            final BlockEmitter codeBlockEmitter,
-            final boolean forceExtendedProfile, final SpanEmitter specialLinkEmitter,
-            final boolean allowSpacesInFencedDelimiters, final boolean panicMode)
+                  final BlockEmitter codeBlockEmitter,
+                  final boolean forceExtendedProfile, final SpanEmitter specialLinkEmitter,
+                  final boolean allowSpacesInFencedDelimiters, final boolean panicMode,
+                  final List<TxtmarkExtension> extensions)
     {
         this.safeMode = safeMode;
         this.encoding = encoding;
@@ -77,6 +82,7 @@ public class Configuration
         this.specialLinkEmitter = specialLinkEmitter;
         this.allowSpacesInFencedDelimiters = allowSpacesInFencedDelimiters;
         this.panicMode = panicMode;
+        this.extensions = extensions;
     }
 
     /**
@@ -105,6 +111,7 @@ public class Configuration
         private Decorator    decorator                     = new DefaultDecorator();
         private BlockEmitter codeBlockEmitter              = null;
         private SpanEmitter  specialLinkEmitter            = null;
+        private List<TxtmarkExtension> extensions = new ArrayList<TxtmarkExtension>();
 
         /**
          * Constructor.
@@ -264,6 +271,18 @@ public class Configuration
         }
 
         /**
+         * Register an extension to txtmark, like a parser for a new markdown construct.
+         * A reasonable way to do this is to add a processor that produces one or more
+         * XML blocks.
+         *
+         * @param extension
+         */
+        public Builder addExtension(TxtmarkExtension extension) {
+            extensions.add(extension);
+            return this;
+        }
+
+        /**
          * Builds a configuration instance.
          *
          * @return a Configuration instance
@@ -273,7 +292,8 @@ public class Configuration
         {
             return new Configuration(this.safeMode, this.encoding, this.decorator, this.codeBlockEmitter,
                     this.forceExtendedProfile, this.specialLinkEmitter, this.allowSpacesInFencedDelimiters,
-                    this.panicMode);
+                    this.panicMode, this.extensions);
         }
+
     }
 }

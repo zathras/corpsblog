@@ -1,6 +1,8 @@
 import com.github.rjeschke.txtmark.Configuration
 import com.github.rjeschke.txtmark.Processor
-import com.jovial.blog.model.Config
+import com.jovial.blog.Site
+import com.jovial.blog.md.gallery.GalleryExtension
+import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import templates.Post
 import java.io.BufferedReader
@@ -14,23 +16,20 @@ import java.util.*
  */
 
 fun main(args : Array<String>) {
+    val site = Site(File("out/production/corpsblog/blog"))
     val configuration = Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
             forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
             setEncoding("UTF-8").
+            addExtension(GalleryExtension(site)).
             build()
-    val input = BufferedReader(FileReader("README.md"))
-    val r = Processor.process(input, configuration)
-    val config = Config()
-    val content = Content(
-            rootPath = "./",
-            body = r,
-            title = "Test HTML",
-            synopsis = "This is the synopsis",
-            date = Date()
-    )
+    val config = BlogConfig()
+    val content = Content(configuration)
+    content.read("../", File("test/blog/2013-08-25-lorem.md"))
     val p = Post(config, content)
-    val f = File("out/production/corpsblog/out.html")
+    val d = File("out/production/corpsblog/blog")
+    d.mkdirs()
+    val f = File(d, "out.html")
     val w = FileWriter(f)
     w.write(p.generate().toString())
     w.close();
