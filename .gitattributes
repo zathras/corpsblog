@@ -1,1 +1,2 @@
-src/com/github/* linguist-vendored
+src/com/github/* 	linguist-vendored
+src/net/* 		linguist-vendored

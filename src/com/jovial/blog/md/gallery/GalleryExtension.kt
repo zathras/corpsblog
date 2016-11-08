@@ -14,7 +14,8 @@ import java.io.File
  */
 
 
-private val homeDir = System.getenv("HOME")
+private val homeDir = System.getenv("HOME") ?: "/."
+    // Null home?  I read about this on alt.windows.die.die.die somewhere
 
 class GalleryExtension (val site: Site) : TxtmarkExtension() {
     override fun emitIfHandled(emitter: Emitter, out: StringBuilder, block: Block) : Boolean {

@@ -21,7 +21,7 @@ private val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
 private val commaSplitRegex = Regex(" *, *")
 
 class Content (val configuration: Configuration) {
-    var rootPath : String = "" /** Path to the base directory of the blog wihin our site **/
+    var rootPath : String = "" /** Path to the base directory of the blog within our site **/
         private set
     var body : String = ""      /** Body of the content, in HTML */
         private set
