@@ -26,5 +26,6 @@ Note added to the MIT license for the software project "corpsblog"
 
 Some components of this directory hierarchy come from other sources, and
 may be covered by a different license.  In this event, the author has made
-a good-faith effort to provide the appropriate license, in the base directory
-of the imported component, where possible, or through other documentary means.
+a good-faith effort to provide the appropriate license, including a copy
+in the base directory of the imported component in the case where the 
+source provided it there.  I did not knowingly remove any copyright messages.
