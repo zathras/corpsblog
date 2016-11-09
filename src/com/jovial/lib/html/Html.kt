@@ -12,25 +12,31 @@ import java.util.*
 
 private val yymmddDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
-abstract class Element (val parent: Element?) {
-    var initLevel : Int = 0;    // Reduce visibility
+interface Element {
 
-    protected fun root() : Element = if (parent != null) parent.root() else this
-    fun depth() : Int = if (parent == null) 0 else parent.depth() + 1
-
-    abstract fun render(builder: StringBuilder, indent: String)
+    fun render(builder: StringBuilder, indent: String)
+    fun startInitAssert(depth: Int) : Boolean
+    fun endInitAssert() : Boolean
+    fun tagName() : String
 }
 
 /**
  * An element that consists only of text, like the body of a paragraph.
  */
-class TextElement(parent: Element?, val text: String) : Element(parent) {
+class TextElement(val text: String) : Element {
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("$indent$text\n")
     }
+    override fun startInitAssert(depth : Int) : Boolean {
+        return false;   // Init isn't called on a TextElement
+    }
+    override fun endInitAssert() : Boolean {
+        return false;   // Init isn't called on a TextElement
+    }
+    override fun tagName() : String = "text element"
 }
 
-abstract class Tag(parent: Element?, val name: String) : Element(parent) {
+abstract class Tag(private val parent: Element, val name: String) : Element {
     val children = arrayListOf<Element>()
     val attributes = arrayListOf<Pair<String, String>>()
         // key/value pairs, kept in order to avoid weird-looking HTML
@@ -46,14 +52,35 @@ abstract class Tag(parent: Element?, val name: String) : Element(parent) {
     protected open fun isSelfClosing() : Boolean = false    // like <meta foo="bar"/>
     protected open fun noEndTag() : Boolean = false         // like <img src="foo.png">
 
+    override fun startInitAssert(depth: Int) : Boolean {
+        return parent.startInitAssert(depth+1)
+    }
+
+    override fun endInitAssert() : Boolean {
+        return parent.endInitAssert()
+    }
+
     protected fun <T : Element> initTag(tag: T, init: (T.() -> Unit)?): T {
-        root().initLevel++  // @@ clean this up
-        assert(root().initLevel == tag.depth())
+        assert(startInitAssert(0)) {
+            "Depth error in ${tag.tagName()} tag -- incorrect nesting of tag types"
+            // It's tempting to define tag types at a higher level of the inheritance
+            // hierarchy.  That's a Bad Idea, because of the multiple nesting of receiver
+            // types.  For example, consider:
+            //
+            //  html {
+            //    body {
+            //      head { }  <--  Oops!  This calls html's head function
+            //    }
+            //  }
+            //
+            // This assertion catches that error, because head's parent is html, but
+            // head's init is called recursively during the call to body's.
+        }
         if (init != null) {
             tag.init()
         }
         children.add(tag)
-        root().initLevel--
+        assert(endInitAssert())
         return tag
     }
 
@@ -73,6 +100,7 @@ abstract class Tag(parent: Element?, val name: String) : Element(parent) {
                 builder.append("$indent</$name>\n")
             }
         }
+
     }
 
     protected fun renderAttributes(): String? {
@@ -89,29 +117,17 @@ abstract class Tag(parent: Element?, val name: String) : Element(parent) {
         render(builder, "")
         return builder.toString()
     }
+
+    override fun tagName() : String = name
 }
 
-abstract class TagWithText(parent: Element?, name: String) : Tag(parent, name) {
+abstract class TagWithText(parent: Element, name: String) : Tag(parent, name) {
     operator fun String.unaryPlus() {
-        children.add(TextElement(this@TagWithText, this))
-    }
-    fun bad(init: Bad.() -> Unit) = initTag(Bad(this), init)
-}
-
-class Bad(parent: Element?) : TagWithText(parent, "bad")
-
-class HTML() : TagWithText(null, "html") {
-    fun head(init: Head.() -> Unit) = initTag(Head(this), init)
-
-    fun body(init: Body.() -> Unit) = initTag(Body(this), init)
-
-    override fun render(builder: StringBuilder, indent: String) {
-        builder.append("<!DOCTYPE html>\n")
-        super.render(builder, indent)
+        children.add(TextElement(this))
     }
 }
 
-abstract class HeadTag(parent: Element?, name: String) : TagWithText(parent, name) {
+abstract class HeadTag(parent: Element, name: String) : TagWithText(parent, name) {
     fun include(expr: HeadTag.() -> Unit) {
         expr()
     }
@@ -148,18 +164,18 @@ abstract class HeadTag(parent: Element?, name: String) : TagWithText(parent, nam
     }
 }
 
-class Head(parent: Element?) : HeadTag(parent, "head")
-class Title(parent: Element?) : HeadTag(parent, "title")
-class Meta(parent: Element?) : HeadTag(parent, "meta") {
+class Head(parent: Element) : HeadTag(parent, "head")
+class Title(parent: Element) : HeadTag(parent, "title")
+class Meta(parent: Element) : HeadTag(parent, "meta") {
     override protected fun isSelfClosing() : Boolean = true
 }
-class Link(parent: Element?) : HeadTag(parent, "link") {
+class Link(parent: Element) : HeadTag(parent, "link") {
     override protected fun isSelfClosing() : Boolean = true
 }
 
-class ScriptInHead(parent: Element?) : HeadTag(parent, "script")
+class ScriptInHead(parent: Element) : HeadTag(parent, "script")
 
-abstract class BodyTag(parent: Element?, name: String) : TagWithText(parent, name) {
+abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name) {
     fun include(expr: BodyTag.() -> Unit) {
         expr()
     }
@@ -265,39 +281,70 @@ abstract class BodyTag(parent: Element?, name: String) : TagWithText(parent, nam
     }
 }
 
-class Body(parent: Element?) : BodyTag(parent, "body")
-class Script(parent: Element?) : BodyTag(parent, "script")
-class B(parent: Element?) : BodyTag(parent, "b")
-class Em(parent: Element?) : BodyTag(parent, "em")
-class P(parent: Element?) : BodyTag(parent, "p")
-class H1(parent: Element?) : BodyTag(parent, "h1")
-class H2(parent: Element?) : BodyTag(parent, "h2")
-class Ul(parent: Element?) : BodyTag(parent, "ul")
-class Li(parent: Element?) : BodyTag(parent, "li")
+class Body(parent: Element) : BodyTag(parent, "body")
+class Script(parent: Element) : BodyTag(parent, "script")
+class B(parent: Element) : BodyTag(parent, "b")
+class Em(parent: Element) : BodyTag(parent, "em")
+class P(parent: Element) : BodyTag(parent, "p")
+class H1(parent: Element) : BodyTag(parent, "h1")
+class H2(parent: Element) : BodyTag(parent, "h2")
+class Ul(parent: Element) : BodyTag(parent, "ul")
+class Li(parent: Element) : BodyTag(parent, "li")
 
-class Div(parent: Element?) : BodyTag(parent, "div")
-class Nav(parent: Element?) : BodyTag(parent, "nav")
+class Div(parent: Element) : BodyTag(parent, "div")
+class Nav(parent: Element) : BodyTag(parent, "nav")
 
-class Header(parent: Element?) : BodyTag(parent, "header")
-class Span(parent: Element?) : BodyTag(parent, "span")
-class I(parent: Element?) : BodyTag(parent, "i")
-class Time(parent: Element?) : BodyTag(parent, "time")
+class Header(parent: Element) : BodyTag(parent, "header")
+class Span(parent: Element) : BodyTag(parent, "span")
+class I(parent: Element) : BodyTag(parent, "i")
+class Time(parent: Element) : BodyTag(parent, "time")
 
-class Article(parent: Element?) : BodyTag(parent, "article")
+class Article(parent: Element) : BodyTag(parent, "article")
 
-class Section(parent: Element?) : BodyTag(parent, "section")
+class Section(parent: Element) : BodyTag(parent, "section")
 
 
-class A(parent: Element?) : BodyTag(parent, "a")
-class Img(parent: Element?) : BodyTag(parent, "img") {
+class A(parent: Element) : BodyTag(parent, "a")
+class Img(parent: Element) : BodyTag(parent, "img") {
     override protected fun noEndTag() : Boolean = true
 }
-class Hr(parent: Element?) : BodyTag(parent, "hr") {
+class Hr(parent: Element) : BodyTag(parent, "hr") {
     override protected fun noEndTag() : Boolean = true
 }
-class Noscript(parent: Element?) : BodyTag(parent, "noscript")
-class Footer(parent: Element?) : BodyTag(parent, "footer")
+class Noscript(parent: Element) : BodyTag(parent, "noscript")
+class Footer(parent: Element) : BodyTag(parent, "footer")
 
+
+private class RootNode : Element {
+
+    private var initDepth = 0
+
+    override fun startInitAssert(depth: Int) : Boolean {
+        initDepth++
+        return initDepth == depth
+    }
+
+    override fun endInitAssert() : Boolean {
+        initDepth--
+        return true
+    }
+    override fun render(builder: StringBuilder, indent: String) {
+        assert(false)
+    }
+
+    override fun tagName() : String = "root pseudo-tag"
+}
+
+class HTML() : TagWithText(RootNode(), "html") {
+    fun head(init: Head.() -> Unit) = initTag(Head(this), init)
+
+    fun body(init: Body.() -> Unit) = initTag(Body(this), init)
+
+    override fun render(builder: StringBuilder, indent: String) {
+        builder.append("<!DOCTYPE html>\n")
+        super.render(builder, indent)
+    }
+}
 
 
 fun html(init: HTML.() -> Unit): HTML {
@@ -314,7 +361,7 @@ fun head(init: Head.() -> Unit) : Head {
 }
 */
 
-class BodyFragment : BodyTag(null, "") {
+class BodyFragment : BodyTag(RootNode(), "") {
     override fun render(builder: StringBuilder, indent: String) {
         for (c in children) {
             c.render(builder, indent)

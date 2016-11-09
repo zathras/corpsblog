@@ -116,8 +116,7 @@ class Picture (
 
     private fun doGenerate(baseDir: File, relName: String, maxDimension: Int): String {
         val dest = File(baseDir, relName)
-        println("@@ relName is $relName")
-        if (!dest.exists() || true) {   // @@
+        if (!dest.exists()) {
             var im = getImage()
             dest.parentFile.mkdirs()
             val maxSrc = if (im.width > im.height) im.width else im.height
