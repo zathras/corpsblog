@@ -8,6 +8,7 @@ import com.jovial.blog.Site
 import com.jovial.lib.html.BodyTag
 import com.jovial.lib.html.bodyFragment
 import java.io.File
+import java.util.*
 
 /**
  * Created by billf on 11/7/16.
@@ -26,13 +27,25 @@ class GalleryExtension (val site: Site) : TxtmarkExtension() {
             return false
         }
         currLine = currLine.next
-        val pictures = mutableListOf<Picture>()
+        val pictures = ArrayList<Picture>()
         while (currLine != null) {
             currLine = addPicture(currLine, emitter, pictures)
         }
+        // Make a gallery of up to 12 pictures, or 11 if we need a plus icon.
+        val needPlusIcon = pictures.size > 12
+        val gallery : MutableList<Picture> = if (!needPlusIcon) {
+            pictures
+        } else {
+            val list = ArrayList<Picture>(11)
+            for (i in 0..10) {
+                list.add(pictures[(i * pictures.size) / 11])
+            }
+            list
+        }
         var num = 0;
         for (p in pictures) {
-            p.generateScaled(site.baseDir, "pix/", num.toString())
+            val makeGallery = (!needPlusIcon) || gallery.contains(p)
+            p.generate(site.baseDir, "pix/", num.toString(), makeGallery)
             num++
         }
         val doc = bodyFragment {
@@ -40,10 +53,12 @@ class GalleryExtension (val site: Site) : TxtmarkExtension() {
                 +"@@ Gallery"
             }
             section(class_ = "photogrid-4") {
-                for (p in pictures) {
+                for (p in gallery) {
                     img(src = p.galleryImage!!)
                 }
-                img(src=rootPath + "images/plus-sign.png")
+                if (needPlusIcon) {
+                    img(src = rootPath + "images/plus-sign.png")
+                }
             }
         }
         doc.render(out, "")

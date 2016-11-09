@@ -19,7 +19,7 @@ class Picture (
         val caption : String
 ) {
     private var sourceImage: BufferedImage? = null
-    var bigImage: String? = null /** Relative file name of big image */
+    public var bigImage: String? = null /** Relative file name of big image */
     private set
 
     var smallImage: String? = null /** Relative file name of small image */
@@ -28,12 +28,16 @@ class Picture (
     var galleryImage: String? = null  /** Relative file name of square image for gallery */
     private set
 
-    // @@@@  Only generate gallery images if needed
-    fun generateScaled(baseDir: File, relDir: String, name: String) {
+    /**
+     * Generate any images that need to be generated
+     */
+    fun generate(baseDir: File, relDir: String, name: String, doGallery: Boolean) {
         println("Processing ${source.absolutePath}")
         bigImage = doGenerate(baseDir, "${relDir}big/$name.jpg", 1920)
         smallImage = doGenerate(baseDir, "${relDir}small/$name.jpg", 384)
-        galleryImage = generateSquare(baseDir, "${relDir}gallery/$name.jpg", 400)
+        if (doGallery) {
+            galleryImage = generateSquare(baseDir, "${relDir}gallery/$name.jpg", 400)
+        }
         // 384 is arbitrary, but it is 1920/5
         if (sourceImage != null) {
             sourceImage!!.flush()
