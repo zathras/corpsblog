@@ -43,7 +43,6 @@ I grabbed useful stuff from the following places:
    web theme for the blog.  I took the assets, and translated the
    relevant templates into Kotlin code by hand.
 *  [PhotoSwipe](http://photoswipe.com/) for a JavaScript image gallery.
-*  Chris Coyier's [Photo Grid CSS](https://css-tricks.com/seamless-responsive-photo-grid/)
 *  The [JHeader](https://sourceforge.net/projects/jheader/?source=directory )
    library to read JPEG EXIF data, so I can auto-rotate images in a gallery.
 

@@ -25,10 +25,15 @@ class Picture (
     var smallImage: String? = null /** Relative file name of small image */
     private set
 
+    var galleryImage: String? = null  /** Relative file name of square image for gallery */
+    private set
+
+    // @@@@  Only generate gallery images if needed
     fun generateScaled(baseDir: File, relDir: String, name: String) {
         println("Processing ${source.absolutePath}")
         bigImage = doGenerate(baseDir, "${relDir}big/$name.jpg", 1920)
         smallImage = doGenerate(baseDir, "${relDir}small/$name.jpg", 384)
+        galleryImage = generateSquare(baseDir, "${relDir}gallery/$name.jpg", 400)
         // 384 is arbitrary, but it is 1920/5
         if (sourceImage != null) {
             sourceImage!!.flush()
@@ -133,6 +138,35 @@ class Picture (
             if (scaled != im) {
                 scaled.flush()
             }
+        }
+        return relName
+    }
+
+    private fun generateSquare(baseDir: File, relName: String, maxSize: Int): String {
+        val dest = File(baseDir, relName)
+        if (!dest.exists()) {
+            var im = getImage()
+            dest.parentFile.mkdirs()
+            val minDimension = Math.min(im.width, im.height)
+            val size = Math.min(maxSize, minDimension)
+            val square  = BufferedImage(size, size, im.type)
+            val g = square.createGraphics();
+            val scaleFactor = size.toDouble() / minDimension.toDouble()
+            g.scale(scaleFactor, scaleFactor)
+            val dx = if (im.width > minDimension) {
+                (minDimension - im.width) / 2
+            } else {
+                0
+            }
+            val dy = if (im.height > minDimension) {
+                (minDimension - im.height) / 2
+            } else {
+                0
+            }
+            g.drawImage(im, dx, dy, null)
+            g.dispose()
+            ImageIO.write(square, "jpeg", dest)
+            square .flush()
         }
         return relName
     }
