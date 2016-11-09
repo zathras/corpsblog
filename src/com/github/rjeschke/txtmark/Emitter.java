@@ -60,12 +60,12 @@ public class Emitter
      * @param root
      *            The Block to process.
      */
-    public void emit(final StringBuilder out, final Block root)
+    public void emit(final StringBuilder out, final Block root, final String rootPath)
     {
         root.removeSurroundingEmptyLines();
 
         for (TxtmarkExtension e : config.extensions) {
-            if (e.emitIfHandled(this, out, root)) {
+            if (e.emitIfHandled(this, out, root, rootPath)) {
                 return;
             }
         }
@@ -128,7 +128,7 @@ public class Emitter
             Block block = root.blocks;
             while (block != null)
             {
-                this.emit(out, block);
+                this.emit(out, block, rootPath);
                 block = block.next;
             }
         }

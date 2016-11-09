@@ -77,11 +77,12 @@ public class Processor
      * @since 0.7
      * @see Configuration
      */
-    public final static String process(final Reader reader, final Configuration configuration) throws IOException
+    public final static String process(final Reader reader, final Configuration configuration,
+                                       final String rootPath) throws IOException
     {
         final Processor p = new Processor(!(reader instanceof BufferedReader) ? new BufferedReader(reader) : reader,
                 configuration);
-        return p.process();
+        return p.doProcess(rootPath);
     }
 
     /**
@@ -95,11 +96,12 @@ public class Processor
      * @since 0.7
      * @see Configuration
      */
-    public final static String process(final String input, final Configuration configuration)
+    public final static String process(final String input, final Configuration configuration,
+                                       final String rootPath)
     {
         try
         {
-            return process(new StringReader(input), configuration);
+            return process(new StringReader(input), configuration, rootPath);
         }
         catch (final IOException e)
         {
@@ -121,10 +123,11 @@ public class Processor
      * @since 0.7
      * @see Configuration
      */
-    public final static String process(final File file, final Configuration configuration) throws IOException
+    public final static String process(final File file, final Configuration configuration,
+                                       final String rootPath) throws IOException
     {
         final FileInputStream input = new FileInputStream(file);
-        final String ret = process(input, configuration);
+        final String ret = process(input, configuration, rootPath);
         input.close();
         return ret;
     }
@@ -142,439 +145,14 @@ public class Processor
      * @since 0.7
      * @see Configuration
      */
-    public final static String process(final InputStream input, final Configuration configuration) throws IOException
+    public final static String process(final InputStream input, final Configuration configuration,
+                                       final String rootPath) throws IOException
     {
         final Processor p = new Processor(new BufferedReader(new InputStreamReader(input, configuration.encoding)),
                 configuration);
-        return p.process();
+        return p.doProcess(rootPath);
     }
 
-    /**
-     * Transforms an input String into HTML using the default Configuration.
-     *
-     * @param input
-     *            The String to process.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input)
-    {
-        return process(input, Configuration.DEFAULT);
-    }
-
-    /**
-     * Transforms an input String into HTML.
-     *
-     * @param input
-     *            The String to process.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input, final boolean safeMode)
-    {
-        return process(input, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input String into HTML.
-     *
-     * @param input
-     *            The String to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input, final Decorator decorator)
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input String into HTML.
-     *
-     * @param input
-     *            The String to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final String input, final Decorator decorator, final boolean safeMode)
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input file into HTML using the default Configuration.
-     *
-     * @param file
-     *            The File to process.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file) throws IOException
-    {
-        return process(file, Configuration.DEFAULT);
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final boolean safeMode) throws IOException
-    {
-        return process(file, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final Decorator decorator) throws IOException
-    {
-        return process(file, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(file, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding) throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding, final boolean safeMode)
-            throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding, final Decorator decorator)
-            throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input file into HTML.
-     *
-     * @param file
-     *            The File to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final File file, final String encoding, final Decorator decorator,
-            final boolean safeMode) throws IOException
-    {
-        return process(file, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode)
-                .setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input) throws IOException
-    {
-        return process(input, Configuration.DEFAULT);
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final boolean safeMode) throws IOException
-    {
-        return process(input, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final Decorator decorator) throws IOException
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(input, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding) throws IOException
-    {
-        return process(input, Configuration.builder().setEncoding(encoding).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding, final boolean safeMode)
-            throws IOException
-    {
-        return process(input, Configuration.builder().setEncoding(encoding).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding, final Decorator decorator)
-            throws IOException
-    {
-        return process(input, Configuration.builder().setEncoding(encoding).setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param encoding
-     *            The encoding to use.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final InputStream input, final String encoding, final Decorator decorator,
-            final boolean safeMode) throws IOException
-    {
-        return process(input,
-                Configuration.builder().setEncoding(encoding).setDecorator(decorator).setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML using the default Configuration.
-     *
-     * @param reader
-     *            The Reader to process.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader) throws IOException
-    {
-        return process(reader, Configuration.DEFAULT);
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param reader
-     *            The Reader to process.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader, final boolean safeMode) throws IOException
-    {
-        return process(reader, Configuration.builder().setSafeMode(safeMode).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param reader
-     *            The Reader to process.
-     * @param decorator
-     *            The decorator to use.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader, final Decorator decorator) throws IOException
-    {
-        return process(reader, Configuration.builder().setDecorator(decorator).build());
-    }
-
-    /**
-     * Transforms an input stream into HTML.
-     *
-     * @param reader
-     *            The Reader to process.
-     * @param decorator
-     *            The decorator to use.
-     * @param safeMode
-     *            Set to <code>true</code> to escape unsafe HTML tags.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @see Configuration#DEFAULT
-     */
-    public final static String process(final Reader reader, final Decorator decorator, final boolean safeMode)
-            throws IOException
-    {
-        return process(reader, Configuration.builder().setDecorator(decorator).setSafeMode(safeMode).build());
-    }
 
     /**
      * Reads all lines from our reader.
@@ -1002,7 +580,7 @@ System.out.println("@@ Block level " + foo);
      * @throws IOException
      *             If an IO error occurred.
      */
-    private String process() throws IOException
+    private String doProcess(String rootPath) throws IOException
     {
         final StringBuilder out = new StringBuilder();
         final Block parent = this.readLines();
@@ -1012,7 +590,7 @@ System.out.println("@@ Block level " + foo);
         Block block = parent.blocks;
         while (block != null)
         {
-            this.emitter.emit(out, block);
+            this.emitter.emit(out, block, rootPath);
             block = block.next;
         }
 

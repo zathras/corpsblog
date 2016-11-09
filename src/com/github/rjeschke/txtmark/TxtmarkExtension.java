@@ -15,8 +15,10 @@ public abstract class TxtmarkExtension {
      * return true.
      *
      * @param emitter  The current emitter, which can be useful for e.g. extensionEmitText()
+     * @param rootPath  The path to the root of the site being generated, e.g. "../"
      */
-    public boolean emitIfHandled(Emitter emitter, StringBuilder out, Block block) {
+    public boolean emitIfHandled(Emitter emitter, StringBuilder out, Block block,
+                                 String rootPath) {
         return false;
     }
 }

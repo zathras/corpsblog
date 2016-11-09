@@ -18,7 +18,9 @@ private val homeDir = System.getenv("HOME") ?: "/."
     // Null home?  I read about this on alt.windows.die.die.die somewhere
 
 class GalleryExtension (val site: Site) : TxtmarkExtension() {
-    override fun emitIfHandled(emitter: Emitter, out: StringBuilder, block: Block) : Boolean {
+    override fun emitIfHandled(emitter: Emitter, out: StringBuilder, block: Block,
+                               rootPath: String) : Boolean
+    {
         var currLine : Line? = block.lines;    // It's a raw linked list
         if (currLine == null || currLine.value != "\$gallery\$") {
             return false
@@ -37,10 +39,11 @@ class GalleryExtension (val site: Site) : TxtmarkExtension() {
             h2 {
                 +"@@ Gallery"
             }
-            section(class_ = "photogrid") {
+            section(class_ = "photogrid-4") {
                 for (p in pictures) {
-                    img(src = p.smallImage!!)
+                    img(src = p.galleryImage!!)
                 }
+                img(src=rootPath + "images/plus-sign.png")
             }
         }
         doc.render(out, "")

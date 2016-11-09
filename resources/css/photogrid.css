@@ -6,6 +6,7 @@
 .photogrid-1 img {
   width: 100% ;
   height: auto ;
+  float: left ;
 }
 
 .photogrid-2 {
@@ -16,6 +17,7 @@
 .photogrid-2 img {
   width: 50% ;
   height: auto ;
+  float: left ;
 }
 
 .photogrid-3 {
@@ -26,6 +28,7 @@
 .photogrid-3 img {
   width: 33% ;
   height: auto ;
+  float: left ;
 }
 
 .photogrid-4 {
@@ -36,4 +39,5 @@
 .photogrid-4 img {
   width: 25% ;
   height: auto ;
+  float: left ;
 }

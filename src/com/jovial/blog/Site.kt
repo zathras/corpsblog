@@ -1,5 +1,6 @@
 package com.jovial.blog
 
+import com.jovial.blog.model.Content
 import java.io.File
 
 /**
