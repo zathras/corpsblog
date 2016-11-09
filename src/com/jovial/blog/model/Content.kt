@@ -79,6 +79,7 @@ class Content (val configuration: Configuration) {
                                          +"at line $lineNumber of $location")
             }
         }
-        body = Processor.process(input, configuration, rootPath)
+        body = Processor<Content>(input, configuration).process(this)
+        input.close()
     }
 }

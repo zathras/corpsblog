@@ -38,13 +38,13 @@ import java.io.StringReader;
  *
  * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
  */
-public class Processor
+public class Processor<ContextType>
 {
     private int foo = 0; // @@
     /** The reader. */
     private final Reader  reader;
     /** The emitter. */
-    private final Emitter emitter;
+    private final Emitter<ContextType> emitter;
     /** The Configuration. */
     final Configuration   config;
     /** Extension flag. */
@@ -56,103 +56,17 @@ public class Processor
      * @param reader
      *            The input reader.
      */
-    private Processor(final Reader reader, final Configuration config)
+    public Processor(final Reader reader, final Configuration config)
     {
         this.reader = reader;
         this.config = config;
         this.useExtensions = config.forceExtendedProfile;
-        this.emitter = new Emitter(this.config);
+        this.emitter = new Emitter<ContextType>(this.config);
     }
 
-    /**
-     * Transforms an input stream into HTML using the given Configuration.
-     *
-     * @param reader
-     *            The Reader to process.
-     * @param configuration
-     *            The Configuration.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @since 0.7
-     * @see Configuration
-     */
-    public final static String process(final Reader reader, final Configuration configuration,
-                                       final String rootPath) throws IOException
-    {
-        final Processor p = new Processor(!(reader instanceof BufferedReader) ? new BufferedReader(reader) : reader,
-                configuration);
-        return p.doProcess(rootPath);
+    public Processor(final String input, final Configuration config) {
+        this(new StringReader(input), config);
     }
-
-    /**
-     * Transforms an input String into HTML using the given Configuration.
-     *
-     * @param input
-     *            The String to process.
-     * @param configuration
-     *            The Configuration.
-     * @return The processed String.
-     * @since 0.7
-     * @see Configuration
-     */
-    public final static String process(final String input, final Configuration configuration,
-                                       final String rootPath)
-    {
-        try
-        {
-            return process(new StringReader(input), configuration, rootPath);
-        }
-        catch (final IOException e)
-        {
-            // This _can never_ happen
-            return null;
-        }
-    }
-
-    /**
-     * Transforms an input file into HTML using the given Configuration.
-     *
-     * @param file
-     *            The File to process.
-     * @param configuration
-     *            the Configuration
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @since 0.7
-     * @see Configuration
-     */
-    public final static String process(final File file, final Configuration configuration,
-                                       final String rootPath) throws IOException
-    {
-        final FileInputStream input = new FileInputStream(file);
-        final String ret = process(input, configuration, rootPath);
-        input.close();
-        return ret;
-    }
-
-    /**
-     * Transforms an input stream into HTML using the given Configuration.
-     *
-     * @param input
-     *            The InputStream to process.
-     * @param configuration
-     *            The Configuration.
-     * @return The processed String.
-     * @throws IOException
-     *             if an IO error occurs
-     * @since 0.7
-     * @see Configuration
-     */
-    public final static String process(final InputStream input, final Configuration configuration,
-                                       final String rootPath) throws IOException
-    {
-        final Processor p = new Processor(new BufferedReader(new InputStreamReader(input, configuration.encoding)),
-                configuration);
-        return p.doProcess(rootPath);
-    }
-
 
     /**
      * Reads all lines from our reader.
@@ -580,7 +494,7 @@ System.out.println("@@ Block level " + foo);
      * @throws IOException
      *             If an IO error occurred.
      */
-    private String doProcess(String rootPath) throws IOException
+    public String process(ContextType context) throws IOException
     {
         final StringBuilder out = new StringBuilder();
         final Block parent = this.readLines();
@@ -590,7 +504,7 @@ System.out.println("@@ Block level " + foo);
         Block block = parent.blocks;
         while (block != null)
         {
-            this.emitter.emit(out, block, rootPath);
+            this.emitter.emit(out, block, context);
             block = block.next;
         }
 

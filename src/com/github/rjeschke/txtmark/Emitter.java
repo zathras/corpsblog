@@ -23,7 +23,7 @@ import java.util.HashMap;
  *
  * @author René Jeschke <rene_jeschke@yahoo.de>
  */
-public class Emitter
+public class Emitter<ContextType>
 {
     /** Link references. */
     private final HashMap<String, LinkRef> linkRefs      = new HashMap<String, LinkRef>();
@@ -60,12 +60,12 @@ public class Emitter
      * @param root
      *            The Block to process.
      */
-    public void emit(final StringBuilder out, final Block root, final String rootPath)
+    public void emit(final StringBuilder out, final Block root, final ContextType context)
     {
         root.removeSurroundingEmptyLines();
 
-        for (TxtmarkExtension e : config.extensions) {
-            if (e.emitIfHandled(this, out, root, rootPath)) {
+        for (TxtmarkExtension<ContextType> e : config.extensions) {
+            if (e.emitIfHandled(this, out, root, context)) {
                 return;
             }
         }
@@ -128,7 +128,7 @@ public class Emitter
             Block block = root.blocks;
             while (block != null)
             {
-                this.emit(out, block, rootPath);
+                this.emit(out, block, context);
                 block = block.next;
             }
         }
