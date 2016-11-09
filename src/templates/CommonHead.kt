@@ -23,9 +23,11 @@ class CommonHead(val config: BlogConfig, val content: Content) {
     meta(name="keywords", content="")
     meta(name="generator", content="CorpsBlog")
     link(rel="stylesheet", href="${content.rootPath}css/main.css")
-    link(rel="stylesheet", href="${content.rootPath}css/photogrid.css")
-    link(rel="stylesheet", href="${content.rootPath}photoswipe/photoswipe.css")
-    link(rel="stylesheet", href="${content.rootPath}photoswipe/default-skin/default-skin.css")
+    if (content.hasGallery) {
+      link(rel = "stylesheet", href = "${content.rootPath}css/photogrid.css")
+      link(rel = "stylesheet", href = "${content.rootPath}photoswipe/photoswipe.min.css")
+      link(rel = "stylesheet", href = "${content.rootPath}photoswipe/default-skin/default-skin.css")
+    }
 
     link(rel="manifest", href="${content.rootPath}images/favicons/manifest.json")
     link(rel="shortcut icon", href="${content.rootPath}images/favicons/favicon.ico")
@@ -37,7 +39,7 @@ class CommonHead(val config: BlogConfig, val content: Content) {
 
     //  HTML5 shim, for IE6-8 support of HTML5 elements
     +"<!--[if lt IE 9]>"
-    script(src="${content.rootPath}/html5shim.min.js")
+    script(src="${content.rootPath}js/html5shim.min.js")
     +"<![endif]-->"
 
     /*

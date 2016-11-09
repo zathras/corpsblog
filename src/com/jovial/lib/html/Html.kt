@@ -201,10 +201,18 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("content", content)
         t.addAttribute("class", class_)
     }
-    fun div(class_: String? = null, id: String? = null, init: Div.() -> Unit) {
+    fun div(class_: String? = null,
+            id: String? = null,
+            tabindex: String? = null,
+            role: String? = null,
+            aria_hidden: String? = null,
+            init: Div.() -> Unit) {
         val t = initTag(Div(this), init)
         t.addAttribute("id", id)
         t.addAttribute("class", class_)
+        t.addAttribute("tabindex", tabindex)
+        t.addAttribute("role", role)
+        t.addAttribute("aria-hidden", aria_hidden)
     }
     fun nav(class_: String, init: Nav.() -> Unit) {
         val t = initTag(Nav(this), init)
@@ -213,6 +221,11 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
     fun article(class_: String, init: Article.() -> Unit) {
         val t = initTag(Article(this), init)
         t.attributes += Pair("class", class_)
+    }
+    fun button(class_: String?, title: String?, init: Button.() -> Unit) {
+        val t = initTag(Button(this), init)
+        t.addAttribute("class", class_)
+        t.addAttribute("title", title)
     }
     fun section(class_: String, init: Section.() -> Unit) {
         val t = initTag(Section(this), init)
@@ -300,6 +313,7 @@ class I(parent: Element) : BodyTag(parent, "i")
 class Time(parent: Element) : BodyTag(parent, "time")
 
 class Article(parent: Element) : BodyTag(parent, "article")
+class Button(parent: Element) : BodyTag(parent, "button")
 
 class Section(parent: Element) : BodyTag(parent, "section")
 

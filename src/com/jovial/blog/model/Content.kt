@@ -33,11 +33,15 @@ class Content (val configuration: Configuration) {
         private set
     var tags : List<String> = listOf<String>()
         private set
+    var galleryCount = 0
+
+    val hasGallery : Boolean
+        get() = galleryCount > 0
 
     class ParseError(message: String) : Exception(message)
 
 
-    private fun escapeHtml(line: String) =
+    public fun escapeHtml(line: String) =
         line.replace("<", "&lt;", false).
                 replace(">", "&gt;").
                 replace("&", "&amp;")

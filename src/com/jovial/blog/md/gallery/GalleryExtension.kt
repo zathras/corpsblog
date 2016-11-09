@@ -27,12 +27,15 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
         if (currLine == null || currLine.value != "\$gallery\$") {
             return false
         }
+        context.galleryCount++
+        // Parse the pictures from input
         currLine = currLine.next
         val pictures = ArrayList<Picture>()
         while (currLine != null) {
             currLine = addPicture(currLine, emitter, pictures)
         }
-        // Make a gallery of up to 12 pictures, or 11 if we need a plus icon.
+
+        // Prepare the images
         val needPlusIcon = pictures.size > 12
         val gallery : MutableList<Picture> = if (!needPlusIcon) {
             pictures
@@ -49,6 +52,47 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
             p.generate(site.baseDir, "pix/", num.toString(), makeGallery)
             num++
         }
+
+        // Output the photoswipe code for these images
+        val pswpItems = "pswpItems${context.galleryCount}"
+        val photoswipe = bodyFragment {
+            script(type="text/javascript") {
+                +"var $pswpItems = ["
+                var first = true
+                for (p in pictures) {
+                    if (first) {
+                        +"  {"
+                        first = false
+                    } else {
+                        +"  }, {"
+                    }
+                    val title = p.caption.trim().replace("'", "\\'")
+                    +"    src: '${p.bigImage}',"
+                    +"    msrc: '${p.smallImage}',"
+                    +"    w: ${p.bigImageSize!!.width},"
+                    +"    h: ${p.bigImageSize!!.height},"
+                    +"    title: '${title}'"
+                }
+                +"  }"
+                +"];"
+                // @@@@ todo:
+                +"""
+// define options (if needed)
+var options = {
+    // optionName: 'option value'
+    // for example:
+    index: 0 // start at first slide
+};
+
+// Initializes and opens PhotoSwipe
+var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, $pswpItems, options);
+gallery.init();
+"""
+            }
+        }
+        photoswipe.render(out, "")
+
+        // Make a photo grid for the gallery of up to 12 pictures, or 11 if we need a plus icon.
         val doc = bodyFragment {
             h2 {
                 +"@@ Gallery"

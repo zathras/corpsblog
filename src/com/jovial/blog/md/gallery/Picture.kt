@@ -3,6 +3,7 @@ package com.jovial.blog.md.gallery
 import net.sourceforge.jheader.App1Header
 import net.sourceforge.jheader.JpegHeaders
 import net.sourceforge.jheader.enumerations.Orientation
+import java.awt.Dimension
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
@@ -20,13 +21,16 @@ class Picture (
 ) {
     private var sourceImage: BufferedImage? = null
     public var bigImage: String? = null /** Relative file name of big image */
-    private set
+        private set
+
+    public var bigImageSize: Dimension? = null
+        private set
 
     var smallImage: String? = null /** Relative file name of small image */
-    private set
+        private set
 
     var galleryImage: String? = null  /** Relative file name of square image for gallery */
-    private set
+            private set
 
     /**
      * Generate any images that need to be generated
@@ -34,6 +38,11 @@ class Picture (
     fun generate(baseDir: File, relDir: String, name: String, doGallery: Boolean) {
         println("Processing ${source.absolutePath}")
         bigImage = doGenerate(baseDir, "${relDir}big/$name.jpg", 1920)
+        // Usually the image is there already, so we just always parse the image to extract the width and
+        // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
+        val bigImageFile = File(baseDir, "${relDir}big/$name.jpg")
+        val jpegParser = JpegHeaders(bigImageFile.absoluteFile.toString())
+        bigImageSize = Dimension(jpegParser.width, jpegParser.height)
         smallImage = doGenerate(baseDir, "${relDir}small/$name.jpg", 384)
         if (doGallery) {
             galleryImage = generateSquare(baseDir, "${relDir}gallery/$name.jpg", 400)
