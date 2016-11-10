@@ -84,12 +84,12 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
       i(class_ = "icon icon-list btn-mobile-menu__icon") { }
       i(class_ = "icon icon-x-circle btn-mobile-close__icon hidden") { }
     }
-    header (class_="panel-cover", style="background-image: url(${config.siteBaseURL}images/cover.jpg)") {
+    header (class_="panel-cover", style="background-image: url(${content.rootPath}${config.coverImage}); background-position: center;") {
       div(class_="panel-main") {
         div(class_="panel-main__inner panel-inverted") {
           div(class_="panel-main__content") {
-            a(href="${config.siteBaseURL}", title="link to home of ${config.siteTitle}") {
-              img(src="${config.siteBaseURL}images/profile.jpg", class_="user-image", alt="My Profile Photo")
+            a(href="${content.rootPath}", title="link to home of ${config.siteTitle}") {
+              img(src="${content.rootPath}${config.myProfilePhoto}", class_="user-image", alt="My Profile Photo")
               h1(class_="panel-cover__title panel-title") {
                 +config.siteTitle
               }
@@ -103,12 +103,12 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
               nav(class_="cover-navigation cover-navigation--primary") {
                 ul(class_="navigation") {
                   li(class_="navigation__item") {
-                    a(href="${config.siteBaseURL}#blog", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
+                    a(href="${content.rootPath}#blog", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
                       +"Blog"
                     }
                   }
                   li(class_="navigation__item") {
-                    a(href="${config.siteBaseURL}archive.html",title="link to ${config.siteBaseURL} archive",class_="blog-button") {
+                    a(href="${content.rootPath}archive.html",title="link to archive",class_="blog-button") {
                       +"Archive"
                     }
                   }
