@@ -11,17 +11,17 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
   public fun generate(body: Body): Unit = body.include {
 
     //
-    // Photoswipe UI -- iniially hidden
+    // Photoswipe UI -- initially hidden
     //
     if (content.hasGallery) {
       // Root element of PhotoSwipe. Must have class pswp.
       div(class_="pswp",tabindex="-1",role="dialog",aria_hidden="true") {
-        // Background of PhotoSwipe. 
+        // Background of PhotoSwipe.
         // It's a separate element as animating opacity is faster than rgba().
         div(class_="pswp__bg") { }
         // Slides wrapper with overflow:hidden.
         div(class_="pswp__scroll-wrap") {
-          // Container that holds slides. 
+          // Container that holds slides.
           // PhotoSwipe keeps only 3 of them in the DOM to save memory.
           // Don't modify these 3 pswp__item elements, data is added later on.
           div(class_="pswp__container") {
@@ -29,7 +29,7 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
             div(class_="pswp__item") { }
             div(class_="pswp__item") { }
           }
-          // Default (PhotoSwipeUI_Default) interface on top of sliding area. 
+          // Default (PhotoSwipeUI_Default) interface on top of sliding area.
           // Can be changed.
           div(class_="pswp__ui pswp__ui--hidden") {
             div(class_="pswp__top-bar") {
@@ -67,6 +67,13 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
       script(src = "${content.rootPath}/photoswipe/photoswipe-ui-default.min.js")
       script(type = "text/javascript") {
         +"var pswpElement = document.querySelectorAll('.pswp')[0];"
+        +"function openPhotoSwipe(index, items) {"
+        +"  var options = {"
+        +"    index: index-1"   // Subtract one from index so user sees 1-based numbers in href hint
+        +"  };"
+        +"  var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);"
+        +"  gallery.init();"
+        +"}"
       }
     }   // end if(hasGallery)
 

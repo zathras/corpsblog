@@ -135,7 +135,8 @@ abstract class HeadTag(parent: Element, name: String) : TagWithText(parent, name
     fun meta(charset: String? = null,
              name: String? = null,
              author: String? = null,
-             content: String? = null) {
+             content: String? = null)
+    {
         val t = initTag(Meta(this), {})
         t.addAttribute("charset", charset)
         t.addAttribute("name", name)
@@ -265,13 +266,19 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         val t = initTag(Li(this), init)
         t.addAttribute("class", class_)
     }
-    fun a(href: String, title: String? = null, target: String? = null,
-          class_: String? = null, init: A.() -> Unit) {
+    fun a(href: String? = null,
+          title: String? = null,
+          target: String? = null,
+          class_: String? = null,
+          onclick: String? = null,
+          init: A.() -> Unit)
+    {
         val t = initTag(A(this), init)
         t.addAttribute("href", href)
         t.addAttribute("title", title)
         t.addAttribute("target", target)
         t.addAttribute("class", class_)
+        t.addAttribute("onclick", onclick)
     }
     fun img(src: String, class_: String? = null, alt: String? = null) {
         val t = initTag(Img(this), {})

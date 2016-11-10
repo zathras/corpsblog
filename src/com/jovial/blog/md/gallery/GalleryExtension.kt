@@ -37,20 +37,23 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
 
         // Prepare the images
         val needPlusIcon = pictures.size > 12
+        var indexes : MutableList<Int>? = null
         val gallery : MutableList<Picture> = if (!needPlusIcon) {
             pictures
         } else {
             val list = ArrayList<Picture>(11)
+            indexes = ArrayList<Int>(11)
             for (i in 0..10) {
-                list.add(pictures[(i * pictures.size) / 11])
+                val index = (i * (pictures.size-1)) / 10
+                list.add(pictures[index])
+                indexes.add(index)
             }
             list
         }
-        var num = 0;
-        for (p in pictures) {
+        for (i in 0..pictures.size-1) {
+            val p = pictures[i]
             val makeGallery = (!needPlusIcon) || gallery.contains(p)
-            p.generate(site.baseDir, "pix/", num.toString(), makeGallery)
-            num++
+            p.generate(site.baseDir, "pix/", i.toString(), makeGallery)
         }
 
         // Output the photoswipe code for these images
@@ -75,19 +78,6 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
                 }
                 +"  }"
                 +"];"
-                // @@@@ todo:
-                +"""
-// define options (if needed)
-var options = {
-    // optionName: 'option value'
-    // for example:
-    index: 0 // start at first slide
-};
-
-// Initializes and opens PhotoSwipe
-var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, $pswpItems, options);
-gallery.init();
-"""
             }
         }
         photoswipe.render(out, "")
@@ -98,11 +88,17 @@ gallery.init();
                 +"@@ Gallery"
             }
             section(class_ = "photogrid-4") {
-                for (p in gallery) {
-                    img(src = p.galleryImage!!)
+                for (i in 0..gallery.size-1) {
+                    val p = gallery[i]
+                    val index = indexes?.elementAt(i) ?: i
+                    a(href = "javascript:openPhotoSwipe(${index+1}, $pswpItems)") {
+                        img(src = p.galleryImage!!)
+                    }
                 }
                 if (needPlusIcon) {
-                    img(src = context.rootPath  + "images/plus-sign.png")
+                    a(href="javascript:openPhotoSwipe(1, $pswpItems)") {
+                        img(src = context.rootPath + "images/plus-sign.png")
+                    }
                 }
             }
         }

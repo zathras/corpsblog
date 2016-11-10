@@ -25,7 +25,7 @@ class CommonHead(val config: BlogConfig, val content: Content) {
     link(rel="stylesheet", href="${content.rootPath}css/main.css")
     if (content.hasGallery) {
       link(rel = "stylesheet", href = "${content.rootPath}css/photogrid.css")
-      link(rel = "stylesheet", href = "${content.rootPath}photoswipe/photoswipe.min.css")
+      link(rel = "stylesheet", href = "${content.rootPath}photoswipe/photoswipe.css")
       link(rel = "stylesheet", href = "${content.rootPath}photoswipe/default-skin/default-skin.css")
     }
 
