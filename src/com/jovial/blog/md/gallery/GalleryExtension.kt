@@ -56,7 +56,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
         for (i in 0..pictures.size-1) {
             val p = pictures[i]
             val makeGallery = pictures.size > 1 && ((!needPlusIcon) || gallery.contains(p))
-            p.generate(i.toString(), makeGallery)
+            p.generate(i.toString(), makeGallery, site)
         }
 
         // Output the photoswipe code for these images
@@ -73,8 +73,8 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
                         +"  }, {"
                     }
                     val title = p.caption.trim().replace("'", "\\'")
-                    +"    src: '$galleryName/${p.largeImage}',"
-                    +"    msrc: '$galleryName/${p.smallImage}',"
+                    +"    src: '${p.largeImage}',"
+                    +"    msrc: '${p.smallImage}',"
                     +"    w: ${p.largeImageSize!!.width},"
                     +"    h: ${p.largeImageSize!!.height},"
                     +"    title: '${title}'"
@@ -90,7 +90,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
             if (gallery.size == 1) {
                 section(class_ = "photogrid-1") {
                     a(href = "javascript:openPhotoSwipe(1, $pswpItems)") {
-                        img(src = galleryName + "/" + gallery[0].largeImage!!)
+                        img(src = gallery[0].largeImage!!)
                     }
                 }
             } else {
@@ -101,12 +101,17 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
                 } else {
                     4
                 }
-                section(class_ = "photogrid-$cols") {
+                section(class_ = "photogrid-${if (gallery.size == 9) 33 else cols}") {
                     for (i in 0..gallery.size - 1) {
                         val p = gallery[i]
                         val index = indexes?.elementAt(i) ?: i
                         a(href = "javascript:openPhotoSwipe(${index + 1}, $pswpItems)") {
-                            img(src = galleryName + "/" + p.galleryImage!!)
+                            val style = if (i % cols != 0) {
+                                "margin-left: 0"
+                            } else {
+                                null
+                            }
+                            img(src = p.mosaicImage!!, style=style)
                         }
                     }
                     if (needPlusIcon) {
@@ -116,7 +121,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
                     } else if (gallery.size % cols != 0) {
                         for (i in (gallery.size % cols)..(cols-1)) {
                             a(href = "javascript:openPhotoSwipe(1, $pswpItems)") {
-                                img(src = context.rootPath + "images/grey.png")
+                                img(src = context.rootPath + "images/grey.png", style="margin-left: 0")
                             }
                         }
                     }

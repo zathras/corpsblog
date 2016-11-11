@@ -1,5 +1,6 @@
 package com.jovial.blog.md.gallery
 
+import com.jovial.blog.Site
 import net.sourceforge.jheader.App1Header
 import net.sourceforge.jheader.JpegHeaders
 import net.sourceforge.jheader.enumerations.Orientation
@@ -22,32 +23,45 @@ class Picture (
         val caption : String
 ) {
     private var sourceImage: BufferedImage? = null
-    public var largeImage: String? = null /** file name of big image within gallery directory */
+    public var largeImage: String? = null /** file name of big image, including gallery dir name */
         private set
 
     public var largeImageSize: Dimension? = null
         private set
 
-    var smallImage: String? = null /** Relative file name of small image */
+    var smallImage: String? = null /** file name of small image, including gallery dir */
         private set
 
-    var galleryImage: String? = null  /** Relative file name of square image for gallery */
+    var mosaicImage: String? = null  /** Relative file name of square image for mosaic */
             private set
 
     /**
      * Generate any images that need to be generated
      */
-    fun generate(name: String, doGallery: Boolean) {
+    fun generate(name: String, doGallery: Boolean, site: Site) {
         println("Processing ${source.absolutePath}")
-        largeImage = doGenerate(galleryDir, "large/$name.jpg", 1920)
-        // Usually the image is there already, so we just always parse the image to extract the width and
-        // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
-        val largeImageFile = File(galleryDir, "large/$name.jpg")
-        val jpegParser = JpegHeaders(largeImageFile.absoluteFile.toString())
-        largeImageSize = Dimension(jpegParser.width, jpegParser.height)
-        smallImage = doGenerate(galleryDir, "small/$name.jpg", 384)
-        if (doGallery) {
-            galleryImage = generateSquare(galleryDir, "mosaic/$name.jpg", 400)
+        val other = site.allPictures[source]
+        if (other != null) {
+            largeImage = other.largeImage
+            largeImageSize = other.largeImageSize
+            smallImage = other.smallImage
+            mosaicImage = other.mosaicImage
+        } else {
+            site.allPictures[source] = this
+            largeImage = doGenerate(galleryDir, "large/$name.jpg", 1920)
+            // Often the image is there already, so we just always parse the image to extract the width and
+            // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
+            val largeImageFile = File(galleryDir, "large/$name.jpg")
+            val jpegParser = JpegHeaders(largeImageFile.absoluteFile.toString())
+            largeImageSize = Dimension(jpegParser.width, jpegParser.height)
+            smallImage = doGenerate(galleryDir, "small/$name.jpg", 384)
+        }
+        if (doGallery && mosaicImage == null) {
+            mosaicImage = generateSquare(galleryDir, "mosaic/$name.jpg", 400)
+            if (other != null) {
+                assert(other.mosaicImage == null)
+                other.mosaicImage = mosaicImage
+            }
         }
         // 384 is arbitrary, but it is 1920/5
         if (sourceImage != null) {
@@ -159,7 +173,7 @@ class Picture (
                 scaled.flush()
             }
         }
-        return relName
+        return baseDir.name + "/" + relName
     }
 
     private fun generateSquare(baseDir: File, relName: String, maxSize: Int): String {
@@ -188,6 +202,6 @@ class Picture (
             ImageIO.write(square, "jpeg", dest)
             square .flush()
         }
-        return relName
+        return baseDir.name + "/" + relName
     }
 }

@@ -1,5 +1,6 @@
 package com.jovial.blog
 
+import com.jovial.blog.md.gallery.Picture
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.Content
 import templates.Post
@@ -23,6 +24,11 @@ class Site (
 
     val blogConfig = BlogConfig()
 
+    /**
+     * We keep a record of all the generated we have, to avoid re-generating them
+     */
+    val allPictures = mutableMapOf<File, Picture>()
+
     public fun generate() {
         val postsSrc = File(inputDir, "posts")
         for (name in postsSrc.list().sortedBy{ s -> s.toLowerCase() } ) {
@@ -44,7 +50,7 @@ class Site (
     private fun generatePost(pathTo: String, pathFrom: String, name: String) {
         val baseName = name.dropLast(3)
         val postOutputDir = File(outputDir, pathTo)
-        val content = Content(txtmarkConfig, postOutputDir, baseName, "../")
+        val content = Content(txtmarkConfig, postOutputDir, baseName, pathFrom)
         content.read(File(inputDir, "$pathTo/$name"))
         val p = Post(blogConfig, content)
         postOutputDir.mkdirs()

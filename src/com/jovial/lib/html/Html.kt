@@ -282,15 +282,16 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("class", class_)
         t.addAttribute("onclick", onclick)
     }
-    fun img(src: String, class_: String? = null, alt: String? = null) {
+    fun img(src: String,
+            alt: String? = null,
+            class_: String? = null,
+            style: String? = null)
+    {
         val t = initTag(Img(this), {})
         t.addAttribute("src", src)
+        t.addAttribute("alt", alt ?: "*")
         t.addAttribute("class", class_)
-        if (alt == null) {
-            t.addAttribute("alt", "*")
-        } else {
-            t.addAttribute("alt", alt)
-        }
+        t.addAttribute("style", style)
     }
     fun hr(class_: String?) {
         val t = initTag(Hr(this), {})
