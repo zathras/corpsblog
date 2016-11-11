@@ -59,14 +59,17 @@ involving [Mooré](https://en.wikipedia.org/wiki/Mossi_language) :-)
 
 #Output Directory Structure
 
+The output will look something like this:
+
 * index.html
 * posts
-  * yyyy-mm-dd-optional-name.html
-  * yyyy-mm-dd-optional-name-gallery
-    * 1.jpg
-    * 2.jpg
-  * yyyy-mm-dd-optional-name-gallery-2
-    * 1.jpg
-    * 2.jpg
-    * 3.jpg
+  * 2017-06-15-first-optional-name.html
+  * 2017-06-15-first-optional-name-gallery
+    * Pictures, in directories "large," "small" and "mosaic"
+  * 2017-06-15-second-optional-name-2.html
+  * 2017-06-15-second optional-name-2-gallery
+    * Pictures
+  * 2017-07-12.html
+  * 2017-07-12-gallery
+    * Pictures
 
