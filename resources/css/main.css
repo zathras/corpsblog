@@ -52,3 +52,18 @@
   border: 3px solid #fff;
   border-radius:100%;
 }
+
+.arrow-nav {
+   width: 100%;
+  line-height: 1.5em;
+}
+.newer {
+  width: 50%;
+  float: left;
+  text-align: left;
+}
+.older {
+  width: 50%;
+  float: right;
+  text-align: right;
+}

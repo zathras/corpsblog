@@ -189,6 +189,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("type", type)
     }
     fun b(init: B.() -> Unit) = initTag(B(this), init)
+    fun br(init: Br.() -> Unit = {}) = initTag(Br(this), init)
     fun em(init: Em.() -> Unit) = initTag(Em(this), init)
     fun p(style: String? = null,
           name: String? = null,
@@ -217,9 +218,13 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("role", role)
         t.addAttribute("aria-hidden", aria_hidden)
     }
-    fun nav(class_: String, init: Nav.() -> Unit) {
+    fun nav(class_: String? = null,
+            style: String? = null,
+            init: Nav.() -> Unit)
+    {
         val t = initTag(Nav(this), init)
-        t.attributes += Pair("class", class_)
+        t.addAttribute("class", class_)
+        t.addAttribute("style", style)
     }
     fun article(class_: String, init: Article.() -> Unit) {
         val t = initTag(Article(this), init)
@@ -258,6 +263,14 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
     }
     fun h2(class_: String? = null, init: H2.() -> Unit) {
         val t = initTag(H2(this), init)
+        t.addAttribute("class", class_)
+    }
+    fun h3(class_: String? = null, init: H3.() -> Unit) {
+        val t = initTag(H3(this), init)
+        t.addAttribute("class", class_)
+    }
+    fun h4(class_: String? = null, init: H4.() -> Unit) {
+        val t = initTag(H4(this), init)
         t.addAttribute("class", class_)
     }
     fun ul(class_: String? = null, init: Ul.() -> Unit) {
@@ -307,10 +320,15 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
 class Body(parent: Element) : BodyTag(parent, "body")
 class Script(parent: Element) : BodyTag(parent, "script")
 class B(parent: Element) : BodyTag(parent, "b")
+class Br(parent: Element) : BodyTag(parent, "br") {
+    override protected fun noEndTag(): Boolean = true
+}
 class Em(parent: Element) : BodyTag(parent, "em")
 class P(parent: Element) : BodyTag(parent, "p")
 class H1(parent: Element) : BodyTag(parent, "h1")
 class H2(parent: Element) : BodyTag(parent, "h2")
+class H3(parent: Element) : BodyTag(parent, "h3")
+class H4(parent: Element) : BodyTag(parent, "h4")
 class Ul(parent: Element) : BodyTag(parent, "ul")
 class Li(parent: Element) : BodyTag(parent, "li")
 

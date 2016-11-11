@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Created by billf on 11/6/16.
  */
-class Footer (val config: BlogConfig, val content: Content) {
+class Footer (val config: BlogConfig, val rootPath: String) {
   private val year = SimpleDateFormat("yyyy").format(Date())
   public fun generate(tag: BodyTag): Unit = tag.include {
     footer(class_ = "footer") {
@@ -20,8 +20,8 @@ class Footer (val config: BlogConfig, val content: Content) {
         }
       }
     }
-    script(type="text/javascript", src="${content.rootPath}js/jquery-1.11.3.min.js") { }
-    script(type="text/javascript", src="${content.rootPath}js/main.js") { }
-    GoogleAnalytics(config, content).generate(this)
+    script(type="text/javascript", src="${rootPath}js/jquery-1.11.3.min.js") { }
+    script(type="text/javascript", src="${rootPath}js/main.js") { }
+    GoogleAnalytics(config, rootPath).generate(this)
   }
 }

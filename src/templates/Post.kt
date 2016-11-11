@@ -10,18 +10,18 @@ import java.text.SimpleDateFormat
  * Created by w.foote on 11/3/2016.
  */
 
+private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
-class Post(val config : BlogConfig, val content: Content) {
-  private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
-  public fun generate() : HTML = html {
+class Post(val config : BlogConfig, val content: Content, val fileName: String) {
+  public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
     head {
-      CommonHead(config, content).generate(this)
+      CommonHead(config, content.title, content.rootPath, content.hasGallery).generate(this)
     }
     body {
-      BodyHeader(config, content).generate(this)
+      BodyHeader(config, content.rootPath, content.hasGallery).generate(this)
       div("content-wrapper") {
         div("content-wrapper__inner") {
-           article("post-container post-container--single") {
+          article("post-container post-container--single") {
             header("post-header") {
               div("post-meta") {
                 time(datetime = content.date, class_ = "post-meta__date date") {
@@ -49,10 +49,31 @@ class Post(val config : BlogConfig, val content: Content) {
               }
               +content.body
             }
-            Disqus(config, content).generate(this)
+            Disqus(config, content.rootPath).generate(this)
+            if (newerPost != null || olderPost != null) {
+              div(style = "clear: both") { }
+              +"&nbsp;"
+              div(style = "clear: both") { }
+              nav(class_ = "arrow-nav") {
+                if (newerPost != null) {
+                  a(href = newerPost) {
+                    div(class_ = "newer") {
+                      +"← NEWER"
+                    }
+                  }
+                }
+                if (olderPost != null) {
+                  a(href = olderPost) {
+                    div(class_ = "older") {
+                      +"OLDER  →"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-        Footer(config, content).generate(this)
+        Footer(config, content.rootPath).generate(this)
       }
     }
   }

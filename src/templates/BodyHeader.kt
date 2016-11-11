@@ -7,13 +7,15 @@ import com.jovial.lib.html.Body
 /**
  * Created by w.foote on 11/4/2016.
  */
-class BodyHeader (val config: BlogConfig, val content: Content) {
+class BodyHeader (val config: BlogConfig,
+                  val rootPath: String,
+                  val hasGallery: Boolean = false) {
   public fun generate(body: Body): Unit = body.include {
 
     //
     // Photoswipe UI -- initially hidden
     //
-    if (content.hasGallery) {
+    if (hasGallery) {
       // Root element of PhotoSwipe. Must have class pswp.
       div(class_="pswp",tabindex="-1",role="dialog",aria_hidden="true") {
         // Background of PhotoSwipe.
@@ -63,8 +65,8 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
           }
         }
       }
-      script(src = "${content.rootPath}photoswipe/photoswipe.min.js")
-      script(src = "${content.rootPath}photoswipe/photoswipe-ui-default.min.js")
+      script(src = "${rootPath}photoswipe/photoswipe.min.js")
+      script(src = "${rootPath}photoswipe/photoswipe-ui-default.min.js")
       script(type = "text/javascript") {
         +"var pswpElement = document.querySelectorAll('.pswp')[0];"
         +"function openPhotoSwipe(index, items) {"
@@ -84,12 +86,12 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
       i(class_ = "icon icon-list btn-mobile-menu__icon") { }
       i(class_ = "icon icon-x-circle btn-mobile-close__icon hidden") { }
     }
-    header (class_="panel-cover", style="background-image: url(${content.rootPath}${config.coverImage}); background-position: center;") {
+    header (class_="panel-cover", style="background-image: url(${rootPath}${config.coverImage}); background-position: center;") {
       div(class_="panel-main") {
         div(class_="panel-main__inner panel-inverted") {
           div(class_="panel-main__content") {
-            a(href="${content.rootPath}", title="link to home of ${config.siteTitle}") {
-              img(src="${content.rootPath}${config.myProfilePhoto}", class_="user-image", alt="My Profile Photo")
+            a(href="${rootPath}", title="link to home of ${config.siteTitle}") {
+              img(src="${rootPath}${config.myProfilePhoto}", class_="user-image", alt="My Profile Photo")
               h1(class_="panel-cover__title panel-title") {
                 +config.siteTitle
               }
@@ -103,12 +105,12 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
               nav(class_="cover-navigation cover-navigation--primary") {
                 ul(class_="navigation") {
                   li(class_="navigation__item") {
-                    a(href="${content.rootPath}#blog", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
+                    a(href="${rootPath}#blog", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
                       +"Blog"
                     }
                   }
                   li(class_="navigation__item") {
-                    a(href="${content.rootPath}archive.html",title="link to archive",class_="blog-button") {
+                    a(href="${rootPath}archive.html",title="link to archive",class_="blog-button") {
                       +"Archive"
                     }
                   }
@@ -179,7 +181,7 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
 
                   // RSS
                   li(class_="navigation__item") {
-                    a(href="${content.rootPath}", title="Subscribe", target="_blank") {
+                    a(href="${rootPath}", title="Subscribe", target="_blank") {
                       i(class_="icon icon-rss") { }
                       span(class_="label") {
                         +"RSS"

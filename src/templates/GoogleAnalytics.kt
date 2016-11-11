@@ -8,7 +8,7 @@ import com.jovial.lib.html.BodyTag
  * Created by billf on 11/6/16.
  */
 
-class GoogleAnalytics(config: BlogConfig, content: Content) {
+class GoogleAnalytics(config: BlogConfig, rootPath: String) {
   private val account : String? = config.googleAnalyticsAccount
 
   public fun generate(tag: BodyTag): Unit = tag.include {

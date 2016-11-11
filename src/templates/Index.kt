@@ -8,14 +8,14 @@ import com.jovial.lib.html.html
 /**
  * Created by billf on 11/7/16.
  */
-class Index(val config : BlogConfig, val content: Content) {
+class Index(val config : BlogConfig, val titleString: String, val rootPath: String) {
     // @@ TODO
     public fun generate(): HTML = html {
         head {
-            CommonHead(config, content).generate(this)
+            CommonHead(config, titleString, rootPath).generate(this)
         }
         body {
-            BodyHeader(config, content).generate(this)
+            BodyHeader(config, rootPath).generate(this)
         }
     }
 }

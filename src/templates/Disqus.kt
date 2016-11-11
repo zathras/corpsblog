@@ -12,7 +12,7 @@ import com.jovial.lib.html.Tag
  *
  * Created by billf on 11/6/16.
  */
-class Disqus (val config: BlogConfig, val content: Content) {
+class Disqus (val config: BlogConfig, val rootPath: String) {
   public fun generate(tag: BodyTag): Unit = tag.include {
     if (config.shareDisqus != null) {
       div (id="disqus_thread") { }
@@ -41,14 +41,11 @@ class Disqus (val config: BlogConfig, val content: Content) {
       noscript {
         +"Please enable JavaScript to view the"
         a(href="http://disqus.com/?ref_noscript") {
-          +"comments powered by Disqus."
+          +"comments."
         }
       }
       a(href="http://disqus.com", class_="dsq-brlink") {
-        +"comments powered by "
-        span(class_="logo-disqus") {
-          +"Disqus"
-        }
+        +"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See comments"
       }
     }
   }

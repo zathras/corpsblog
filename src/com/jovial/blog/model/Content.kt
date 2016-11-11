@@ -89,4 +89,11 @@ class Content (
         body = Processor<Content>(input, configuration).process(this)
         input.close()
     }
+
+    /**
+     * Discard the body after writing, to save a bit of memory.
+     */
+    fun discardBody() {
+        body = ""
+    }
 }
