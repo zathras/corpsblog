@@ -5,4 +5,5 @@ package templates
  */
 class Menu {
     // @@ todo
+    // This is a fragment, so get to it when it's used...
 }

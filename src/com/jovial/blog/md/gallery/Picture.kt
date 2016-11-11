@@ -9,6 +9,7 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.awt.image.RescaleOp
 import java.io.File
+import java.io.IOException
 import javax.imageio.ImageIO
 
 /**
@@ -17,13 +18,14 @@ import javax.imageio.ImageIO
 
 class Picture (
         val source : File,
+        val galleryDir : File,
         val caption : String
 ) {
     private var sourceImage: BufferedImage? = null
-    public var bigImage: String? = null /** Relative file name of big image */
+    public var largeImage: String? = null /** file name of big image within gallery directory */
         private set
 
-    public var bigImageSize: Dimension? = null
+    public var largeImageSize: Dimension? = null
         private set
 
     var smallImage: String? = null /** Relative file name of small image */
@@ -35,17 +37,17 @@ class Picture (
     /**
      * Generate any images that need to be generated
      */
-    fun generate(baseDir: File, relDir: String, name: String, doGallery: Boolean) {
+    fun generate(name: String, doGallery: Boolean) {
         println("Processing ${source.absolutePath}")
-        bigImage = doGenerate(baseDir, "${relDir}big/$name.jpg", 1920)
+        largeImage = doGenerate(galleryDir, "large/$name.jpg", 1920)
         // Usually the image is there already, so we just always parse the image to extract the width and
         // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
-        val bigImageFile = File(baseDir, "${relDir}big/$name.jpg")
-        val jpegParser = JpegHeaders(bigImageFile.absoluteFile.toString())
-        bigImageSize = Dimension(jpegParser.width, jpegParser.height)
-        smallImage = doGenerate(baseDir, "${relDir}small/$name.jpg", 384)
+        val largeImageFile = File(galleryDir, "large/$name.jpg")
+        val jpegParser = JpegHeaders(largeImageFile.absoluteFile.toString())
+        largeImageSize = Dimension(jpegParser.width, jpegParser.height)
+        smallImage = doGenerate(galleryDir, "small/$name.jpg", 384)
         if (doGallery) {
-            galleryImage = generateSquare(baseDir, "${relDir}gallery/$name.jpg", 400)
+            galleryImage = generateSquare(galleryDir, "mosaic/$name.jpg", 400)
         }
         // 384 is arbitrary, but it is 1920/5
         if (sourceImage != null) {
@@ -59,7 +61,12 @@ class Picture (
         if (im != null) {
             return im;
         }
-        im = ImageIO.read(source)!!
+        try {
+            im = ImageIO.read(source)!!
+        } catch (ex : IOException) {
+            println("Error reading $source")
+            throw ex
+        }
         try {
             val jpegParser = JpegHeaders(source.absoluteFile.toString())
             // Didn't bother to check filename extension, since that could be wrong anyway.

@@ -5,4 +5,5 @@ package templates
  */
 class Sitemap {
     // @@ todo
+    // This is XML.  Not totally sure what it's for :-)
 }

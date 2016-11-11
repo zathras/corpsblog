@@ -5,4 +5,5 @@ package templates
  */
 class Page {
     // @@ todo
+    // Not sure about this vs. post, if I do one post per page.
 }

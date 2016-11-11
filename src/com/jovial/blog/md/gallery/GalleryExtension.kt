@@ -28,11 +28,14 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
             return false
         }
         context.galleryCount++
+        val galleryName = context.baseGeneratedDirName + "-gallery-" + context.galleryCount
+        val galleryDir = File(context.outputDir, galleryName)
+        galleryDir.mkdirs()
         // Parse the pictures from input
         currLine = currLine.next
         val pictures = ArrayList<Picture>()
         while (currLine != null) {
-            currLine = addPicture(currLine, emitter, pictures)
+            currLine = addPicture(currLine, emitter, galleryDir, pictures)
         }
 
         // Prepare the images
@@ -52,8 +55,8 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
         }
         for (i in 0..pictures.size-1) {
             val p = pictures[i]
-            val makeGallery = (!needPlusIcon) || gallery.contains(p)
-            p.generate(site.baseDir, "pix/", i.toString(), makeGallery)
+            val makeGallery = pictures.size > 1 && ((!needPlusIcon) || gallery.contains(p))
+            p.generate(i.toString(), makeGallery)
         }
 
         // Output the photoswipe code for these images
@@ -70,10 +73,10 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
                         +"  }, {"
                     }
                     val title = p.caption.trim().replace("'", "\\'")
-                    +"    src: '${p.bigImage}',"
-                    +"    msrc: '${p.smallImage}',"
-                    +"    w: ${p.bigImageSize!!.width},"
-                    +"    h: ${p.bigImageSize!!.height},"
+                    +"    src: '$galleryName/${p.largeImage}',"
+                    +"    msrc: '$galleryName/${p.smallImage}',"
+                    +"    w: ${p.largeImageSize!!.width},"
+                    +"    h: ${p.largeImageSize!!.height},"
                     +"    title: '${title}'"
                 }
                 +"  }"
@@ -84,38 +87,59 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
 
         // Make a photo grid for the gallery of up to 12 pictures, or 11 if we need a plus icon.
         val doc = bodyFragment {
-            h2 {
-                +"@@ Gallery"
-            }
-            section(class_ = "photogrid-4") {
-                for (i in 0..gallery.size-1) {
-                    val p = gallery[i]
-                    val index = indexes?.elementAt(i) ?: i
-                    a(href = "javascript:openPhotoSwipe(${index+1}, $pswpItems)") {
-                        img(src = p.galleryImage!!)
+            if (gallery.size == 1) {
+                section(class_ = "photogrid-1") {
+                    a(href = "javascript:openPhotoSwipe(1, $pswpItems)") {
+                        img(src = galleryName + "/" + gallery[0].largeImage!!)
                     }
                 }
-                if (needPlusIcon) {
-                    a(href="javascript:openPhotoSwipe(1, $pswpItems)") {
-                        img(src = context.rootPath + "images/plus-sign.png")
+            } else {
+                val cols = if (gallery.size == 2 || gallery.size == 4) {
+                    2
+                } else if (gallery.size in setOf(3, 5, 6, 9)) {
+                    3
+                } else {
+                    4
+                }
+                section(class_ = "photogrid-$cols") {
+                    for (i in 0..gallery.size - 1) {
+                        val p = gallery[i]
+                        val index = indexes?.elementAt(i) ?: i
+                        a(href = "javascript:openPhotoSwipe(${index + 1}, $pswpItems)") {
+                            img(src = galleryName + "/" + p.galleryImage!!)
+                        }
+                    }
+                    if (needPlusIcon) {
+                        a(href = "javascript:openPhotoSwipe(1, $pswpItems)") {
+                            img(src = context.rootPath + "images/plus-sign.png")
+                        }
+                    } else if (gallery.size % cols != 0) {
+                        for (i in (gallery.size % cols)..(cols-1)) {
+                            a(href = "javascript:openPhotoSwipe(1, $pswpItems)") {
+                                img(src = context.rootPath + "images/grey.png")
+                            }
+                        }
                     }
                 }
             }
+            div(style="clear: both") { }
         }
         doc.render(out, "")
         return true
     }
 
-    private fun addPicture(start: Line, emitter: Emitter<Content>,
+    private fun addPicture(start: Line,
+                           emitter: Emitter<Content>,
+                           galleryDir: File,
                            pictures: MutableList<Picture>) : Line? {
-        val fileName = processFileName(start.value)
+        val sourceName = processFileName(start.value)
         var line : Line? = start.next
         val caption = StringBuilder()
         while (line != null && line.value.startsWith(" ")) {
             emitter.extensionEmitText(caption, line.value)
             line = line.next
         }
-        pictures += Picture(fileName, caption.toString())
+        pictures += Picture(sourceName, galleryDir, caption.toString())
         return line
     }
 

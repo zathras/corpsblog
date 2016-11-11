@@ -207,10 +207,12 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
             tabindex: String? = null,
             role: String? = null,
             aria_hidden: String? = null,
+            style: String? = null,
             init: Div.() -> Unit) {
         val t = initTag(Div(this), init)
         t.addAttribute("id", id)
         t.addAttribute("class", class_)
+        t.addAttribute("style", style)
         t.addAttribute("tabindex", tabindex)
         t.addAttribute("role", role)
         t.addAttribute("aria-hidden", aria_hidden)
@@ -237,9 +239,9 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.attributes += Pair("class", class_)
         t.addAttribute("style", style)
     }
-    fun span(class_: String, init: Span.() -> Unit) {
+    fun span(class_: String? = null, init: Span.() -> Unit) {
         val t = initTag(Span(this), init)
-        t.attributes += Pair("class", class_)
+        t.addAttribute("class", class_)
     }
     fun i(class_: String? = null, init: I.() -> Unit) {
         val t = initTag(I(this), init)

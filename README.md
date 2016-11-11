@@ -57,3 +57,16 @@ just write my own site generator, and it's certainly more joyful.
 Perhaps I'll come up with a better pun for a new name someday...  Maybe something
 involving [Mooré](https://en.wikipedia.org/wiki/Mossi_language) :-)
 
+#Output Directory Structure
+
+* index.html
+* posts
+  * yyyy-mm-dd-optional-name.html
+  * yyyy-mm-dd-optional-name-gallery
+    * 1.jpg
+    * 2.jpg
+  * yyyy-mm-dd-optional-name-gallery-2
+    * 1.jpg
+    * 2.jpg
+    * 3.jpg
+

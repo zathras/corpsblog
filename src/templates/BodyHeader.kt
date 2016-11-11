@@ -63,8 +63,8 @@ class BodyHeader (val config: BlogConfig, val content: Content) {
           }
         }
       }
-      script(src = "${content.rootPath}/photoswipe/photoswipe.min.js")
-      script(src = "${content.rootPath}/photoswipe/photoswipe-ui-default.min.js")
+      script(src = "${content.rootPath}photoswipe/photoswipe.min.js")
+      script(src = "${content.rootPath}photoswipe/photoswipe-ui-default.min.js")
       script(type = "text/javascript") {
         +"var pswpElement = document.querySelectorAll('.pswp')[0];"
         +"function openPhotoSwipe(index, items) {"

@@ -20,9 +20,13 @@ import java.util.*
 private val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
 private val commaSplitRegex = Regex(" *, *")
 
-class Content (val configuration: Configuration) {
-    var rootPath : String = "" /** Path to the base directory of the blog within our site **/
-        private set
+class Content (
+        val configuration : Configuration,
+        val outputDir : File,
+        val baseGeneratedDirName : String,    /** Name to use for any generated directories within outputDir, etc. */
+        val rootPath : String   /** Relative to the base directory of the blog within our site **/
+        )
+{
     var body : String = ""      /** Body of the content, in HTML */
         private set
     var title : String = ""     /** Title, escaped for HTML */
@@ -47,8 +51,7 @@ class Content (val configuration: Configuration) {
                 replace("&", "&amp;")
 
     @Throws(ParseError::class)
-    fun read(rootPath: String, location: File) {
-        this.rootPath = rootPath
+    fun read(location: File) {
         try {
             date = fileDateFormat.parse(location.name)
         } catch (ex: ParseException) {
