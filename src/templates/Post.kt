@@ -35,7 +35,7 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
                 }
                 if (content.tags.size > 0) {
                   span(class_ = "post-meta__tags") {
-                    +"tags"
+                    +"tags:  "
                     for (t in content.tags) {
                       a(href = "${content.rootPath}tags/$t.html") { +t }
                     }

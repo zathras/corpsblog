@@ -1,10 +1,14 @@
 package com.jovial.util
 
 import java.io.IOException
+import java.text.SimpleDateFormat
 
 /**
  * Created by billf on 11/14/16.
  */
+
+val MMMMyyyyFormat = SimpleDateFormat("MMMM yyyy")
+val ddFormat = SimpleDateFormat("dd")
 
 /**
  *  Utility for reading a string value out of a map, like the one that JsonIO gives us

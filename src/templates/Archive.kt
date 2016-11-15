@@ -4,20 +4,19 @@ import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.html
+import com.jovial.util.MMMMyyyyFormat
+import com.jovial.util.ddFormat
 import java.text.SimpleDateFormat
 
 /**
  * Created by billf on 11/6/16.
  */
 
-private val MMMMyyyyFormat = SimpleDateFormat("MMMM yyyy")
-private val ddFormat = SimpleDateFormat("dd")
-
-class Archive(val config : BlogConfig, 
-	      val rootPath: String,
+class Archive(val config : BlogConfig,
               val posts: List<Post>) {
 
   public fun generate(): HTML = html {
+    val rootPath = ""
     head {
       CommonHead(config, "Archive of ${config.siteDescription}", rootPath).generate(this)
     }

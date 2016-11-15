@@ -43,7 +43,11 @@ class Site (
 
     val posts = mutableListOf<Post>()
 
-    public fun generate() {
+    private val tagMap = mutableMapOf<String, MutableList<Post>>()
+    // Map from tag name to list of posts, in date order starting with the earliest post
+
+
+    fun generate() {
         val postsSrc = File(inputDir, "posts")
         val postFiles = postsSrc.list().
                 sortedBy { s -> s.toLowerCase() }.
@@ -58,12 +62,16 @@ class Site (
         for (i in 0..postFiles.size-1) {
             generatePost("posts", "../", postFiles, i)
         }
+        for ((t, taggedPosts) in tagMap) {
+            generateTagFile("tags", "../", t, taggedPosts)
+        }
+
         val images = File(inputDir, "images")
         val fOutDir = File(outputDir, "images")
         for (s in images.list()) {
             Files.copy(File(images, s).toPath(), File(fOutDir, s).toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
-        writeFile(Archive(blogConfig, "", posts).generate().toString(), File(outputDir, "archive.html"))
+        writeFile(Archive(blogConfig, posts).generate().toString(), File(outputDir, "archive.html"))
         writeFile(Feed(blogConfig, posts).generate(), File(outputDir, "feed.xml"))
 
         val indexContent = IndexContent(txtmarkConfig)
@@ -100,6 +108,22 @@ class Site (
         writeFile(html.toString(), f)
         p.content.discardBody()
         posts.add(p)
+        for (t in content.tags) {
+            val list = tagMap[t]
+            if (list == null) {
+                tagMap[t] = mutableListOf(p)
+            } else {
+                list.add(p)
+            }
+        }
+    }
+
+    private fun generateTagFile(pathTo: String, pathFrom: String, tag: String, taggedPosts: List<Post>) {
+        val html = Tags(blogConfig, pathTo, pathFrom, tag, taggedPosts).generate()
+        val tagOutputDir = File(outputDir, pathTo)
+        tagOutputDir.mkdirs()
+        val f = File(tagOutputDir, "$tag.html")
+        writeFile(html.toString(), f)
     }
 
     private fun writeFile(content: String, outFile: File) {
