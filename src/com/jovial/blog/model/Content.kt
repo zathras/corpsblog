@@ -5,58 +5,24 @@ import com.github.rjeschke.txtmark.Processor
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import java.io.IOException
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.Reader
 
 /**
- * Represents the content that is passed to a template, in order to 
- * generate an HTML file.
- *
- * Created by w.foote on 11/3/2016.
+ * Created by billf on 11/14/16.
  */
-
-private val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-private val commaSplitRegex = Regex(" *, *")
-
-class Content (
-        val configuration : Configuration,
-        val outputDir : File,
-        val baseGeneratedDirName : String,    /** Name to use for any generated directories within outputDir, etc. */
-        val rootPath : String   /** Relative to the base directory of the blog within our site **/
-        )
-{
+abstract class Content(
+        val txtmarkConfig: Configuration
+) {
     var body : String = ""      /** Body of the content, in HTML */
-        private set
-    var title : String = ""     /** Title, escaped for HTML */
-        private set
-    var synopsis : String = ""  /** Synopsis, escaped for HTML */
-        private set
-    var date : Date = Date(0)
-        private set
-    var tags : List<String> = listOf<String>()
-        private set
-    var galleryCount = 0
-
-    val hasGallery : Boolean
-        get() = galleryCount > 0
+        protected set
 
     class ParseError(message: String) : Exception(message)
 
-
-    public fun escapeHtml(line: String) =
-        line.replace("<", "&lt;", false).
-                replace(">", "&gt;").
-                replace("&", "&amp;")
-
+    /**
+     * Read the input, and return a reader positioned just after the headers
+     */
     @Throws(ParseError::class)
-    fun read(location: File) {
-        try {
-            date = fileDateFormat.parse(location.name)
-        } catch (ex: ParseException) {
-            // No date.
-        }
+    open fun read(location: File) : Unit {
         val input = BufferedReader(FileReader(location))
         var lineNumber = 0;
         while (true) {
@@ -70,30 +36,21 @@ class Content (
             val i = line.indexOf('=')
             if (i < 0) {
                 throw ParseError("""Missing "=" in metadata block """
-				 +"at line $lineNumber of $location")
+                        + "at line $lineNumber of $location")
             }
-	    val key = line.substring(0, i)
-            val value = line.substring(i+1)
-            when (key) {
-                "tags"
-                    -> tags = value.split(commaSplitRegex)
-                "synopsis"
-                    -> synopsis = escapeHtml(value)
-                "title"
-                    -> title = escapeHtml(value)
-                else
-                    ->  throw ParseError("Unrecognized key "
-                                         +"at line $lineNumber of $location")
+            val key = line.substring(0, i)
+            val value = line.substring(i + 1)
+            if (!processHeader(key, value)) {
+                throw ParseError("""Unrecognized key "$key" at line $lineNumber of $location""")
             }
         }
-        body = Processor<Content>(input, configuration).process(this)
+        readBody(input)
         input.close()
     }
 
-    /**
-     * Discard the body after writing, to save a bit of memory.
-     */
-    fun discardBody() {
-        body = ""
+    protected abstract fun processHeader(key: String, value: String) :  Boolean
+
+    protected open fun readBody(input: Reader) {
+        body = Processor<Content>(input, txtmarkConfig).process(this)
     }
 }

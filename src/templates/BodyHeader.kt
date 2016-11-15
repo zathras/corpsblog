@@ -1,7 +1,7 @@
 package templates
 
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.Body
 
 /**
@@ -181,7 +181,7 @@ class BodyHeader (val config: BlogConfig,
 
                   // RSS
                   li(class_="navigation__item") {
-                    a(href="${rootPath}", title="Subscribe", target="_blank") {
+                    a(href="{config.feedURL}", title="Subscribe", target="_blank") {
                       i(class_="icon icon-rss") { }
                       span(class_="label") {
                         +"RSS"

@@ -2,15 +2,19 @@ package com.jovial.blog
 
 import com.jovial.blog.md.gallery.Picture
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.IndexContent
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
 import templates.Archive
+import templates.Feed
 import templates.Index
 import templates.Post
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.OutputStreamWriter
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * Class to generate the site.
@@ -27,7 +31,13 @@ class Site (
         deferredTxtmarkConfig!!
     }
 
-    val blogConfig = BlogConfig()
+    var deferredTxtmarkPostConfig : com.github.rjeschke.txtmark.Configuration? = null
+
+    val txtmarkPostConfig: com.github.rjeschke.txtmark.Configuration by lazy {
+        deferredTxtmarkPostConfig!!
+    }
+
+    val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
     /**
      * We keep a record of all the generated we have, to avoid re-generating them
@@ -51,13 +61,17 @@ class Site (
         for (i in 0..postFiles.size-1) {
             generatePost("posts", "../", postFiles, i)
         }
-        writeHtml(Archive(blogConfig, "", posts).generate(), File(outputDir, "archive.html"))
-    }
+        val images = File(inputDir, "images")
+        val fOutDir = File(outputDir, "images")
+        for (s in images.list()) {
+            Files.copy(File(images, s).toPath(), File(fOutDir, s).toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+        writeFile(Archive(blogConfig, "", posts).generate().toString(), File(outputDir, "archive.html"))
+        writeFile(Feed(blogConfig, posts).generate(), File(outputDir, "feed.xml"))
 
-    private fun writeHtml(html: HTML, outFile: File) {
-        val w = OutputStreamWriter(FileOutputStream(outFile), "UTF-8")
-        w.write(html.toString())
-        w.close();
+        val content = IndexContent(txtmarkConfig)
+        content.read(File(inputDir, "index.md"))
+        writeFile(Index(blogConfig, content).generate().toString(), File(outputDir, "index.html"))
     }
 
     /**
@@ -73,15 +87,25 @@ class Site (
         val olderName = if (index == 0) { null } else { src[index-1].dropLast(3)+".html" }
         val newerName = if (index+1 == src.size) { null } else { src[index+1].dropLast(3)+".html" }
         val postOutputDir = File(outputDir, pathTo)
-        val content = Content(txtmarkConfig, postOutputDir, baseName, pathFrom)
+        val content = PostContent(txtmarkPostConfig, postOutputDir, baseName, pathFrom)
         content.read(File(inputDir, "$pathTo/$name"))
-        val p = Post(blogConfig, content, "$baseName.html")
+        val p = Post(
+                blogConfig =blogConfig,
+                content=content,
+                pathTo=pathTo,
+                fileName="$baseName.html")
         postOutputDir.mkdirs()
         val f = File(postOutputDir, "$baseName.html")
         val html = p.generate(olderName, newerName)
-        writeHtml(html, f)
-        println("Wrote post to ${f.toURI()}")
+        writeFile(html.toString(), f)
         p.content.discardBody()
         posts.add(p)
+    }
+
+    private fun writeFile(content: String, outFile: File) {
+        val w = OutputStreamWriter(FileOutputStream(outFile), "UTF-8")
+        w.write(content)
+        w.close();
+        println("Wrote to file ${outFile.absolutePath}")
     }
 }

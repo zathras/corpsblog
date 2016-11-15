@@ -1,7 +1,7 @@
 package templates
 
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.BodyTag
 
 /**

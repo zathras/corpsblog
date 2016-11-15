@@ -1,29 +1,58 @@
 package com.jovial.blog.model
 
+import com.jovial.util.JsonIO
+import com.jovial.util.notNull
+import com.jovial.util.nullOK
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.util.*
+
 /**
  * Created by w.foote on 11/3/2016.
  */
 
-class BlogConfig {
-    // @@ Todo:  Read this from a config file
-    public val feedURL: String
-        get() = "@@ to do feed URL"
-    public val siteDescription : String
-        get() = "Peace Corps Burkina Faso"
-    public val siteAuthor : String
-        get() = "@@ to do site author"
+class BlogConfig(configFile: File) {
+
     public val siteBaseURL : String
-        get() = "@@ siteBaseURL"
+    public val feedURL : String
+    public val siteDescription : String
+    public val siteAuthor : String
     public val siteTitle: String
-        get() = "The Adventures of Burkinabè Bill"
-    public val shareTwitter = "@@ shareTwitter"
-    public val shareLinkedIn = "@@ shareLinkedIn"
-    public val shareGitHub = "@@ shareGitHub"
-    public val shareFlickr = "@@ shareFlickr"
-    public val shareGarmin = "@@ shareGarmin"
-    public val shareEmail = "@@ shareEmail"
-    public val shareDisqus = "@@ shareDisqus"
-    public val googleAnalyticsAccount : String? = null
-    public val myProfilePhoto = "images/where_is_burkina.png"   /** Relative to base URL */
-    public val coverImage = "images/cover.jpg"
+    public val myProfilePhoto : String
+    public val coverImage : String
+    public val shareTwitter : String?
+    public val shareLinkedIn : String?
+    public val shareGitHub : String?
+    public val shareFlickr : String?
+    public val shareGarmin : String?
+    public val shareEmail : String?
+    public val shareDisqus : String?
+    public val googleAnalyticsAccount : String?
+
+    init {
+        try {
+            val m = JsonIO.readJSON(BufferedReader(FileReader(configFile))) as HashMap<Any, Any>
+            siteBaseURL = notNull(m, "siteBaseURL")
+            siteDescription = notNull(m, "siteDescription")
+            siteAuthor = notNull(m, "siteAuthor")
+            siteTitle = notNull(m, "siteTitle")
+            myProfilePhoto = notNull(m, "myProfilePhoto")
+            coverImage = notNull(m, "coverImage")
+            shareTwitter = nullOK(m, "shareTwitter")
+            shareLinkedIn = nullOK(m, "shareLinkedIn")
+            shareGitHub = nullOK(m, "shareGitHub")
+            shareFlickr = nullOK(m, "shareFlickr")
+            shareGarmin = nullOK(m, "shareGarmin")
+            shareEmail = nullOK(m, "shareEmail")
+            shareDisqus = nullOK(m, "shareDisqus")
+            googleAnalyticsAccount = nullOK(m, "googleAnalyticsAccount")
+        } catch (e: Exception) {
+            println()
+            println("Error reading configuration file ${configFile.absolutePath}")
+            println()
+            throw e
+        }
+        feedURL = siteBaseURL + "/feed.xml"
+    }
 }

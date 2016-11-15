@@ -5,7 +5,7 @@ import com.github.rjeschke.txtmark.Block
 import com.github.rjeschke.txtmark.Emitter
 import com.github.rjeschke.txtmark.Line
 import com.jovial.blog.Site
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.BodyTag
 import com.jovial.lib.html.bodyFragment
 import java.io.File
@@ -19,9 +19,9 @@ import java.util.*
 private val homeDir = System.getenv("HOME") ?: "/."
     // Null home?  I read about this on alt.windows.die.die.die somewhere
 
-class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
-    override fun emitIfHandled(emitter: Emitter<Content>, out: StringBuilder, block: Block,
-                               context: Content) : Boolean
+class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
+    override fun emitIfHandled(emitter: Emitter<PostContent>, out: StringBuilder, block: Block,
+                               context: PostContent) : Boolean
     {
         var currLine : Line? = block.lines;    // It's a raw linked list
         if (currLine == null || currLine.value != "\$gallery\$") {
@@ -134,7 +134,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<Content>() {
     }
 
     private fun addPicture(start: Line,
-                           emitter: Emitter<Content>,
+                           emitter: Emitter<PostContent>,
                            galleryDir: File,
                            pictures: MutableList<Picture>) : Line? {
         val sourceName = processFileName(start.value)

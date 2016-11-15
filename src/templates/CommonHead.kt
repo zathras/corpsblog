@@ -1,7 +1,7 @@
 package templates
 
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.Head
 import com.jovial.lib.html.Title
@@ -38,7 +38,7 @@ class CommonHead(val config: BlogConfig,
 
     script(type="text/javascript") {
 	  +"var baseUrl = '${config.siteBaseURL}';"
-	  +"var baseUrlIndex = '${config.siteBaseURL}index.html'; "
+	  +"var baseUrlIndex = '${config.siteBaseURL}/index.html'; "
     }
 
     //  HTML5 shim, for IE6-8 support of HTML5 elements

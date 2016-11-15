@@ -1,7 +1,7 @@
 package templates
 
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
+import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.html
 import java.text.SimpleDateFormat
@@ -12,13 +12,18 @@ import java.text.SimpleDateFormat
 
 private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
-class Post(val config : BlogConfig, val content: Content, val fileName: String) {
+class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: String, val fileName: String) {
+
+  val title = content.title
+  val date = content.date
+  val synopsis = content.synopsis
+
   public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
     head {
-      CommonHead(config, content.title, content.rootPath, content.hasGallery).generate(this)
+      CommonHead(blogConfig, content.title, content.rootPath, content.hasGallery).generate(this)
     }
     body {
-      BodyHeader(config, content.rootPath, content.hasGallery).generate(this)
+      BodyHeader(blogConfig, content.rootPath, content.hasGallery).generate(this)
       div("content-wrapper") {
         div("content-wrapper__inner") {
           article("post-container post-container--single") {
@@ -49,7 +54,7 @@ class Post(val config : BlogConfig, val content: Content, val fileName: String) 
               }
               +content.body
             }
-            Disqus(config, content.rootPath).generate(this)
+            Disqus(blogConfig, content.rootPath).generate(this)
             if (newerPost != null || olderPost != null) {
               div(style = "clear: both") { }
               +"&nbsp;"
@@ -73,7 +78,7 @@ class Post(val config : BlogConfig, val content: Content, val fileName: String) 
             }
           }
         }
-        Footer(config, content.rootPath).generate(this)
+        Footer(blogConfig, content.rootPath).generate(this)
       }
     }
   }

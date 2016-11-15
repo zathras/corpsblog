@@ -39,7 +39,6 @@ class Picture (
      * Generate any images that need to be generated
      */
     fun generate(name: String, doGallery: Boolean, site: Site) {
-        println("Processing ${source.absolutePath}")
         val other = site.allPictures[source]
         if (other != null) {
             largeImage = other.largeImage
@@ -76,6 +75,7 @@ class Picture (
             return im;
         }
         try {
+	    println("Processing ${source.absolutePath}")
             im = ImageIO.read(source)!!
         } catch (ex : IOException) {
             println("Error reading $source")
