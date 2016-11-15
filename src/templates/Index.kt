@@ -21,7 +21,7 @@ class Index(val blogConfig : BlogConfig, val content: IndexContent) {
             div("content-wrapper") {
                 div("content-wrapper__inner") {
                     +content.body
-                    @@ Add the arrows here.
+                    // @@ Add the arrows here.
                 }
                 Footer(blogConfig, rootPath).generate(this)
             }
