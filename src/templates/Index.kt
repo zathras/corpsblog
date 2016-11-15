@@ -9,8 +9,6 @@ import com.jovial.lib.html.html
  * Created by billf on 11/7/16.
  */
 class Index(val blogConfig : BlogConfig, val content: IndexContent) {
-    // @@ TODO
-
     public fun generate(): HTML = html {
         val rootPath = ""
         head {
