@@ -19,18 +19,16 @@ fun main(args : Array<String>) {
             inputDir=File("test"),
             outputDir=File("out/production/corpsblog")
     )
-    val txtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
+    site.deferredTxtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
             forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
             setEncoding("UTF-8").
             build()
-    site.deferredTxtmarkConfig = txtmarkConfig
-    val txtmarkPostConfig = com.github.rjeschke.txtmark.Configuration.builder().
+    site.deferredTxtmarkPostConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
             forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
             setEncoding("UTF-8").
             addExtension(GalleryExtension(site)).
             build()
-    site.deferredTxtmarkPostConfig = txtmarkConfig
     site.generate()
 }

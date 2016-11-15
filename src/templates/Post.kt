@@ -61,16 +61,16 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
               div(style = "clear: both") { }
               nav(class_ = "arrow-nav") {
                 if (newerPost != null) {
-                  a(href = newerPost) {
-                    div(class_ = "newer") {
+                  div(class_ = "newer") {
+                    a(href = newerPost) {
                       +"← NEWER"
                     }
                   }
                 }
                 if (olderPost != null) {
-                  a(href = olderPost) {
-                    div(class_ = "older") {
-                      +"OLDER  →"
+                  div(class_ = "older") {
+                    a(href = olderPost) {
+                      +"OLDER →"
                     }
                   }
                 }

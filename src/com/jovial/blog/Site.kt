@@ -5,10 +5,7 @@ import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.IndexContent
 import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
-import templates.Archive
-import templates.Feed
-import templates.Index
-import templates.Post
+import templates.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
@@ -69,9 +66,12 @@ class Site (
         writeFile(Archive(blogConfig, "", posts).generate().toString(), File(outputDir, "archive.html"))
         writeFile(Feed(blogConfig, posts).generate(), File(outputDir, "feed.xml"))
 
-        val content = IndexContent(txtmarkConfig)
-        content.read(File(inputDir, "index.md"))
-        writeFile(Index(blogConfig, content).generate().toString(), File(outputDir, "index.html"))
+        val indexContent = IndexContent(txtmarkConfig)
+        indexContent.read(File(inputDir, "index.md"))
+        writeFile(Index(blogConfig, indexContent, posts).generate().toString(),
+                  File(outputDir, "index.html"))
+        writeFile(Sitemap(this, indexContent.date).generate(),
+                  File(outputDir, "sitemap.xml"))
     }
 
     /**

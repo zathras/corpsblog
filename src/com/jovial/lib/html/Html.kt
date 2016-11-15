@@ -203,6 +203,16 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("content", content)
         t.addAttribute("class", class_)
     }
+    fun blockquote(style: String? = null,
+          name: String? = null,
+          class_: String? = null,
+          init: Blockquote.() -> Unit)
+    {
+        val t = initTag(Blockquote(this), init)
+        t.addAttribute("style", style)
+        t.addAttribute("name", name)
+        t.addAttribute("class", class_)
+    }
     fun div(class_: String? = null,
             id: String? = null,
             tabindex: String? = null,
@@ -325,6 +335,7 @@ class Br(parent: Element) : BodyTag(parent, "br") {
 }
 class Em(parent: Element) : BodyTag(parent, "em")
 class P(parent: Element) : BodyTag(parent, "p")
+class Blockquote(parent: Element) : BodyTag(parent, "p")
 class H1(parent: Element) : BodyTag(parent, "h1")
 class H2(parent: Element) : BodyTag(parent, "h2")
 class H3(parent: Element) : BodyTag(parent, "h3")
