@@ -34,9 +34,9 @@ class Feed(val config: BlogConfig,
             sb.append("""
     <item>
       <title>${p.title}</title>
-      <link>${config.siteBaseURL}/${p.pathTo}/${p.fileName}</link>
+      <link>${config.siteBaseURL}/${p.pathTo}/${p.outputFile.name}</link>
       <pubDate>${dateFormat.format(p.date)}</pubDate>
-      <guid isPermaLink="true">${p.pathTo}/${p.fileName}</guid>
+      <guid isPermaLink="true">${p.pathTo}/${p.outputFile.name}</guid>
         <description>
           ${p.synopsis}
         </description>

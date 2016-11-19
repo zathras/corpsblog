@@ -57,10 +57,7 @@ package com.jovial.util;
 import java.io.Reader;
 import java.io.Writer;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * This contains utility methods to read and write JSON-formatted objects.
@@ -73,7 +70,7 @@ import java.util.Iterator;
  *      JSON TYPE  ->  Java Type
  *
  *          Object -> HashMap
- *           Array -> Object[]
+ *           Array -> ArrayList
  *          String -> String
  *          Number -> java.lang.Number (subclass determined by value)
  *      true/false -> Boolean
@@ -81,6 +78,8 @@ import java.util.Iterator;
  * </pre>
  * For numbers, the reader will produce Integer, Long or Double; the
  * writer will accept Integer, Long, Float or Double.
+ *
+ * For lists, the writer will accept Java arrays or any List type.
  *
  * @author Bill Foote (http://jovial.com)
  */
@@ -157,8 +156,8 @@ public class JsonIO {
                 }
             }
             out.write('"');
-        } else if (value instanceof Object[]) {
-            Object[] arr = (Object[]) value;
+        } else if (value instanceof List || value instanceof Object[]) {
+            Object[] arr = (value instanceof Object[]) ? ((Object[]) value) : ((List) value).toArray();
             out.write('[');
             for (int i = 0; i < arr.length; i++) {
                 if (i > 0) {
@@ -385,14 +384,14 @@ public class JsonIO {
         }
     }
 
-    private static Object[] readArray(Reader rdr) throws IOException {
+    private static ArrayList readArray(Reader rdr) throws IOException {
         for (;;) {
             rdr.mark(1);
             int ch = rdr.read();
             if (ch == -1) {
                 throwUnexpected(ch);
             } else if (ch == ']') {
-                return new Object[0];
+                return new ArrayList();
             } else if (skipWhitespace(ch, rdr)) {
                 continue;
             } else {
@@ -408,7 +407,7 @@ public class JsonIO {
                 if (ch == ',') {
                     break;
                 } else if (ch == ']') {
-                    return result.toArray(new Object[result.size()]);
+                    return result;
                 } else if (skipWhitespace(ch, rdr)) {
                     continue;
                 } else { 

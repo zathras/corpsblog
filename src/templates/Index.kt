@@ -27,7 +27,7 @@ class Index(val blogConfig : BlogConfig,
                     +content.body
                     if (firstPost != null && lastPost != null) {
                         div(class_ = "newer") {
-                            a(href = firstPost.pathTo + "/" + firstPost.fileName) {
+                            a(href = firstPost.pathTo + "/" + firstPost.outputFile.name) {
                                 +"← FIRST POST"
                             }
                             br()
@@ -46,7 +46,7 @@ class Index(val blogConfig : BlogConfig,
                             }
                         }
                         div(class_ = "older") {
-                            a(href = lastPost.pathTo + "/" + lastPost.fileName) {
+                            a(href = lastPost.pathTo + "/" + lastPost.outputFile.name) {
                                 +"LATEST POST →"
                             }
                             br()

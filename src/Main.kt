@@ -17,7 +17,7 @@ import java.util.*
 fun main(args : Array<String>) {
     val site = Site(
             inputDir=File("test"),
-            outputDir=File("out/production/corpsblog")
+            outputDir=File("out/test")
     )
     site.deferredTxtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags

@@ -1,9 +1,7 @@
 package com.jovial.blog
 
 import com.jovial.blog.md.gallery.Picture
-import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.IndexContent
-import com.jovial.blog.model.PostContent
+import com.jovial.blog.model.*
 import com.jovial.lib.html.HTML
 import templates.*
 import java.io.File
@@ -36,6 +34,9 @@ class Site (
 
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
+    val dependencies = DependencyManager(inputDir, "dependencies.json")
+
+
     /**
      * We keep a record of all the generated we have, to avoid re-generating them
      */
@@ -48,6 +49,20 @@ class Site (
 
 
     fun generate() {
+        dependencies.read()
+
+        val images = File(inputDir, "images")
+        val fOutDir = File(outputDir, "images")
+        fOutDir.mkdirs()
+        for (s in images.list()) {
+            val inputFile = File(images, s)
+            val outputFile = File(fOutDir, s)
+            val dep = dependencies.get(outputFile)
+            if (dep.changed(listOf(inputFile))) {
+                Files.copy(inputFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+        copyCorpsblogAssets()
         val postsSrc = File(inputDir, "posts")
         val postFiles = postsSrc.list().
                 sortedBy { s -> s.toLowerCase() }.
@@ -66,20 +81,34 @@ class Site (
             generateTagFile("tags", "../", t, taggedPosts)
         }
 
-        val images = File(inputDir, "images")
-        val fOutDir = File(outputDir, "images")
-        for (s in images.list()) {
-            Files.copy(File(images, s).toPath(), File(fOutDir, s).toPath(), StandardCopyOption.REPLACE_EXISTING)
+        val generatedPosts = posts.map { it.outputFile }
+        val archiveFile = File(outputDir, "archive.html")
+        generateDependingOn(generatedPosts, archiveFile) {
+            Archive(blogConfig, posts).generate().toString()
         }
-        writeFile(Archive(blogConfig, posts).generate().toString(), File(outputDir, "archive.html"))
-        writeFile(Feed(blogConfig, posts).generate(), File(outputDir, "feed.xml"))
-
+        generateDependingOn(listOf(archiveFile), File(outputDir, "feed.xml")) {
+            Feed(blogConfig, posts).generate()
+        }
         val indexContent = IndexContent(txtmarkConfig)
-        indexContent.read(File(inputDir, "index.md"))
-        writeFile(Index(blogConfig, indexContent, posts).generate().toString(),
-                  File(outputDir, "index.html"))
-        writeFile(Sitemap(this, indexContent.date).generate(),
-                  File(outputDir, "sitemap.xml"))
+        val indexOutputFile = File(outputDir, "index.html")
+        val indexInputFile = File(inputDir, "index.md")
+        generateDependingOn(listOf(archiveFile, indexInputFile), indexOutputFile) {
+            indexContent.read(indexInputFile)
+            Index(blogConfig, indexContent, posts).generate().toString()
+        }
+        generateDependingOn(listOf(indexOutputFile), File(outputDir, "sitemap.xml")) {
+            Sitemap(this, indexContent.date).generate()
+        }
+        dependencies.write()
+
+        checkForStrayOutputFiles(outputDir)
+    }
+
+    /**
+     * Copy the built-in corpsblog assets
+     */
+    fun copyCorpsblogAssets() {
+        throw RuntimeException("@@ todo")
     }
 
     /**
@@ -92,20 +121,37 @@ class Site (
     private fun generatePost(pathTo: String, pathFrom: String, src: List<String>, index: Int) {
         val name = src[index]
         val baseName = name.dropLast(3)
-        val olderName = if (index == 0) { null } else { src[index-1].dropLast(3)+".html" }
-        val newerName = if (index+1 == src.size) { null } else { src[index+1].dropLast(3)+".html" }
+        val olderName = if (index == 0) {
+            null
+        } else {
+            src[index - 1].dropLast(3) + ".html"
+        }
+        val newerName = if (index + 1 == src.size) {
+            null
+        } else {
+            src[index + 1].dropLast(3) + ".html"
+        }
         val postOutputDir = File(outputDir, pathTo)
-        val content = PostContent(txtmarkPostConfig, postOutputDir, baseName, pathFrom)
-        content.read(File(inputDir, "$pathTo/$name"))
+        val outputFile = File(postOutputDir, "$baseName.html")
+        val dependencyFiles = mutableListOf<File>()
+        val content = PostContent(txtmarkPostConfig, postOutputDir, baseName, pathFrom, dependencyFiles)
+        val inputFile = File(inputDir, "$pathTo/$name")
+        dependencyFiles.add(inputFile)
+        content.read(inputFile)
         val p = Post(
-                blogConfig =blogConfig,
-                content=content,
-                pathTo=pathTo,
-                fileName="$baseName.html")
-        postOutputDir.mkdirs()
-        val f = File(postOutputDir, "$baseName.html")
-        val html = p.generate(olderName, newerName)
-        writeFile(html.toString(), f)
+                blogConfig = blogConfig,
+                content = content,
+                pathTo = pathTo,
+                outputFile = outputFile)
+        val dependencyValues = mutableListOf<String>()
+        if (olderName != null) dependencyValues.add(olderName)
+        if (newerName != null) dependencyValues.add(newerName)
+        val dependsOn = dependencies.get(outputFile)
+        if (dependsOn.changed(dependencyFiles, dependencyValues)) {
+            postOutputDir.mkdirs()
+            val html = p.generate(olderName, newerName)
+            writeFile(html.toString(), outputFile)
+        }
         p.content.discardBody()
         posts.add(p)
         for (t in content.tags) {
@@ -119,11 +165,28 @@ class Site (
     }
 
     private fun generateTagFile(pathTo: String, pathFrom: String, tag: String, taggedPosts: List<Post>) {
-        val html = Tags(blogConfig, pathTo, pathFrom, tag, taggedPosts).generate()
         val tagOutputDir = File(outputDir, pathTo)
-        tagOutputDir.mkdirs()
-        val f = File(tagOutputDir, "$tag.html")
-        writeFile(html.toString(), f)
+        val outputFile = File(tagOutputDir, "$tag.html")
+        val dependsOn = dependencies.get(outputFile)
+        val dependencyFiles = mutableListOf<File>()
+        for (p in taggedPosts) {
+            dependencyFiles.add(p.outputFile)
+        }
+        if (dependsOn.changed(dependencyFiles)) {
+            val html = Tags(blogConfig, pathTo, pathFrom, tag, taggedPosts).generate()
+            tagOutputDir.mkdirs()
+            writeFile(html.toString(), outputFile)
+        }
+    }
+
+    private fun generateDependingOn(dependencyFiles: List<File>,
+                                    outputFile: File,
+                                    contents: () -> String)
+    {
+        val dependsOn = dependencies.get(outputFile)
+        if (dependsOn.changed(dependencyFiles)) {
+            writeFile(contents(), outputFile)
+        }
     }
 
     private fun writeFile(content: String, outFile: File) {
@@ -131,5 +194,24 @@ class Site (
         w.write(content)
         w.close();
         println("Wrote to file ${outFile.absolutePath}")
+    }
+
+    private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {
+        var found = foundInput
+        for (s in dir.list()) {
+            val f = File(dir, s)
+            if (f.isDirectory) {
+                if (checkForStrayOutputFiles(f, found)) {
+                    found = true
+                }
+            } else if (dependencies.check(f) == null) {
+                if (!found) {
+                    found = true
+                    println("Warning -- Stray files found in output directory:")
+                }
+                println("    $f")
+            }
+        }
+        return found
     }
 }

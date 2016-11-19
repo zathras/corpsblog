@@ -66,6 +66,8 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                 +"var $pswpItems = ["
                 var first = true
                 for (p in pictures) {
+                    context.dependsOn.add(File(context.outputDir, p.largeImage))
+                    context.dependsOn.add(File(context.outputDir, p.smallImage))
                     if (first) {
                         +"  {"
                         first = false
@@ -112,6 +114,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                                 null
                             }
                             img(src = p.mosaicImage!!, style=style)
+                            context.dependsOn.add(File(context.outputDir, p.mosaicImage))
                         }
                     }
                     if (needPlusIcon) {
