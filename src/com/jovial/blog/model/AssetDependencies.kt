@@ -30,10 +30,11 @@ class AssetDependencies  {
     constructor (jsonRecord: HashMap<String, Any>) {
         this.generatedAsset = File(jsonRecord["asset"] as String)
         this.values = listOf<String>()
-        val files = jsonRecord["files"] as ArrayList<ArrayList<Any>>
+        val files = jsonRecord["files"]
         if (files == null) {
             this.fileTimes = listOf<Pair<File, Long>>()
         } else {
+            val fl = files as ArrayList<ArrayList<Any>>
             this.fileTimes = files.map { Pair(File(it[0] as String), (it[1] as Number).toLong()) }
         }
         val values = jsonRecord["values"]
@@ -42,7 +43,6 @@ class AssetDependencies  {
         } else {
             this.values = values as ArrayList<String>
         }
-        assert(files != null || values != null)
     }
 
     /**

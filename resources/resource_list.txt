@@ -1,5 +1,7 @@
 ./images/profile.jpg
+./images/plus-sign.png
 ./images/cover.jpg
+./images/grey.png
 ./images/favicons/favicon-32x32.png
 ./images/favicons/android-chrome-96x96.png
 ./images/favicons/mstile-70x70.png
@@ -30,11 +32,12 @@
 ./images/favicons/safari-pinned-tab.svg
 ./images/favicons/android-chrome-144x144.png
 ./images/favicons/android-chrome-72x72.png
-./js/jquery-1.11.1.min.js
+./js/jquery-1.11.3.min.js
 ./js/bootstrap.min.js
 ./js/html5shim.min.js
 ./js/prettify.js
 ./js/main.js
+./new.txt
 ./photoswipe/photoswipe-ui-default.js
 ./photoswipe/default-skin/default-skin.css
 ./photoswipe/default-skin/preloader.gif
@@ -52,6 +55,7 @@
 ./fonts/foundation-icons/foundation-icons.ttf
 ./fonts/foundation-icons/foundation-icons.svg
 ./fonts/glyphicons-halflings-regular.woff
+./css/photogrid.css
 ./css/animate.css
 ./css/uno.css
 ./css/main.css

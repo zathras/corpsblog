@@ -4,10 +4,7 @@ import com.jovial.blog.md.gallery.Picture
 import com.jovial.blog.model.*
 import com.jovial.lib.html.HTML
 import templates.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.FileWriter
-import java.io.OutputStreamWriter
+import java.io.*
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -108,7 +105,35 @@ class Site (
      * Copy the built-in corpsblog assets
      */
     fun copyCorpsblogAssets() {
-        throw RuntimeException("@@ todo")
+        val input = BufferedReader(InputStreamReader(
+                        javaClass.getResourceAsStream("/resource_list.txt")!!, "UTF8"))
+        val buffer = ByteArray(65536)
+        while (true) {
+            val line = input.readLine()
+            if (line == null) {
+                break
+            }
+            val outputFile = File(outputDir, line)
+            val dependsOn = dependencies.get(outputFile)
+            if (dependsOn.changed(listOf<File>())) {
+                // We don't really depend on anything, because our source is intrinsic.
+                // This records the copy, and it checks for the existence of the destination.
+                println("Copying " + line)
+                outputFile.parentFile.mkdirs()
+                val resOut = FileOutputStream(outputFile)
+                val resIn = javaClass.getResource("/" + line).openStream()
+                while (true) {
+                    val read = resIn.read(buffer)
+                    if (read == -1) {
+                        break
+                    }
+                    resOut.write(buffer, 0, read)
+                }
+                resIn.close()
+                resOut.close()
+            }
+        }
+        input.close()
     }
 
     /**
