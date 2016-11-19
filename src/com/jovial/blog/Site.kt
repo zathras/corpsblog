@@ -34,7 +34,7 @@ class Site (
 
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
-    val dependencies = DependencyManager(inputDir, "dependencies.json")
+    val dependencies = DependencyManager(inputDir, ".dependencies.json")
 
 
     /**
