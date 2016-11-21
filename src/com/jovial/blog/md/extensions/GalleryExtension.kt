@@ -1,4 +1,4 @@
-package com.jovial.blog.md.gallery
+package com.jovial.blog.md.extensions
 
 import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.github.rjeschke.txtmark.Block
@@ -8,6 +8,7 @@ import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.BodyTag
 import com.jovial.lib.html.bodyFragment
+import com.jovial.util.processFileName
 import java.io.File
 import java.util.*
 
@@ -15,9 +16,6 @@ import java.util.*
  * Created by billf on 11/7/16.
  */
 
-
-private val homeDir = System.getenv("HOME") ?: "/."
-    // Null home?  I read about this on alt.windows.die.die.die somewhere
 
 class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
     override fun emitIfHandled(emitter: Emitter<PostContent>, out: StringBuilder, block: Block,
@@ -66,8 +64,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                 +"var $pswpItems = ["
                 var first = true
                 for (p in pictures) {
-                    context.dependsOn.add(File(context.outputDir, p.largeImage))
-                    context.dependsOn.add(File(context.outputDir, p.smallImage))
+                    context.dependsOn.add(p.source)
                     if (first) {
                         +"  {"
                         first = false
@@ -114,7 +111,6 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                                 null
                             }
                             img(src = p.mosaicImage!!, style=style)
-                            context.dependsOn.add(File(context.outputDir, p.mosaicImage))
                         }
                     }
                     if (needPlusIcon) {
@@ -149,13 +145,5 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         }
         pictures += Picture(sourceName, galleryDir, caption.toString())
         return line
-    }
-
-    private fun processFileName(name: String) : File {
-        if (name.startsWith("~/")) {
-            return File(homeDir + name.substring(1))
-        } else {
-            return File(name)
-        }
     }
 }

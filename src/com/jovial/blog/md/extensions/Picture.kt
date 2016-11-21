@@ -1,4 +1,4 @@
-package com.jovial.blog.md.gallery
+package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
 import net.sourceforge.jheader.App1Header

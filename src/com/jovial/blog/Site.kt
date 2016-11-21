@@ -1,6 +1,6 @@
 package com.jovial.blog
 
-import com.jovial.blog.md.gallery.Picture
+import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.model.*
 import com.jovial.lib.html.HTML
 import templates.*

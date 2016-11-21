@@ -1,5 +1,6 @@
 package com.jovial.util
 
+import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 
@@ -42,3 +43,13 @@ public fun escapeHtml(line: String) =
                 replace(">", "&gt;").
                 replace("&", "&amp;")
 
+private val homeDir = System.getenv("HOME") ?: "/."
+    // Null home?  I read about this on alt.windows.die.die.die somewhere
+
+public fun processFileName(name: String) : File {
+    if (name.startsWith("~/")) {
+	return File(homeDir + name.substring(1))
+    } else {
+	return File(name)
+    }
+}

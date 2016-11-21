@@ -1,6 +1,7 @@
 import com.github.rjeschke.txtmark.Processor
 import com.jovial.blog.Site
-import com.jovial.blog.md.gallery.GalleryExtension
+import com.jovial.blog.md.extensions.GalleryExtension
+import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
 import templates.Post
@@ -29,6 +30,7 @@ fun main(args : Array<String>) {
             forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
             setEncoding("UTF-8").
             addExtension(GalleryExtension(site)).
+            addExtension(VideoExtension(site)).
             build()
     site.generate()
 }

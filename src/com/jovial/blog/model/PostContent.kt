@@ -39,6 +39,8 @@ class PostContent (
     val hasGallery : Boolean
         get() = galleryCount > 0
 
+    var videoCount = 0
+
     override fun read(location: File) {
         date = fileDateFormat.parse(location.name)
         super.read(location)
