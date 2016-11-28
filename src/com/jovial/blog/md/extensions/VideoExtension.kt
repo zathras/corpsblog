@@ -6,6 +6,8 @@ import com.github.rjeschke.txtmark.Line
 import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
+import com.jovial.blog.model.VideoUpload
+import com.jovial.util.GitManager
 import com.jovial.util.processFileName
 import java.io.File
 import java.nio.file.Files
@@ -49,8 +51,16 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
 
         // Copy the video file
         val dep = site.dependencies.get(destFile)
+        val upload = site.dependencies.getVideo(destFile)
         if (dep.changed(listOf(sourceFile))) {
             Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            try {
+                GitManager.addFile(destFile)
+            } catch (ex : Exception) {
+                destFile.delete()
+                throw ex
+            }
+            upload.uploadedAddress = null
         }
 
         // Make a video tag
@@ -65,9 +75,20 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
 <video $dim controls>
     <source src="${destFile.name}">
 </video>""")
-        if (width <= height) {
-            out.append("</center>")
+        if (width > height) {
+            out.append("<center>\n")
         }
+        out.append("<br>\n")
+        val a = upload.uploadedAddress
+        if (a == null) {
+            out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
+            site.pass!!.addTask {
+                uploadVideo(upload)
+            }
+        } else {
+            out.append("""<em><a href="${a.toString()}">(view on YouTube)</a></em>""")
+        }
+        out.append("\n</center>\n")
 	if (caption.length > 0) {
 	    out.append("""
 <blockquote>
@@ -75,7 +96,10 @@ ${caption.toString()}
 </blockquote>
 <div style="clear: both"></div>""")
 	}
-        // @@ todo:  Add youtube link, and do uploading.
         return true
+    }
+
+    private fun uploadVideo(vu : VideoUpload) {
+        throw RuntimeException("@@ Not implemented:  Upload video ${vu.videoFile}")
     }
 }
