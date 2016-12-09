@@ -1,5 +1,7 @@
 package com.jovial.google
 
+import com.jovial.server.SimpleHttp
+import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
 
@@ -16,13 +18,26 @@ class OAuth (val config : GoogleClientConfig){
         val url = URL("http://accounts.google.com/o/oauth2/auth"
                       + "?client_id=" + urlEncode(config.client_id)
                       + "&redirect_uri=" + urlEncode("http://localhost:7001/google_oauth")
-                      + "&scope=" + urlEncode("https://www.googleapis.com/")
+                      + "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube")
                       + "&response_type=code"
                       + "&access_type=offline")
 
         println("@@ Hello, oauth")
         println(url)
-        println(config)
+        val pb = ProcessBuilder("firefox", url.toString())
+        val p = pb.start()
+        val result = p.isAlive()
+        if (!result || true) {
+            println("""Unable to start "firefox $url"""")
+        }
+        val server = SimpleHttp(7001)
+        println("Running server to wait for OAuth redirect from browser...")
+        val query = server.run()
+        println("@@ query is $query")
+        // /google_oauth?error=access_denied
+        // /google_oauth?error=access_denied
+        Thread.sleep(1000)
+        System.exit(1)
     }
 
     private fun urlEncode(s : String) : String =
