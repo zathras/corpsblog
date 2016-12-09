@@ -3,6 +3,7 @@ import com.jovial.blog.Site
 import com.jovial.blog.md.gallery.GalleryExtension
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
+import com.jovial.google.OAuth
 import templates.Post
 import java.io.BufferedReader
 import java.io.File
@@ -30,5 +31,8 @@ fun main(args : Array<String>) {
             setEncoding("UTF-8").
             addExtension(GalleryExtension(site)).
             build()
+    val oa = OAuth(site.blogConfig.googleClient!!)
+    oa.run()
+    throw RuntimeException("@@ stop here")
     site.generate()
 }

@@ -1,5 +1,6 @@
 package com.jovial.blog.model
 
+import com.jovial.google.GoogleClientConfig
 import com.jovial.util.JsonIO
 import com.jovial.util.notNull
 import com.jovial.util.nullOK
@@ -29,6 +30,7 @@ class BlogConfig(configFile: File) {
     public val shareEmail : String?
     public val shareDisqus : String?
     public val googleAnalyticsAccount : String?
+    public val googleClient : GoogleClientConfig?
 
     init {
         try {
@@ -47,6 +49,12 @@ class BlogConfig(configFile: File) {
             shareEmail = nullOK(m, "shareEmail")
             shareDisqus = nullOK(m, "shareDisqus")
             googleAnalyticsAccount = nullOK(m, "googleAnalyticsAccount")
+            val googleClientName = nullOK(m, "google_id")
+            if (googleClientName == null) {
+                googleClient = null;
+            } else {
+                googleClient = GoogleClientConfig(googleClientName)
+            }
         } catch (e: Exception) {
             println()
             println("Error reading configuration file ${configFile.absolutePath}")
