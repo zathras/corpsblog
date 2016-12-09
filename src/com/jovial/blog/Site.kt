@@ -116,12 +116,14 @@ class Site (
      */
     fun copyCorpsblogAssets() {
         val input = BufferedReader(InputStreamReader(
-                        javaClass.getResourceAsStream("/resource_list.txt")!!, "UTF8"))
+                        javaClass.getResourceAsStream("/src/resource_list.txt")!!, "UTF8"))
         val buffer = ByteArray(65536)
         while (true) {
             val line = input.readLine()
             if (line == null) {
                 break
+            } else if (line.startsWith("src/") || line.startsWith("./src/")) {
+                continue
             }
             val outputFile = File(outputDir, line)
             val dependsOn = dependencies.get(outputFile)
