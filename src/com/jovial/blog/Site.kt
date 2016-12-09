@@ -15,8 +15,7 @@ import java.nio.file.StandardCopyOption
  */
 class Site (
         val inputDir: File,
-        val outputDir: File,
-        val publish : Boolean
+        val outputDir: File
 ){
 
     var deferredTxtmarkConfig : com.github.rjeschke.txtmark.Configuration? = null
@@ -33,8 +32,15 @@ class Site (
 
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
-    val dependencies = DependencyManager(outputDir, ".dependencies.json")
+    val dbDir = File(outputDir, "db")
 
+    val dependencies = DependencyManager(dbDir, "dependencies.json")
+
+    private val errors = mutableListOf<String>()
+
+    init {
+        dbDir.mkdirs()
+    }
 
     /**
      * We keep a record of all the generated we have, to avoid re-generating them
@@ -43,12 +49,23 @@ class Site (
 
     val posts = mutableListOf<Post>()
 
-    var pass : Pass? = null
-        private set
-
     private val tagMap = mutableMapOf<String, MutableList<Post>>()
     // Map from tag name to list of posts, in date order starting with the earliest post
 
+
+    public fun error(message: String) {
+        println("$message")
+        errors.add(message)
+    }
+
+    public fun hasErrors() : Boolean = !errors.isEmpty()
+
+    public fun printErrors() : Unit {
+        println("Site errors:")
+        for (e in errors) {
+            println("    $e")
+        }
+    }
 
     fun generate() {
         dependencies.read()
@@ -65,48 +82,43 @@ class Site (
             }
         }
         copyCorpsblogAssets()
-        do {
-            val thisPass = Pass(this)
-            pass = thisPass
-            val postsSrc = File(inputDir, "posts")
-            val postFiles = postsSrc.list().
-                    sortedBy { s -> s.toLowerCase() }.
-                    filter {
-                        if (!it.toLowerCase().endsWith(".md")) {
-                            println("""Skipping post $it in $postsSrc:  File name doesn't end in ".md".""")
-                            false
-                        } else {
-                            true
-                        }
+        val postsSrc = File(inputDir, "posts")
+        val postFiles = postsSrc.list().
+                sortedBy { s -> s.toLowerCase() }.
+                filter {
+                    if (!it.toLowerCase().endsWith(".md")) {
+                        println("""Skipping post $it in $postsSrc:  File name doesn't end in ".md".""")
+                        false
+                    } else {
+                        true
                     }
-            for (i in 0..postFiles.size - 1) {
-                generatePost("posts", "../", postFiles, i)
-            }
-            for ((t, taggedPosts) in tagMap) {
-                generateTagFile("tags", "../", t, taggedPosts)
-            }
+                }
+        for (i in 0..postFiles.size - 1) {
+            generatePost("posts", "../", postFiles, i)
+        }
+        for ((t, taggedPosts) in tagMap) {
+            generateTagFile("tags", "../", t, taggedPosts)
+        }
 
-            val generatedPosts = posts.map { it.outputFile }
-            val archiveFile = File(outputDir, "archive.html")
-            generateDependingOn(generatedPosts, archiveFile) {
-                Archive(blogConfig, posts).generate().toString()
-            }
-            generateDependingOn(listOf(archiveFile), File(outputDir, "feed.xml")) {
-                Feed(blogConfig, posts).generate()
-            }
-            val indexContent = IndexContent(txtmarkConfig)
-            val indexOutputFile = File(outputDir, "index.html")
-            val indexInputFile = File(inputDir, "index.md")
-            generateDependingOn(listOf(archiveFile, indexInputFile), indexOutputFile) {
-                indexContent.read(indexInputFile)
-                Index(blogConfig, indexContent, posts).generate().toString()
-            }
-            generateDependingOn(listOf(indexOutputFile), File(outputDir, "sitemap.xml")) {
-                Sitemap(this, indexContent.date).generate()
-            }
-            thisPass.runTasks()
-            dependencies.write()
-        } while (!thisPass.siteFinished)
+        val generatedPosts = posts.map { it.outputFile }
+        val archiveFile = File(outputDir, "archive.html")
+        generateDependingOn(generatedPosts, archiveFile) {
+            Archive(blogConfig, posts).generate().toString()
+        }
+        generateDependingOn(listOf(archiveFile), File(outputDir, "feed.xml")) {
+            Feed(blogConfig, posts).generate()
+        }
+        val indexContent = IndexContent(txtmarkConfig)
+        val indexOutputFile = File(outputDir, "index.html")
+        val indexInputFile = File(inputDir, "index.md")
+        generateDependingOn(listOf(archiveFile, indexInputFile), indexOutputFile) {
+            indexContent.read(indexInputFile)
+            Index(blogConfig, indexContent, posts).generate().toString()
+        }
+        generateDependingOn(listOf(indexOutputFile), File(outputDir, "sitemap.xml")) {
+            Sitemap(this, indexContent.date).generate()
+        }
+        dependencies.write()
 
         checkForStrayOutputFiles(outputDir)
     }

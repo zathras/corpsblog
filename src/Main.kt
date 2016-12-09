@@ -38,18 +38,9 @@ private fun usage() {
 }
 
 fun main(args : Array<String>) {
-    var publish = false     // @@@@ Wrong
-    for (a in args) {
-        if (a == "publish") {
-            publish = true
-        } else {
-            usage()
-        }
-    }
     val site = Site(
             inputDir=File("test"),
-            outputDir=File("out/test"),
-            publish=publish
+            outputDir=File("out/test")
     )
     site.deferredTxtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
@@ -63,8 +54,16 @@ fun main(args : Array<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
+    /*
     val oa = OAuth(site.blogConfig.googleClient!!)
     oa.run()
     throw RuntimeException("@@ stop here")
+    */
     site.generate()
+    if (site.hasErrors()) {
+        println()
+        site.printErrors()
+        System.exit(1)
+    }
+    System.exit(0)
 }

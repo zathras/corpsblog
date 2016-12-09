@@ -7,7 +7,6 @@ import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
 import com.jovial.blog.model.VideoUpload
-import com.jovial.util.GitManager
 import com.jovial.util.processFileName
 import java.io.File
 import java.nio.file.Files
@@ -54,13 +53,6 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val upload = site.dependencies.getVideo(destFile)
         if (dep.changed(listOf(sourceFile))) {
             Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-            try {
-                GitManager.addFile(destFile)
-            } catch (ex : Exception) {
-                destFile.delete()
-                throw ex
-            }
-            upload.uploadedAddress = null
         }
 
         // Make a video tag
@@ -82,9 +74,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val a = upload.uploadedAddress
         if (a == null) {
             out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
-            site.pass!!.addTask {
-                uploadVideo(upload)
-            }
+            site.error("Video not uploaded to YouTube:  $destFile")
         } else {
             out.append("""<em><a href="${a.toString()}">(view on YouTube)</a></em>""")
         }
