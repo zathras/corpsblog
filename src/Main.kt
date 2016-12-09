@@ -17,12 +17,19 @@ import java.util.*
  */
 
 private fun usage() {
-    println("Usage:  corpsblog [publish]")
+    println("Usage:  corpsblog (publish | offline | fb | yt_hack | yt_hack_remote)")
+    println()
+    println("""    publish:  Ready the target for "git commit -a" and "git push"""")
+    println(  "    offline:  Trial run; don't upload anything (e.g. no YouTube uploads)")
+    println(  "    fb:       Post to Facebook about recent activity (do this after git push)")
+    println(  "    yt_hack:  Pre-publish videos using remote shell (no double upload)")
+    println(  "    yt_hack_remote:  The remote shell side of yt_hack")
+    println()
     System.exit(1)
 }
 
 fun main(args : Array<String>) {
-    var publish = false
+    var publish = false     // @@@@ Wrong
     for (a in args) {
         if (a == "publish") {
             publish = true
