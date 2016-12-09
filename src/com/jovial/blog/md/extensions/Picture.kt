@@ -1,4 +1,4 @@
-package com.jovial.blog.md.gallery
+package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
 import net.sourceforge.jheader.App1Header
@@ -47,16 +47,16 @@ class Picture (
             mosaicImage = other.mosaicImage
         } else {
             site.allPictures[source] = this
-            largeImage = doGenerate(galleryDir, "large/$name.jpg", 1920)
+            largeImage = doGenerate(site, galleryDir, "large/$name.jpg", 1920)
             // Often the image is there already, so we just always parse the image to extract the width and
             // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
             val largeImageFile = File(galleryDir, "large/$name.jpg")
             val jpegParser = JpegHeaders(largeImageFile.absoluteFile.toString())
             largeImageSize = Dimension(jpegParser.width, jpegParser.height)
-            smallImage = doGenerate(galleryDir, "small/$name.jpg", 384)
+            smallImage = doGenerate(site, galleryDir, "small/$name.jpg", 384)
         }
         if (doGallery && mosaicImage == null) {
-            mosaicImage = generateSquare(galleryDir, "mosaic/$name.jpg", 400)
+            mosaicImage = generateSquare(site, galleryDir, "mosaic/$name.jpg", 400)
             if (other != null) {
                 assert(other.mosaicImage == null)
                 other.mosaicImage = mosaicImage
@@ -153,9 +153,10 @@ class Picture (
         return im
     }
 
-    private fun doGenerate(baseDir: File, relName: String, maxDimension: Int): String {
+    private fun doGenerate(site: Site, baseDir: File, relName: String, maxDimension: Int): String {
         val dest = File(baseDir, relName)
-        if (!dest.exists()) {
+        val dep = site.dependencies.get(dest)
+        if (dep.changed(listOf(source))) {
             var im = getImage()
             dest.parentFile.mkdirs()
             val maxSrc = if (im.width > im.height) im.width else im.height
@@ -176,9 +177,10 @@ class Picture (
         return baseDir.name + "/" + relName
     }
 
-    private fun generateSquare(baseDir: File, relName: String, maxSize: Int): String {
+    private fun generateSquare(site: Site, baseDir: File, relName: String, maxSize: Int): String {
         val dest = File(baseDir, relName)
-        if (!dest.exists()) {
+        val dep = site.dependencies.get(dest)
+        if (dep.changed(listOf(source))) {
             var im = getImage()
             dest.parentFile.mkdirs()
             val minDimension = Math.min(im.width, im.height)

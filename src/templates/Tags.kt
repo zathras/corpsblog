@@ -37,7 +37,7 @@ class Tags(val blogConfig : BlogConfig,
                                 }
                                 li {
                                     +"${ddFormat.format(post.content.date)} - "
-                                    a(href = "${rootPath}posts/${post.fileName}") {
+                                    a(href = "${rootPath}posts/${post.outputFile.name}") {
                                         +post.content.title
                                     }
                                     br()

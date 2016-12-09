@@ -1,4 +1,4 @@
-package com.jovial.blog.md.gallery
+package com.jovial.blog.md.extensions
 
 import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.github.rjeschke.txtmark.Block
@@ -64,6 +64,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                 +"var $pswpItems = ["
                 var first = true
                 for (p in pictures) {
+                    context.dependsOn.add(p.source)
                     if (first) {
                         +"  {"
                         first = false

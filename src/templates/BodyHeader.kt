@@ -181,7 +181,7 @@ class BodyHeader (val config: BlogConfig,
 
                   // RSS
                   li(class_="navigation__item") {
-                    a(href="{config.feedURL}", title="Subscribe", target="_blank") {
+                    a(href=config.feedURL, title="Subscribe", target="_blank") {
                       i(class_="icon icon-rss") { }
                       span(class_="label") {
                         +"RSS"

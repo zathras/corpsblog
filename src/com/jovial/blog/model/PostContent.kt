@@ -22,7 +22,8 @@ class PostContent (
         txtmarkConfig : Configuration,
         val outputDir : File,
         val baseGeneratedDirName : String, /** Name to use for any generated directories within outputDir, etc. */
-        val rootPath : String   /** Relative to the base directory of the blog within our site **/
+        val rootPath : String,   /** Relative to the base directory of the blog within our site **/
+        val dependsOn : MutableList<File>  /** Our post depends on all of its generated pictures; we record that here */
 ) : Content(txtmarkConfig)
 {
     var title : String = ""     /** Title, escaped for HTML */
@@ -37,6 +38,8 @@ class PostContent (
 
     val hasGallery : Boolean
         get() = galleryCount > 0
+
+    var videoCount = 0
 
     override fun read(location: File) {
         date = fileDateFormat.parse(location.name)
