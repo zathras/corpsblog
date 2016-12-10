@@ -11,7 +11,6 @@ import java.util.*
 /**
  * Support for OAuth2.0, as used by Google.
  * cf. https://developers.google.com/youtube/v3/guides/authentication
- * cf. https://developers.google.com/youtube/v3/guides/uploading_a_video
  *
  * Created by w.foote on 12/8/2016.
  */
@@ -38,7 +37,6 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         + "&access_type=offline")
 
                 println("@@ Hello, oauth")
-                println(url)
                 val pb = ProcessBuilder("firefox", url.toString())
                 val p = pb.start()
                 val result = p.isAlive()
@@ -49,7 +47,6 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                 val server = SimpleHttp(7001)
                 println("Running server to wait for OAuth redirect from browser...")
                 val query = server.run()
-                println("@@ query is $query")
                 if (!query.startsWith("/google_oauth?code=")) {
                     throw IOException("Failed to get Google authorization:  $query")
                 }
@@ -59,25 +56,27 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         "code" to singleUseCode,
                         "client_id" to config.client_id,
                         "client_secret" to config.client_secret,
-                        "redirect_uri" to "http://localhost",
+                        "redirect_uri" to "http://localhost:7001/google_oauth",
                         "grant_type" to "authorization_code")
-                val jsonToken = httpPost(tokenServer, args)
+                val jsonToken = httpPost(tokenServer, args) as HashMap<Any, Any>
                 token = OAuthToken(jsonToken)
                 tokenChanged = true
             }
             savedToken = token
         }
-        if (token.expires.time < System.currentTimeMillis() - 1000 * 60 * 5) {  // < 5 minutes left
+        if (token.expires.time - 1000 * 60 * 5 < System.currentTimeMillis()) {  // < 5 minutes left
+            println("Old google token, refreshing -- expiry was ${token.expires}")
             val tokenServer = URL("https://accounts.google.com/o/oauth2/token")
             val args = mapOf(
                     "client_id" to config.client_id,
                     "client_secret" to config.client_secret,
                     "refresh_token" to token.refresh_token,
                     "grant_type" to "refresh_token")
-            val jsonResult = httpPost(tokenServer, args)
+            val jsonResult = httpPost(tokenServer, args) as HashMap<Any, Any>
             token.refreshToken(jsonResult)
             tokenChanged = true
         }
+        println("Google token expires ${token.expires}")
         if (tokenChanged) {
             val out = BufferedWriter(OutputStreamWriter(FileOutputStream(tokenFile), "UTF-8"))
             JsonIO.writeJSON(out, token.toJsonValue())
@@ -86,25 +85,32 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
         return token
     }
 
-    fun httpPost(server: URL, args: Map<String, String>) : String {
-        val query = StringBuffer()
+    //
+    // Do an HTTP post and receive a JSON value in return
+    //
+    fun httpPost(server: URL, args: Map<String, String>) : Any {
+        val content = StringBuffer()
         for ((key, value) in args) {
-            if (query.length > 0)  {
-                query.append('&')
+            if (content.length > 0)  {
+                content.append("&")
             }
-            query.append(key)
-            query.append("=")
-            query.append(urlEncode(value))
+            content.append(key)
+            content.append('=')
+            content.append(urlEncode(value))
         }
         val conn = server.openConnection() as HttpURLConnection
+        val contentBytes = content.toString().toByteArray(Charsets.UTF_8)
+        // UTF-8 is fine since urlencoded is all in ASCII7
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("Content-Length", query.length.toString())
+        conn.setRequestProperty("Content-Length", contentBytes.size.toString())
+        // Content-Length is size in octets sent to the recipient.
+        // cf. http://stackoverflow.com/questions/2773396/whats-the-content-length-field-in-http-header
         val os = conn.getOutputStream();
-        os.write(query.toString().toByteArray());  // That's UTF-8, which is OK since urlencoded is ASCII7
+        os.write(contentBytes)
         os.close()
-        val enc = conn.contentEncoding
+        val enc = conn.contentType
         val pos = enc.indexOf("charset=", ignoreCase = true)
         val charset =
                 if (pos < 0) {
@@ -118,16 +124,28 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         s.substring(0, p).toUpperCase()
                     }
                 }
-        val input = BufferedReader(InputStreamReader(conn.getInputStream(), charset))
-        val sb = StringBuffer()
-        while(true) {
-            val c = input.read()
-            if (c == -1) {
-                break
+        try {
+            val input = BufferedReader(InputStreamReader(conn.inputStream, charset))
+            val result = JsonIO.readJSON(input)
+            return result
+        } catch (ex : IOException) {
+            try {
+                val err = BufferedReader(InputStreamReader(conn.errorStream, charset))
+                println("Error from server:")
+                while (true) {
+                    val c = err.read()
+                    if (c == -1) {
+                        break;
+                    }
+                    print(c.toChar())
+                }
+                println()
+                println()
+            } catch (ex : Exception) {
+                println("Error trying to read error message:  $ex")
             }
-            sb.append(c.toChar())
+            throw ex
         }
-        return sb.toString()
     }
 
     private fun urlEncode(s : String) : String =

@@ -34,6 +34,7 @@ class OAuthToken (jsonValue : Any){
         result["access_token"] = access_token
         result["token_type"] = token_type
         result["expires"] = expires.getTime()
+        result["refresh_token"] = refresh_token
         return result
     }
 

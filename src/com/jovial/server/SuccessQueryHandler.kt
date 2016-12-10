@@ -16,7 +16,7 @@ class SuccessQueryHandler(private val message: String, rawOut: OutputStream, out
 
     override fun run() {
         startHttpResult(200)
-        startHtml("success")
+        startHtml("OK")
         safePrint("Thank you.")
         out.print("<br><br>")
         safePrint("""Got "$message"""")
