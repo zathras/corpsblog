@@ -32,7 +32,7 @@ class Site (
 
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
-    val dbDir = File(outputDir, "db")
+    val dbDir = File(outputDir, "db.local")
 
     val dependencies = DependencyManager(dbDir, "dependencies.json")
 

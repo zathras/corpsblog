@@ -54,11 +54,9 @@ fun main(args : Array<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
-    /*
-    val oa = OAuth(site.blogConfig.googleClient!!)
-    oa.run()
+    val oa = OAuth(site.blogConfig.googleClient!!, site.dbDir)
+    oa.getToken()
     throw RuntimeException("@@ stop here")
-    */
     site.generate()
     if (site.hasErrors()) {
         println()
