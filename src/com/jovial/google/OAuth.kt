@@ -19,10 +19,11 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
 
     val tokenFile = File(dbDir, "google_oauth.json")
 
-    private var token : OAuthToken? = null
+    private var savedToken: OAuthToken? = null
 
     fun getToken() : OAuthToken {
         var tokenChanged = false;
+        var token = savedToken
         if (token == null) {
             if (tokenFile.exists()) {
                 val input = BufferedReader(InputStreamReader(FileInputStream(tokenFile), "UTF-8"))
@@ -64,25 +65,25 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                 token = OAuthToken(jsonToken)
                 tokenChanged = true
             }
+            savedToken = token
         }
-        val t = token!!
-        if (t.expires.time < System.currentTimeMillis() - 1000 * 60 * 5) {  // < 5 minutes left
+        if (token.expires.time < System.currentTimeMillis() - 1000 * 60 * 5) {  // < 5 minutes left
             val tokenServer = URL("https://accounts.google.com/o/oauth2/token")
             val args = mapOf(
                     "client_id" to config.client_id,
                     "client_secret" to config.client_secret,
-                    "refresh_token" to t.refresh_token,
+                    "refresh_token" to token.refresh_token,
                     "grant_type" to "refresh_token")
             val jsonResult = httpPost(tokenServer, args)
-            t.refreshToken(jsonResult)
+            token.refreshToken(jsonResult)
             tokenChanged = true
         }
         if (tokenChanged) {
             val out = BufferedWriter(OutputStreamWriter(FileOutputStream(tokenFile), "UTF-8"))
-            JsonIO.writeJSON(out, t.toJsonValue())
+            JsonIO.writeJSON(out, token.toJsonValue())
             out.close()
         }
-        return t
+        return token
     }
 
     fun httpPost(server: URL, args: Map<String, String>) : String {
