@@ -2,10 +2,7 @@ package com.jovial.blog.model
 
 import com.github.rjeschke.txtmark.Configuration
 import com.github.rjeschke.txtmark.Processor
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
-import java.io.Reader
+import java.io.*
 
 /**
  * Created by billf on 11/14/16.
@@ -23,7 +20,7 @@ abstract class Content(
      */
     @Throws(ParseError::class)
     open fun read(location: File) : Unit {
-        val input = BufferedReader(FileReader(location))
+        val input = BufferedReader(InputStreamReader(FileInputStream(location), "UTF-8"))
         var lineNumber = 0;
         while (true) {
             lineNumber++

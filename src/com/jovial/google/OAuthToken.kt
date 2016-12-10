@@ -29,7 +29,7 @@ class OAuthToken (jsonValue : Any){
         refresh_token = notNull(m, "refresh_token")
     }
 
-    fun asJsonValue() : HashMap<Any, Any> {
+    fun toJsonValue() : HashMap<Any, Any> {
         val result = HashMap<Any, Any>()
         result["access_token"] = access_token
         result["token_type"] = token_type

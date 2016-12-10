@@ -4,9 +4,7 @@ import com.jovial.google.GoogleClientConfig
 import com.jovial.util.JsonIO
 import com.jovial.util.notNull
 import com.jovial.util.nullOK
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
+import java.io.*
 import java.util.*
 
 /**
@@ -34,7 +32,9 @@ class BlogConfig(configFile: File) {
 
     init {
         try {
-            val m = JsonIO.readJSON(BufferedReader(FileReader(configFile))) as HashMap<Any, Any>
+            val input = BufferedReader(InputStreamReader(FileInputStream(configFile), "UTF-8"))
+            val m = JsonIO.readJSON(input) as HashMap<Any, Any>
+            input.close()
             siteBaseURL = notNull(m, "siteBaseURL")
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")

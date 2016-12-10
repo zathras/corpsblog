@@ -2,10 +2,8 @@ package com.jovial.google
 
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
+import java.io.*
+import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.*
@@ -24,10 +22,13 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
     private var token : OAuthToken? = null
 
     fun getToken() : OAuthToken {
+        var tokenChanged = false;
         if (token == null) {
             if (tokenFile.exists()) {
-                token = OAuthToken(JsonIO.readJSON(BufferedReader(FileReader(tokenFile))))
-        } else {
+                val input = BufferedReader(InputStreamReader(FileInputStream(tokenFile), "UTF-8"))
+                token = OAuthToken(JsonIO.readJSON(input))
+                input.close()
+            } else {
                 val url = URL("http://accounts.google.com/o/oauth2/auth"
                         + "?client_id=" + urlEncode(config.client_id)
                         + "&redirect_uri=" + urlEncode("http://localhost:7001/google_oauth")
@@ -40,7 +41,7 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                 val pb = ProcessBuilder("firefox", url.toString())
                 val p = pb.start()
                 val result = p.isAlive()
-                if (!result || true) {
+                if (!result) {
                     println("""Unable to start "firefox $url"""")
                     println("Please start manually.")
                 }
@@ -61,20 +62,73 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         "grant_type" to "authorization_code")
                 val jsonToken = httpPost(tokenServer, args)
                 token = OAuthToken(jsonToken)
-                // /google_oauth?error=access_denied
-                // /google_oauth?error=access_denied
+                tokenChanged = true
             }
         }
-        // @@ Check for expiration
-        return token!!
+        val t = token!!
+        if (t.expires.time < System.currentTimeMillis() - 1000 * 60 * 5) {  // < 5 minutes left
+            val tokenServer = URL("https://accounts.google.com/o/oauth2/token")
+            val args = mapOf(
+                    "client_id" to config.client_id,
+                    "client_secret" to config.client_secret,
+                    "refresh_token" to t.refresh_token,
+                    "grant_type" to "refresh_token")
+            val jsonResult = httpPost(tokenServer, args)
+            t.refreshToken(jsonResult)
+            tokenChanged = true
+        }
+        if (tokenChanged) {
+            val out = BufferedWriter(OutputStreamWriter(FileOutputStream(tokenFile), "UTF-8"))
+            JsonIO.writeJSON(out, t.toJsonValue())
+            out.close()
+        }
+        return t
     }
-    HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-    conn.setDoOutput(true);
-    conn.setRequestMethod("POST");
-    conn.setRequestProperty( "Content-Type", type );
-    conn.setRequestProperty( "Content-Length", String.valueOf(encodedData.length()));
-    OutputStream os = conn.getOutputStream();
-    os.write(encodedData.getBytes());
+
+    fun httpPost(server: URL, args: Map<String, String>) : String {
+        val query = StringBuffer()
+        for ((key, value) in args) {
+            if (query.length > 0)  {
+                query.append('&')
+            }
+            query.append(key)
+            query.append("=")
+            query.append(urlEncode(value))
+        }
+        val conn = server.openConnection() as HttpURLConnection
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Content-Length", query.length.toString())
+        val os = conn.getOutputStream();
+        os.write(query.toString().toByteArray());  // That's UTF-8, which is OK since urlencoded is ASCII7
+        os.close()
+        val enc = conn.contentEncoding
+        val pos = enc.indexOf("charset=", ignoreCase = true)
+        val charset =
+                if (pos < 0) {
+                    "UTF-8"
+                } else {
+                    val s = enc.drop(pos + 8)
+                    val p = s.indexOf(";")
+                    if (p < 0) {
+                        s.toUpperCase()
+                    } else {
+                        s.substring(0, p).toUpperCase()
+                    }
+                }
+        val input = BufferedReader(InputStreamReader(conn.getInputStream(), charset))
+        val sb = StringBuffer()
+        while(true) {
+            val c = input.read()
+            if (c == -1) {
+                break
+            }
+            sb.append(c.toChar())
+        }
+        return sb.toString()
+    }
+
     private fun urlEncode(s : String) : String =
             URLEncoder.encode(s, "UTF-8")
 }

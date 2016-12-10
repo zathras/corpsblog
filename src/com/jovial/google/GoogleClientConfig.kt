@@ -5,7 +5,9 @@ import com.jovial.util.processFileName
 import com.jovial.util.notNull
 import com.jovial.util.nullOK
 import java.io.BufferedReader
+import java.io.FileInputStream
 import java.io.FileReader
+import java.io.InputStreamReader
 import java.util.*
 
 /**
@@ -21,7 +23,9 @@ class GoogleClientConfig(file : String){
     // We don't give the list of redirect_uris.  "http://localhost" isn't interesting.
 
     init {
-        val m = JsonIO.readJSON(BufferedReader(FileReader(processFileName(file)))) as HashMap<Any, Any>
+        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file)), "UTF-8"))
+        val m = JsonIO.readJSON(input) as HashMap<Any, Any>
+        input.close()
         val cm = m["installed"]!! as HashMap<Any, Any>
         client_id = notNull(cm, "client_id")
         project_id = notNull(cm, "project_id")
