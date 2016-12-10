@@ -68,7 +68,13 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
         // @@ Check for expiration
         return token!!
     }
-
+    HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+    conn.setDoOutput(true);
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty( "Content-Type", type );
+    conn.setRequestProperty( "Content-Length", String.valueOf(encodedData.length()));
+    OutputStream os = conn.getOutputStream();
+    os.write(encodedData.getBytes());
     private fun urlEncode(s : String) : String =
             URLEncoder.encode(s, "UTF-8")
 }
