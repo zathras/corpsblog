@@ -2,6 +2,8 @@ package com.jovial.google
 
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
+import com.jovial.util.httpPostForm
+import com.jovial.util.urlEncode
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -58,7 +60,7 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         "client_secret" to config.client_secret,
                         "redirect_uri" to "http://localhost:7001/google_oauth",
                         "grant_type" to "authorization_code")
-                val jsonToken = httpPost(tokenServer, args) as HashMap<Any, Any>
+                val jsonToken = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
                 token = OAuthToken(jsonToken)
                 tokenChanged = true
             }
@@ -72,7 +74,7 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                     "client_secret" to config.client_secret,
                     "refresh_token" to token.refresh_token,
                     "grant_type" to "refresh_token")
-            val jsonResult = httpPost(tokenServer, args) as HashMap<Any, Any>
+            val jsonResult = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
             token.refreshToken(jsonResult)
             tokenChanged = true
         }
@@ -85,69 +87,4 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
         return token
     }
 
-    //
-    // Do an HTTP post and receive a JSON value in return
-    //
-    fun httpPost(server: URL, args: Map<String, String>) : Any {
-        val content = StringBuffer()
-        for ((key, value) in args) {
-            if (content.length > 0)  {
-                content.append("&")
-            }
-            content.append(key)
-            content.append('=')
-            content.append(urlEncode(value))
-        }
-        val conn = server.openConnection() as HttpURLConnection
-        val contentBytes = content.toString().toByteArray(Charsets.UTF_8)
-        // UTF-8 is fine since urlencoded is all in ASCII7
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("Content-Length", contentBytes.size.toString())
-        // Content-Length is size in octets sent to the recipient.
-        // cf. http://stackoverflow.com/questions/2773396/whats-the-content-length-field-in-http-header
-        val os = conn.getOutputStream();
-        os.write(contentBytes)
-        os.close()
-        val enc = conn.contentType
-        val pos = enc.indexOf("charset=", ignoreCase = true)
-        val charset =
-                if (pos < 0) {
-                    "UTF-8"
-                } else {
-                    val s = enc.drop(pos + 8)
-                    val p = s.indexOf(";")
-                    if (p < 0) {
-                        s.toUpperCase()
-                    } else {
-                        s.substring(0, p).toUpperCase()
-                    }
-                }
-        try {
-            val input = BufferedReader(InputStreamReader(conn.inputStream, charset))
-            val result = JsonIO.readJSON(input)
-            return result
-        } catch (ex : IOException) {
-            try {
-                val err = BufferedReader(InputStreamReader(conn.errorStream, charset))
-                println("Error from server:")
-                while (true) {
-                    val c = err.read()
-                    if (c == -1) {
-                        break;
-                    }
-                    print(c.toChar())
-                }
-                println()
-                println()
-            } catch (ex : Exception) {
-                println("Error trying to read error message:  $ex")
-            }
-            throw ex
-        }
-    }
-
-    private fun urlEncode(s : String) : String =
-            URLEncoder.encode(s, "UTF-8")
 }

@@ -30,6 +30,12 @@ class BlogConfig(configFile: File) {
     public val googleAnalyticsAccount : String?
     public val googleClient : GoogleClientConfig?
 
+    /**
+     * Name of the remote shell command for YouTube uploads, if one exists.  See
+     * com.jovial.google.remote_hack.
+     */
+    val remote_upload: String?
+
     init {
         try {
             val input = BufferedReader(InputStreamReader(FileInputStream(configFile), "UTF-8"))
@@ -55,6 +61,7 @@ class BlogConfig(configFile: File) {
             } else {
                 googleClient = GoogleClientConfig(googleClientName)
             }
+            remote_upload = nullOK(m, "remote_upload")
         } catch (e: Exception) {
             println()
             println("Error reading configuration file ${configFile.absolutePath}")

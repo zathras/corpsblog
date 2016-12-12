@@ -5,6 +5,9 @@ import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
 import com.jovial.google.OAuth
+import com.jovial.google.YouTube
+import com.jovial.google.remote_hack.UploadFromRemote
+import com.jovial.util.processFileName
 import templates.Post
 import java.io.BufferedReader
 import java.io.File
@@ -17,7 +20,7 @@ import java.util.*
  */
 
 private fun usage() {
-    println("Usage:  corpsblog (publish | offline | fb | yt_hack | yt_hack_remote)")
+    println("Usage:  corpsblog (publish | offline | fb | remote_hack)")
     println()
     println("    publish")
     println("        Ready the target for \"git commit -a\" and \"git push\"")
@@ -28,19 +31,26 @@ private fun usage() {
     println("    fb")
     println("        Post to Facebook about recent activity (do this after git push)")
     println()
-    println("    yt_hack")
-    println("        Pre-publish videos using remote shell (avoids double upload)")
-    println()
-    println("    yt_hack_remote")
-    println("        The remote shell side of yt_hack")
+    println("    remote_hack (advanced)")
+    println("        The remote shell side of a remote YouTube upload.")
+    println("        cf. com.jovial.google.remote_hack.")
     println()
     System.exit(1)
 }
 
 fun main(args : Array<String>) {
+    if (args.size > 0 && args[0] == "remote_hack") {
+        if (!UploadFromRemote(args).run()) {
+            usage()
+        }
+        System.exit(0)
+    }
+    val inputDir=File("test")
+    val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
     val site = Site(
-            inputDir=File("test"),
-            outputDir=File("out/test")
+            inputDir=inputDir,
+            outputDir=File("out/test"),
+            blogConfig=blogConfig
     )
     site.deferredTxtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
@@ -54,9 +64,16 @@ fun main(args : Array<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
-    val oa = OAuth(site.blogConfig.googleClient!!, site.dbDir)
-    oa.getToken()
-    throw RuntimeException("@@ stop here")
+    val googleClient = blogConfig.googleClient
+    if (googleClient != null) {
+        val oa = OAuth(googleClient, site.dbDir)
+        val yt = YouTube(blogConfig.remote_upload, oa)
+        val vid = processFileName("~/github/moom-www/movies/2006_09_messengers_h264.mp4")
+        val url = yt.uploadVideo(vid, "Test video.  This is a test video.\n\nHere's a link:  http://www.guardian.co.uk/world/")
+        println("Uploaded to $url")
+        println("@@ stop here")
+    }
+    System.exit(1)
     site.generate()
     if (site.hasErrors()) {
         println()

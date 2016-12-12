@@ -15,7 +15,8 @@ import java.nio.file.StandardCopyOption
  */
 class Site (
         val inputDir: File,
-        val outputDir: File
+        val outputDir: File,
+        val blogConfig : BlogConfig
 ){
 
     var deferredTxtmarkConfig : com.github.rjeschke.txtmark.Configuration? = null
@@ -29,8 +30,6 @@ class Site (
     val txtmarkPostConfig: com.github.rjeschke.txtmark.Configuration by lazy {
         deferredTxtmarkPostConfig!!
     }
-
-    val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
 
     val dbDir = File(outputDir, "db.local")
 
