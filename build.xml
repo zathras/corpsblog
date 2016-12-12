@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Simple HTTP Server -- Simples" default="help">
+<project name="CorpsBlog" default="help">
   <property file="ant.local.properties"/>
   <property file="ant.properties"/>
   <property name="kotlin.lib" value="${kotlin.dir}/lib"/>
@@ -13,6 +13,8 @@
 Targets:
 
     build            Build out/corpsblog.jar
+    build-remote     Build out/corpsblog.jar for JDK 1.7, and install it
+                     (This is for the feature of uploading via a remote shell)
     install          Install out/corpsblog.jar to ${install.dir}
     clean            Remove all generated files
     docs             Update the contents of docs
@@ -26,7 +28,7 @@ Targets:
   </target>
 
 
-  <target name="build">
+  <target name="build-remote">
     <mkdir dir="${out.dir}"/>
     <delete dir="${out.dir}/classes" failonerror="false"/>
     <mkdir dir="${out.dir}/classes"/>
@@ -44,6 +46,9 @@ Targets:
         <fileset dir="${out.dir}/classes"/>
 	<zipfileset src="${kotlin.dir}/lib/kotlin-runtime.jar"/>
     </jar>
+    <exec executable="${user.home}/lib/corpsblog_remote_upload.scp">
+      <arg value="out/corpsblog.jar"/>
+    </exec>
   </target>
 
   <target name="check-jar">
