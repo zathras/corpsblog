@@ -59,7 +59,7 @@ class BlogConfig(configFile: File) {
             if (googleClientName == null) {
                 googleClient = null;
             } else {
-                googleClient = GoogleClientConfig(googleClientName)
+                googleClient = GoogleClientConfig(googleClientName, configFile.parentFile)
             }
             remote_upload = nullOK(m, "remote_upload")
         } catch (e: Exception) {

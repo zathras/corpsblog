@@ -64,6 +64,7 @@ fun main(args : Array<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
+    /*
     val googleClient = blogConfig.googleClient
     if (googleClient != null) {
         val oa = OAuth(googleClient, site.dbDir)
@@ -74,6 +75,7 @@ fun main(args : Array<String>) {
         println("@@ stop here")
     }
     System.exit(1)
+    */
     site.generate()
     if (site.hasErrors()) {
         println()

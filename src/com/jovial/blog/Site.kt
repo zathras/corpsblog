@@ -33,6 +33,8 @@ class Site (
 
     val dbDir = File(outputDir, "db.local")
 
+    val postsSrcDir = File(inputDir, "posts")
+
     val dependencies = DependencyManager(dbDir, "dependencies.json")
 
     private val errors = mutableListOf<String>()
@@ -81,12 +83,11 @@ class Site (
             }
         }
         copyCorpsblogAssets()
-        val postsSrc = File(inputDir, "posts")
-        val postFiles = postsSrc.list().
+        val postFiles = postsSrcDir.list().
                 sortedBy { s -> s.toLowerCase() }.
                 filter {
                     if (!it.toLowerCase().endsWith(".md")) {
-                        println("""Skipping post $it in $postsSrc:  File name doesn't end in ".md".""")
+                        println("""Skipping post $it in $postsSrcDir:  File name doesn't end in ".md".""")
                         false
                     } else {
                         true

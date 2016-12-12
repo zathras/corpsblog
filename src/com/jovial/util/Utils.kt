@@ -46,10 +46,15 @@ public fun escapeHtml(line: String) =
                 replace(">", "&gt;").
                 replace("&", "&amp;")
 
-public fun processFileName(name: String) : File {
+public fun processFileName(name: String, pseudoHomeDir: File? = null) : File {
     if (name.startsWith("~/")) {
         return File(homeDir + name.substring(1))
     } else {
-        return File(name)
+        val f = File(name)
+        if (pseudoHomeDir != null && !f.isAbsolute()) {
+            return File(pseudoHomeDir, name)
+        } else {
+            return f
+        }
     }
 }

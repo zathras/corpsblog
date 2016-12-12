@@ -38,13 +38,18 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         + "&response_type=code"
                         + "&access_type=offline")
 
-                println("@@ Hello, oauth")
                 val pb = ProcessBuilder("firefox", url.toString())
-                val p = pb.start()
-                val result = p.isAlive()
-                if (!result) {
-                    println("""Unable to start "firefox $url"""")
+                // @@ Make this part of blog configuration...  google_oauth_browser?
+                try {
+                    val p = pb.start()
+                } catch (ex : IOException) {
+                    println("Unable to start firefox")
                     println("Please start manually.")
+                    println()
+                    println(ex)
+                    println()
+                    println("URL:  $url")
+                    println()
                 }
                 val server = SimpleHttp(7001)
                 println("Running server to wait for OAuth redirect from browser...")

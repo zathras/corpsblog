@@ -33,7 +33,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val height = Integer.parseInt(dimensionStrings[1])
         context.videoCount++
         currLine = currLine.next
-        val sourceFile = processFileName(currLine.value)
+        val sourceFile = processFileName(currLine.value, site.postsSrcDir)
 	var s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
         val destFileName = context.baseGeneratedDirName + "-video-" + context.videoCount + extension
