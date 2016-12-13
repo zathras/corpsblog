@@ -70,10 +70,10 @@ private fun generateSite(publish: Boolean, args: List<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
-    /*
     val googleClient = blogConfig.googleClient
+    /*
     if (googleClient != null) {
-        val oa = OAuth(googleClient, site.dbDir)
+        val oa = OAuth(googleClient, site.dbDir, blogConfig.googleOauthBrowser)
         val yt = YouTube(blogConfig.remote_upload, oa)
         val vid = processFileName("~/github/moom-www/movies/2006_09_messengers_h264.mp4")
         val url = yt.uploadVideo(vid, "Test video.  This is a test video.\n\nHere's a link:  http://www.guardian.co.uk/world/")

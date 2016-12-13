@@ -28,6 +28,7 @@ class BlogConfig(configFile: File) {
     public val shareEmail : String?
     public val shareDisqus : String?
     public val googleAnalyticsAccount : String?
+    public val googleOauthBrowser : String         // Used for Google OAuth login flow.  Defaults to firefox.
     public val googleClient : GoogleClientConfig?
 
     /**
@@ -55,6 +56,7 @@ class BlogConfig(configFile: File) {
             shareEmail = nullOK(m, "shareEmail")
             shareDisqus = nullOK(m, "shareDisqus")
             googleAnalyticsAccount = nullOK(m, "googleAnalyticsAccount")
+            googleOauthBrowser = nullOK(m, "googleOauthBrowser") ?: "firefox"
             val googleClientName = nullOK(m, "google_id")
             if (googleClientName == null) {
                 googleClient = null;

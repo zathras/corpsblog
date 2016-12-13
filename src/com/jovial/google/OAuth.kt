@@ -16,7 +16,7 @@ import java.util.*
  *
  * Created by w.foote on 12/8/2016.
  */
-class OAuth (val config : GoogleClientConfig, val dbDir : File) {
+class OAuth (val config : GoogleClientConfig, val dbDir : File, val browser : String) {
 
     val tokenFile = File(dbDir, "google_oauth.json")
 
@@ -38,12 +38,11 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File) {
                         + "&response_type=code"
                         + "&access_type=offline")
 
-                val pb = ProcessBuilder("firefox", url.toString())
-                // @@ Make this part of blog configuration...  google_oauth_browser?
+                val pb = ProcessBuilder(browser, url.toString())
                 try {
                     val p = pb.start()
                 } catch (ex : IOException) {
-                    println("Unable to start firefox")
+                    println("Unable to start $browser")
                     println("Please start manually.")
                     println()
                     println(ex)
