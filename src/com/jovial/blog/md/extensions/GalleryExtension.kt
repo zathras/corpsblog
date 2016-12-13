@@ -26,7 +26,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
             return false
         }
         context.galleryCount++
-        val galleryName = context.baseGeneratedDirName + "-gallery-" + context.galleryCount
+        val galleryName = context.postBaseName + "-gallery-" + context.galleryCount
         val galleryDir = File(context.outputDir, galleryName)
         galleryDir.mkdirs()
         // Parse the pictures from input

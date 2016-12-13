@@ -4,8 +4,7 @@ import com.jovial.google.remote_hack.RemoteUpload
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostJSON
 import com.jovial.util.processFileName
-import java.io.File
-import java.io.StringWriter
+import java.io.*
 import java.net.URL
 import java.util.*
 
@@ -17,7 +16,43 @@ import java.util.*
  *
  * Created by billf on 12/10/16.
  */
-class YouTube(val remoteCommand: String?, val oAuth : OAuth) {
+class YouTube(val remoteCommand: String?, val oAuth : OAuth, val dbDir: File) {
+
+
+    private val uploadsFile = File(dbDir, "youtube_uploads.json")
+    //
+    // Map from absolute path of source video file to Youtube URL
+    //
+    private val videoUploads = mutableMapOf<File, URL>()
+
+    init {
+        if (uploadsFile.exists()) {
+            val input = BufferedReader(InputStreamReader(FileInputStream(uploadsFile), "UTF-8"))
+            val m = JsonIO.readJSON(input) as HashMap<Any, Any>
+            for ((k, v) in m) {
+                videoUploads[File(k as String)] = URL(v as String)
+            }
+            input.close()
+        } else {
+            writeUploadsFile()      // To make sure we can
+        }
+    }
+
+    private fun writeUploadsFile() {
+        val json = HashMap<Any, Any>()
+        for ((k, v) in videoUploads) {
+            json[k.absolutePath] = v.toString()
+        }
+        val output = BufferedWriter(OutputStreamWriter(FileOutputStream(uploadsFile), "UTF8"))
+        JsonIO.writeJSON(output, json)
+        output.close()
+    }
+
+    /**
+     * Get the video upload record for the given asset (which should be a video).
+     * Return null if it hasn't been uploaded
+     */
+    fun getVideoURL(asset: File) : URL?  = videoUploads[asset.absoluteFile]
 
     fun uploadVideo(videoFile : File, description: String) : URL {
         val token = oAuth.getToken()
@@ -62,15 +97,17 @@ class YouTube(val remoteCommand: String?, val oAuth : OAuth) {
         println("@@ uploading to $uploadURL")
         val u = ResumableUpload(
                 authorization=authorization,
-                // @@ src=videoFile.toURI().toURL(),
-                src=URL("http://moomtastic.jovial.com/movies/2006_09_messengers_h264.mp4"),
+                src=videoFile.toURI().toURL(),
                 size=videoFile.length(),
                 contentType="video/*",
                 dest=uploadURL)
-        if (remoteCommand == null) {
-            return u.upload()
+        val youtubeURL = if (remoteCommand == null) {
+            u.upload()
         } else {
-            return RemoteUpload(processFileName(remoteCommand), u).upload()
+            RemoteUpload(processFileName(remoteCommand), u).upload()
         }
+        videoUploads[videoFile.absoluteFile] = youtubeURL
+        writeUploadsFile()
+        return youtubeURL
     }
 }

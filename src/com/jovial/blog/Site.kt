@@ -2,7 +2,10 @@ package com.jovial.blog
 
 import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.model.*
+import com.jovial.google.OAuth
+import com.jovial.google.YouTube
 import com.jovial.lib.html.HTML
+import com.jovial.util.processFileName
 import templates.*
 import java.io.*
 import java.nio.file.Files
@@ -16,7 +19,8 @@ import java.nio.file.StandardCopyOption
 class Site (
         val inputDir: File,
         val outputDir: File,
-        val blogConfig : BlogConfig
+        val blogConfig : BlogConfig,
+        val publish : Boolean
 ){
 
     var deferredTxtmarkConfig : com.github.rjeschke.txtmark.Configuration? = null
@@ -31,16 +35,26 @@ class Site (
         deferredTxtmarkPostConfig!!
     }
 
-    val dbDir = File(outputDir, "db.local")
+    val dbDir = File(outputDir.canonicalPath + ".db")
 
     val postsSrcDir = File(inputDir, "posts")
 
     val dependencies = DependencyManager(dbDir, "dependencies.json")
 
+    val youtubeManager : YouTube?
+
     private val errors = mutableListOf<String>()
+    private val notes = mutableListOf<String>()
 
     init {
         dbDir.mkdirs()
+        val googleClient = blogConfig.googleClient
+        if (googleClient == null) {
+            youtubeManager = null
+        } else {
+            val oa = OAuth(googleClient, dbDir, blogConfig.googleOauthBrowser)
+            youtubeManager = YouTube(blogConfig.remote_upload, oa, dbDir)
+        }
     }
 
     /**
@@ -55,8 +69,23 @@ class Site (
 
 
     public fun error(message: String) {
-        println("$message")
+        println(message)
         errors.add(message)
+    }
+
+    public fun note(message: String) {
+        println(message)
+        notes.add(message)
+    }
+
+    public fun printNotes() : Unit {
+        if (!notes.isEmpty()) {
+            println()
+            println("Notes about site generation:")
+            for (e in notes) {
+                println("    $e")
+            }
+        }
     }
 
     public fun hasErrors() : Boolean = !errors.isEmpty()
@@ -198,6 +227,9 @@ class Site (
         val dependencyValues = mutableListOf<String>()
         if (olderName != null) dependencyValues.add(olderName)
         if (newerName != null) dependencyValues.add(newerName)
+        for (u in content.videoURLs) {
+            dependencyValues.add(u)
+        }
         val dependsOn = dependencies.get(outputFile)
         if (dependsOn.changed(dependencyFiles, dependencyValues)) {
             postOutputDir.mkdirs()

@@ -16,8 +16,6 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
 
     private var generatedAssets = mutableMapOf<File, AssetDependencies>()
 
-    private var videoUploads = mutableMapOf<File, VideoUpload>()
-
     /**
      * Get the object that describes the things the provided generated asset depends on.
      */
@@ -42,21 +40,6 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
     }
 
     /**
-     * Get the video upload record for the given asset (which should be a video)
-     */
-    fun getVideo(asset: File) : VideoUpload {
-        val canon = asset.canonicalFile
-        val result = videoUploads.get(canon)
-        if (result != null) {
-            return result
-        } else {
-            val v = VideoUpload(asset)
-            videoUploads.put(canon, v)
-            return v
-        }
-    }
-
-    /**
      * Read our state from dependencyFile, if it exists.  If not, do nothing.
      */
     fun read() {
@@ -74,13 +57,7 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
                 val a = AssetDependencies(readAsset)
                 generatedAssets[a.generatedAsset.canonicalFile] = a
             }
-            val readVideos = json["videos"] as List<HashMap<String, Any>>
-            for (readVideo in readVideos) {
-                val v = VideoUpload(readVideo)
-                videoUploads[v.videoFile.canonicalFile] = v
-            }
         }
-        get(f)      // Just so we don't count as a stray file in the output dir
     }
 
     /**
@@ -90,7 +67,6 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
         val json = HashMap<Any, Any>()
         json["version"] = "1.0"
         json["generatedAssets"] = generatedAssets.values.map { it.asJsonValue() }
-        json["videos"] = videoUploads.values.map { it.asJsonValue() }
         val output = BufferedWriter(OutputStreamWriter(FileOutputStream(File(inputDir, dependencyFile)), "UTF8"))
         JsonIO.writeJSON(output, json)
         output.close()

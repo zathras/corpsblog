@@ -56,7 +56,8 @@ private fun generateSite(publish: Boolean, args: List<String>) {
     val site = Site(
             inputDir=inputDir,
             outputDir=File("out/test"),
-            blogConfig=blogConfig
+            blogConfig=blogConfig,
+            publish=publish
     )
     site.deferredTxtmarkConfig = com.github.rjeschke.txtmark.Configuration.builder().
             enableSafeMode().               // Escapes unsafe XML tags
@@ -70,21 +71,10 @@ private fun generateSite(publish: Boolean, args: List<String>) {
             addExtension(GalleryExtension(site)).
             addExtension(VideoExtension(site)).
             build()
-    val googleClient = blogConfig.googleClient
-    /*
-    if (googleClient != null) {
-        val oa = OAuth(googleClient, site.dbDir, blogConfig.googleOauthBrowser)
-        val yt = YouTube(blogConfig.remote_upload, oa)
-        val vid = processFileName("~/github/moom-www/movies/2006_09_messengers_h264.mp4")
-        val url = yt.uploadVideo(vid, "Test video.  This is a test video.\n\nHere's a link:  http://www.guardian.co.uk/world/")
-        println("Uploaded to $url")
-        println("@@ stop here")
-    }
-    System.exit(1)
-    */
     site.generate()
+    site.printNotes()
+    println()
     if (site.hasErrors()) {
-        println()
         site.printErrors()
         System.exit(1)
     }

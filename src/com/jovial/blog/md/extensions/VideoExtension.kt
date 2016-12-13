@@ -6,9 +6,9 @@ import com.github.rjeschke.txtmark.Line
 import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
-import com.jovial.blog.model.VideoUpload
 import com.jovial.util.processFileName
 import java.io.File
+import java.net.URL
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.*
@@ -31,26 +31,25 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val dimensionStrings = currLine.value.drop(7).trim().split(' ')
         val width = Integer.parseInt(dimensionStrings[0])
         val height = Integer.parseInt(dimensionStrings[1])
-        context.videoCount++
         currLine = currLine.next
         val sourceFile = processFileName(currLine.value, site.postsSrcDir)
 	var s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
-        val destFileName = context.baseGeneratedDirName + "-video-" + context.videoCount + extension
+        val destFileName = context.postBaseName + "-video-" + context.videoURLs.size + extension
 	val destFile = File(context.outputDir, destFileName)
         context.dependsOn.add(sourceFile)
 
         // Read the caption
         currLine = currLine.next
-	val caption = StringBuilder()
+	val captionSB = StringBuilder()
         while (currLine != null) {
-            emitter.extensionEmitText(caption, currLine.value)
+            emitter.extensionEmitText(captionSB, currLine.value)
 	    currLine = currLine.next
         }
+        val caption = captionSB.toString()
 
         // Copy the video file
         val dep = site.dependencies.get(destFile)
-        val upload = site.dependencies.getVideo(destFile)
         if (dep.changed(listOf(sourceFile))) {
             Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
@@ -71,25 +70,49 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
             out.append("<center>\n")
         }
         out.append("<br>\n")
-        val a = upload.uploadedAddress
-        if (a == null) {
+        val upload = getYoutubeURL(sourceFile, caption, context)
+        if (upload == null) {
+            context.videoURLs.add("Pending for $sourceFile")
             out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
-            site.error("Video not uploaded to YouTube:  $destFile")
+            if (site.publish) {
+                site.error("Video not uploaded to YouTube:  $destFile")
+            } else {
+                site.note("Video not uploaded to YouTube:  $destFile")
+            }
         } else {
-            out.append("""<em><a href="${a.toString()}">(view on YouTube)</a></em>""")
+            context.videoURLs.add(upload.toString())
+            out.append("""<em><a href="${upload.toString()}">(view on YouTube)</a></em>""")
         }
         out.append("\n</center>\n")
 	if (caption.length > 0) {
 	    out.append("""
 <blockquote>
-${caption.toString()}
+${caption}
 </blockquote>
 <div style="clear: both"></div>""")
 	}
         return true
     }
 
-    private fun uploadVideo(vu : VideoUpload) {
-        throw RuntimeException("@@ Not implemented:  Upload video ${vu.videoFile}")
+    private fun getYoutubeURL(src : File, caption: String, context : PostContent) : URL? {
+        val yt = site.youtubeManager
+        if (yt == null) {
+            return null
+        }
+        val u = yt.getVideoURL(src)
+        if (u != null) {
+            return u
+        }
+        if (!site.publish) {
+            return null;
+        }
+        val postURL = site.blogConfig.siteBaseURL + "/posts/${context.postBaseName}.html"
+        val seeMe = "This video is from the blog post at $postURL"
+        val description = if (caption.length == 0) {
+            seeMe
+        } else {
+            "$caption\n\n$seeMe"
+        }
+        return yt.uploadVideo(src, description)
     }
 }
