@@ -87,7 +87,10 @@ class Site (
                 sortedBy { s -> s.toLowerCase() }.
                 filter {
                     if (!it.toLowerCase().endsWith(".md")) {
-                        println("""Skipping post $it in $postsSrcDir:  File name doesn't end in ".md".""")
+                        if (!File(postsSrcDir, it).isDirectory()) {
+                            println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
+                            // Directories are for assets referenced in a post, so we don't isssue a warning.
+                        }
                         false
                     } else {
                         true

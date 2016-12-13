@@ -39,12 +39,18 @@ private fun usage() {
 }
 
 fun main(args : Array<String>) {
-    if (args.size > 0 && args[0] == "remote_hack") {
-        if (!UploadFromRemote(args).run()) {
-            usage()
-        }
-        System.exit(0)
+    if (args.size == 0) {
+        usage()
     }
+    when (args[0]) {
+        "remote_hack" -> UploadFromRemote(args.drop(1)).run()
+        "publish" -> generateSite(true, args.drop(1))
+        "offline" -> generateSite(false, args.drop(1))
+        "fb" -> postToFacebook(args.drop(1))
+    }
+}
+
+private fun generateSite(publish: Boolean, args: List<String>) {
     val inputDir=File("test")
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
     val site = Site(
@@ -83,4 +89,8 @@ fun main(args : Array<String>) {
         System.exit(1)
     }
     System.exit(0)
+}
+
+private fun postToFacebook(args: List<String>) {
+    throw RuntimeException("@@ not implemented")
 }

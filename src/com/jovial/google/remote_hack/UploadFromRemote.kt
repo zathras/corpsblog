@@ -8,26 +8,24 @@ import java.io.IOException
 /**
  * Created by billf on 12/11/16.
  */
-class UploadFromRemote (val args : Array<String>) {
+class UploadFromRemote (val args : List<String>) {
 
-    fun run() : Boolean {
-        if (args.size != 6) {
+    fun run() : Unit {
+        if (args.size != 5) {
             val sb = StringBuilder()
             for (i in 0..args.size-1) {
                 sb.append("    $i:  ${args[i]}\n")
             }
-            throw IOException("Expected 6 args, got ${args.size}:\n$sb")
-            return false
+            throw IOException("Expected 5 args, got ${args.size}:\n$sb")
         }
         val ru = ResumableUpload(
-                    authorization = urlDecode(args[1]),
-                    src = URL(urlDecode(args[2])),
-                    size = urlDecode(args[3]).toLong(),
-                    contentType = urlDecode(args[4]),
-                    dest = URL(urlDecode(args[5]))
+                    authorization = urlDecode(args[0]),
+                    src = URL(urlDecode(args[1])),
+                    size = urlDecode(args[2]).toLong(),
+                    contentType = urlDecode(args[3]),
+                    dest = URL(urlDecode(args[4]))
         )
         val url = ru.upload()
         println(url)
-        return true
     }
 }
