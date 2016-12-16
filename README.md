@@ -72,4 +72,5 @@ The output will look something like this:
   * 2017-07-12.html
   * 2017-07-12-gallery
     * Pictures
+  * 2017-07-12-video-1.mp4
 
