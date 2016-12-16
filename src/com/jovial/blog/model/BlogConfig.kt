@@ -24,9 +24,10 @@ class BlogConfig(configFile: File) {
     public val shareLinkedIn : String?
     public val shareGitHub : String?
     public val shareFlickr : String?
-    public val shareGarmin : String?
-    public val shareEmail : String?
-    public val shareDisqus : String?
+    public val shareGarmin : String?    // The GPS company.
+    public val shareEmail : String?     // This is a "contact me" e-mail address
+    public val shareDisqus : String?    // Blog comments, https://en.wikipedia.org/wiki/DisqusA
+                                        // Ad-suported by taking a cut from "reveal," but blogs can opt out.
     public val googleAnalyticsAccount : String?
     public val googleOauthBrowser : String         // Used for Google OAuth login flow.  Defaults to firefox.
     public val googleClient : GoogleClientConfig?
