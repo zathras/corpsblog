@@ -357,6 +357,7 @@ public class JsonIO {
     private static HashMap readHashMap(Reader rdr) throws IOException {
         HashMap result = new HashMap();
         for (;;) {
+            rdr.mark(1);
             int ch = rdr.read();
             if (skipWhitespace(ch, rdr)) {
                 continue;
@@ -364,8 +365,9 @@ public class JsonIO {
                 return result;
             } else if (ch == ',') {
                 continue;
-            } else if (ch == '"' || ch == '\'') {
-                String key = readString(rdr, (char) ch);
+            } else {
+                rdr.reset();
+                Object key = readJSON(rdr);
                 for (;;) {
                     ch = rdr.read();
                     if (ch == ':') {
@@ -378,8 +380,6 @@ public class JsonIO {
                 }
                 Object value = readJSON(rdr);
                 result.put(key, value);
-            } else {
-                throwUnexpected(ch);
             }
         }
     }
