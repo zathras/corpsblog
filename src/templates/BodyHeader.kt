@@ -105,8 +105,8 @@ class BodyHeader (val config: BlogConfig,
               nav(class_="cover-navigation cover-navigation--primary") {
                 ul(class_="navigation") {
                   li(class_="navigation__item") {
-                    a(href="${rootPath}#blog", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
-                      +"Blog"
+                    a(href="${rootPath}index.html", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
+                      +"About"
                     }
                   }
                   li(class_="navigation__item") {
@@ -175,6 +175,16 @@ class BodyHeader (val config: BlogConfig,
                         span(class_="label") {
                           +"Garmin"
                         }
+                      }
+                    }
+                  }
+
+                  // contact page
+                  li(class_="navigation__item") {
+                    a(href="${rootPath}contact.html", title="Contact", style="border: 0px") {
+                      img(src="${rootPath}images/xbiff.png", class_="icon-image")
+                      span(class_="label") {
+                        +"Contact"
                       }
                     }
                   }

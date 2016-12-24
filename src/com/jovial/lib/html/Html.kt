@@ -296,6 +296,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
           target: String? = null,
           class_: String? = null,
           onclick: String? = null,
+          style: String? = null,
           init: A.() -> Unit)
     {
         val t = initTag(A(this), init)
@@ -304,6 +305,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("target", target)
         t.addAttribute("class", class_)
         t.addAttribute("onclick", onclick)
+        t.addAttribute("style", style)
     }
     fun img(src: String,
             alt: String? = null,

@@ -53,6 +53,15 @@
   border-radius:100%;
 }
 
+.icon-image {
+  margin-bottom: -12px;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #fff;
+  border-radius:100%;
+}
+
 .arrow-nav {
    width: 100%;
   line-height: 1.5em;

@@ -148,7 +148,16 @@ class Site (
             Index(blogConfig, indexContent, posts).generate().toString()
         }
         generateDependingOn(listOf(indexOutputFile), File(outputDir, "sitemap.xml")) {
+            if (!indexContent.readWasCalled) {
+                indexContent.read(indexInputFile)   // For the date
+            }
             Sitemap(this, indexContent.date).generate()
+        }
+        val contactInputFile = File(inputDir, "contact.md")
+        generateDependingOn(listOf(contactInputFile), File(outputDir, "contact.html")) {
+            val contactContent = ContactContent(txtmarkConfig)
+            contactContent.read(contactInputFile)
+            Contact(blogConfig, contactContent).generate().toString()
         }
         dependencies.write()
 

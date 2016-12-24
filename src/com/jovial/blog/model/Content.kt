@@ -13,13 +13,17 @@ abstract class Content(
     var body : String = ""      /** Body of the content, in HTML */
         protected set
 
+    var readWasCalled : Boolean = false
+        private set
+
     class ParseError(message: String) : Exception(message)
 
     /**
-     * Read the input, and return a reader positioned just after the headers
+     * Read the input
      */
     @Throws(ParseError::class)
     open fun read(location: File) : Unit {
+        readWasCalled = true
         val input = BufferedReader(InputStreamReader(FileInputStream(location), "UTF-8"))
         var lineNumber = 0;
         while (true) {
