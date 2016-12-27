@@ -2,10 +2,12 @@ package com.jovial.blog
 
 import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.model.*
-import com.jovial.google.OAuth
+import com.jovial.oauth.OAuth
 import com.jovial.google.YouTube
 import com.jovial.lib.html.HTML
+import com.jovial.mailchimp.Mailchimp
 import com.jovial.util.processFileName
+import com.jovial.util.urlEncode
 import templates.*
 import java.io.*
 import java.nio.file.Files
@@ -43,17 +45,44 @@ class Site (
 
     val youtubeManager : YouTube?
 
+    val mailchimpManager : Mailchimp?
+
     private val errors = mutableListOf<String>()
     private val notes = mutableListOf<String>()
 
     init {
         dbDir.mkdirs()
-        val googleClient = blogConfig.googleClient
-        if (googleClient == null) {
+        val googleClientConfig = blogConfig.googleClient
+        if (googleClientConfig == null) {
             youtubeManager = null
         } else {
-            val oa = OAuth(googleClient, dbDir, blogConfig.googleOauthBrowser)
+            val authParams =
+                  "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube") +
+                  "&access_type=offline"
+            val oa = OAuth(authURL = googleClientConfig.auth_uri,
+                           clientId = googleClientConfig.client_id,
+                           clientSecret = googleClientConfig.client_secret,
+                           tokenFile = File(dbDir, "google_oauth.json"),
+                           authParams = authParams,
+                           tokenURL = googleClientConfig.token_uri,
+                           browser = blogConfig.googleOauthBrowser)
             youtubeManager = YouTube(blogConfig.remote_upload, oa, dbDir)
+        }
+
+        val mailchimpClientConfig = blogConfig.mailchimpClient
+        if (mailchimpClientConfig == null) {
+            mailchimpManager = null
+        } else {
+            val oa = OAuth(authURL = mailchimpClientConfig.auth_uri,
+                           clientId = mailchimpClientConfig.client_id,
+                           clientSecret = mailchimpClientConfig.client_secret,
+                           tokenFile = File(dbDir, "mailchimp_oauth.json"),
+                           tokenURL = mailchimpClientConfig.token_uri,
+                           browser = blogConfig.mailchimpOauthBrowser)
+            mailchimpManager = Mailchimp(oa, dbDir,
+                                         listID = mailchimpClientConfig.list_id,
+                                         facebookPageIDs = mailchimpClientConfig.facebook_page_ids)
+            // @@@@ mailchimpManager.test()
         }
     }
 

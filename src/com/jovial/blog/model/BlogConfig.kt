@@ -1,6 +1,7 @@
 package com.jovial.blog.model
 
 import com.jovial.google.GoogleClientConfig
+import com.jovial.mailchimp.MailchimpClientConfig
 import com.jovial.util.JsonIO
 import com.jovial.util.notNull
 import com.jovial.util.nullOK
@@ -18,6 +19,8 @@ class BlogConfig(configFile: File) {
     public val siteDescription : String
     public val siteAuthor : String
     public val siteTitle: String
+    public val siteTitleBodyHTML: String?
+    public val siteTitleBodyImage: String?
     public val myProfilePhoto : String
     public val coverImage : String
     public val shareTwitter : String?
@@ -31,6 +34,8 @@ class BlogConfig(configFile: File) {
     public val googleAnalyticsAccount : String?
     public val googleOauthBrowser : String         // Used for Google OAuth login flow.  Defaults to firefox.
     public val googleClient : GoogleClientConfig?
+    public val mailchimpClient : MailchimpClientConfig?
+    public val mailchimpOauthBrowser : String         // Used for Mailchimp OAuth login flow.  Defaults to firefox.
 
     /**
      * Name of the remote shell command for YouTube uploads, if one exists.  See
@@ -47,6 +52,8 @@ class BlogConfig(configFile: File) {
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")
             siteTitle = notNull(m, "siteTitle")
+            siteTitleBodyHTML = nullOK(m, "siteTitleBodyHTML")
+            siteTitleBodyImage = nullOK(m, "siteTitleBodyImage")
             myProfilePhoto = notNull(m, "myProfilePhoto")
             coverImage = notNull(m, "coverImage")
             shareTwitter = nullOK(m, "shareTwitter")
@@ -58,13 +65,20 @@ class BlogConfig(configFile: File) {
             shareDisqus = nullOK(m, "shareDisqus")
             googleAnalyticsAccount = nullOK(m, "googleAnalyticsAccount")
             googleOauthBrowser = nullOK(m, "googleOauthBrowser") ?: "firefox"
-            val googleClientName = nullOK(m, "google_id")
+            val googleClientName = nullOK(m, "google_id_file")
             if (googleClientName == null) {
                 googleClient = null;
             } else {
                 googleClient = GoogleClientConfig(googleClientName, configFile.parentFile)
             }
             remote_upload = nullOK(m, "remote_upload")
+            val mailchimpClientName = nullOK(m, "mailchimp_id_file")
+            if (mailchimpClientName == null) {
+                mailchimpClient = null
+            } else {
+                mailchimpClient = MailchimpClientConfig(mailchimpClientName, configFile.parentFile)
+            }
+            mailchimpOauthBrowser = nullOK(m, "mailchimpOauthBrowser") ?: "firefox"
         } catch (e: Exception) {
             println()
             println("Error reading configuration file ${configFile.absolutePath}")

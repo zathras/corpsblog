@@ -93,7 +93,18 @@ class BodyHeader (val config: BlogConfig,
             a(href="${rootPath}", title="link to home of ${config.siteTitle}") {
               img(src="${rootPath}${config.myProfilePhoto}", class_="user-image", alt="My Profile Photo")
               h1(class_="panel-cover__title panel-title") {
-                +config.siteTitle
+                val htmlText = config.siteTitleBodyHTML
+                val imgSrc = config.siteTitleBodyImage
+                if (htmlText == null && imgSrc == null) {
+                  +config.siteTitle
+                } else {
+                  if (htmlText != null) {
+                    +htmlText
+                  }
+                  if (imgSrc != null) {
+                    img(src="${rootPath}$imgSrc", width="90%")
+                  }
+                }
               }
             }
             hr(class_="panel-cover__divider")

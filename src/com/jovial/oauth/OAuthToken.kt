@@ -1,6 +1,7 @@
-package com.jovial.google
+package com.jovial.oauth
 
 import com.jovial.util.notNull
+import com.jovial.util.nullOK
 import java.util.*
 
 /**
@@ -11,7 +12,7 @@ class OAuthToken (jsonValue : Any){
     public var access_token : String
     public var token_type : String
     public var expires : Date
-    public val refresh_token : String
+    public val refresh_token : String?
 
     init {
         val m = jsonValue as HashMap<Any, Any>
@@ -19,14 +20,19 @@ class OAuthToken (jsonValue : Any){
         token_type = notNull(m, "token_type")
         val e = m["expires"]
         if (e == null) {
-            // It's a response from Google
+            // It's a response from the oauth server
             val expires_in = (m["expires_in"] as Number).toLong()
-            expires = Date(System.currentTimeMillis() + 1000 * expires_in)
+            if (expires_in == 0L) {
+                // Mailchimp tokens don't expire, and their expires_in value is set to zero.
+                expires = Date(10000L * 365 * 24 * 60 * 60 * 1000)  // 10,000 years after 1/1/1970
+            } else {
+                expires = Date(System.currentTimeMillis() + 1000 * expires_in)
+            }
         } else {
             // It's being read from our DB
             expires = Date((e as Number).toLong())
         }
-        refresh_token = notNull(m, "refresh_token")
+        refresh_token = nullOK(m, "refresh_token")      // Not used or provided for Mailchimp
     }
 
     fun toJsonValue() : HashMap<Any, Any> {
@@ -34,10 +40,15 @@ class OAuthToken (jsonValue : Any){
         result["access_token"] = access_token
         result["token_type"] = token_type
         result["expires"] = expires.getTime()
-        result["refresh_token"] = refresh_token
+        if (refresh_token != null) {
+            result["refresh_token"] = refresh_token
+        }
         return result
     }
 
+    /**
+     * Refresh this token from a JSON response from the server
+     */
     fun refreshToken(jsonValue : Any) {
         val m = jsonValue as HashMap<Any, Any>
         access_token = notNull(m, "access_token")

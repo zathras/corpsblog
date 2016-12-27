@@ -1,25 +1,28 @@
-package com.jovial.google
+package com.jovial.oauth
 
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostForm
 import com.jovial.util.urlEncode
 import java.io.*
-import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
 import java.util.*
 
 /**
- * Support for OAuth2.0, as used by Google.
+ * Support for OAuth2.0, as used by Google and Mailchimp.
  * cf. https://developers.google.com/youtube/v3/guides/authentication
+ * cf. https://apidocs.mailchimp.com/oauth2/
  *
  * Created by w.foote on 12/8/2016.
  */
-class OAuth (val config : GoogleClientConfig, val dbDir : File, val browser : String) {
-
-    val tokenFile = File(dbDir, "google_oauth.json")
-
+class OAuth (val authURL : String,
+             val clientId : String,
+             val clientSecret : String,
+             val tokenFile : File,
+             val authParams : String = "",
+             val tokenURL : String,
+             val browser : String)
+{
     private var savedToken: OAuthToken? = null
 
     fun getToken() : OAuthToken {
@@ -31,12 +34,11 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File, val browser : St
                 token = OAuthToken(JsonIO.readJSON(input))
                 input.close()
             } else {
-                val url = URL("http://accounts.google.com/o/oauth2/auth"
-                        + "?client_id=" + urlEncode(config.client_id)
-                        + "&redirect_uri=" + urlEncode("http://localhost:7001/google_oauth")
-                        + "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube")
-                        + "&response_type=code"
-                        + "&access_type=offline")
+                val url = URL(authURL
+                                + "?client_id=" + urlEncode(clientId)
+                                + "&redirect_uri=" + urlEncode("http://localhost:7001/corpsblog_oauth")
+                                + authParams
+                                + "&response_type=code")
 
                 val pb = ProcessBuilder(browser, url.toString())
                 try {
@@ -53,16 +55,16 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File, val browser : St
                 val server = SimpleHttp(7001)
                 println("Running server to wait for OAuth redirect from browser...")
                 val query = server.run()
-                if (!query.startsWith("/google_oauth?code=")) {
+                if (!query.startsWith("/corpsblog_oauth?code=")) {
                     throw IOException("Failed to get Google authorization:  $query")
                 }
                 val singleUseCode = query.drop(19)
-                val tokenServer = URL("https://accounts.google.com/o/oauth2/token")
+                val tokenServer = URL(tokenURL)
                 val args = mapOf(
                         "code" to singleUseCode,
-                        "client_id" to config.client_id,
-                        "client_secret" to config.client_secret,
-                        "redirect_uri" to "http://localhost:7001/google_oauth",
+                        "client_id" to clientId,
+                        "client_secret" to clientSecret,
+                        "redirect_uri" to "http://localhost:7001/corpsblog_oauth",
                         "grant_type" to "authorization_code")
                 val jsonToken = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
                 token = OAuthToken(jsonToken)
@@ -71,18 +73,22 @@ class OAuth (val config : GoogleClientConfig, val dbDir : File, val browser : St
             savedToken = token
         }
         if (token.expires.time - 1000 * 60 * 5 < System.currentTimeMillis()) {  // < 5 minutes left
-            println("Old google token, refreshing -- expiry was ${token.expires}")
-            val tokenServer = URL("https://accounts.google.com/o/oauth2/token")
+            val rt = token.refresh_token
+            if (rt == null) {
+                throw IOException("Expired token, refresh_token not given")
+            }
+            println("Old oauth token, refreshing -- expiry was ${token.expires}")
+            val tokenServer = URL(tokenURL)
             val args = mapOf(
-                    "client_id" to config.client_id,
-                    "client_secret" to config.client_secret,
-                    "refresh_token" to token.refresh_token,
+                    "client_id" to clientId,
+                    "client_secret" to clientSecret,
+                    "refresh_token" to rt,
                     "grant_type" to "refresh_token")
             val jsonResult = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
             token.refreshToken(jsonResult)
             tokenChanged = true
         }
-        println("Google token expires ${token.expires}")
+        println("OAuth token expires ${token.expires}")
         if (tokenChanged) {
             val out = BufferedWriter(OutputStreamWriter(FileOutputStream(tokenFile), "UTF-8"))
             JsonIO.writeJSON(out, token.toJsonValue())

@@ -1,6 +1,7 @@
 package com.jovial.google
 
 import com.jovial.google.remote_hack.RemoteUpload
+import com.jovial.oauth.OAuth
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostJSON
 import com.jovial.util.processFileName
@@ -13,6 +14,8 @@ import java.util.*
  *
  * cf. https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol
  * cf. https://developers.google.com/youtube/v3/guides/uploading_a_video
+ *
+ * @param remoteCommand     An optional system command to remotely upload a URL.
  *
  * Created by billf on 12/10/16.
  */

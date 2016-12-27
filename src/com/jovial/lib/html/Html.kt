@@ -310,13 +310,17 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
     fun img(src: String,
             alt: String? = null,
             class_: String? = null,
-            style: String? = null)
+            style: String? = null,
+            width: String? = null,
+            height: String? = null)
     {
         val t = initTag(Img(this), {})
         t.addAttribute("src", src)
         t.addAttribute("alt", alt ?: "*")
         t.addAttribute("class", class_)
         t.addAttribute("style", style)
+        t.addAttribute("height", height)
+        t.addAttribute("width", width)
     }
     fun hr(class_: String?) {
         val t = initTag(Hr(this), {})
