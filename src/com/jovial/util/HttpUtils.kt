@@ -45,7 +45,8 @@ fun httpPostForm(server: URL, args: Map<String, String>,
 
 /** Do an HTTP post of a JSON value, and receive a JSON value in return. */
 fun httpPostJSON(server: URL, content: Any?,
-                 headers: Map<String, String> = mapOf<String, String>()) : PostResult
+                 headers: Map<String, String> = mapOf<String, String>(),
+                 requestMethod: String = "POST") : PostResult
 {
     val sw = StringWriter()
     if (content != null) {
@@ -54,25 +55,28 @@ fun httpPostJSON(server: URL, content: Any?,
     println("@@ post to $server")
     println("@@ posting $sw")
     return httpPost(server, sw.toString().toByteArray(Charsets.UTF_8),
-                    "application/json; charset=UTF-8", headers)
+                    "application/json; charset=UTF-8", headers, requestMethod)
 }
 
 /**
  * Do an HTTP post of a byte array.
- * Returns a n HttpURLConnection with a successfully opened input stream.
+ * Returns an HttpURLConnection with a successfully opened input stream.
  */
 fun httpPost(server: URL,
              contentBytes : ByteArray,
              contentType: String,
-             headers: Map<String, String>) : PostResult
+             headers: Map<String, String>,
+             requestMethod : String = "POST") : PostResult
 {
     val conn = server.openConnection() as HttpURLConnection
     conn.setDoOutput(true);
-    conn.setRequestMethod("POST");
+    conn.setRequestMethod(requestMethod);
+    println("  @@ requestMethod is $requestMethod")
     conn.setRequestProperty("Content-Type", contentType)
     conn.setRequestProperty("Content-Length", contentBytes.size.toString())
     for ((key, value) in headers) {
         conn.setRequestProperty(key, value)
+        println("  @@ $key: $value")
     }
     // Content-Length is size in octets sent to the recipient.
     // cf. http://stackoverflow.com/questions/2773396/whats-the-content-length-field-in-http-header

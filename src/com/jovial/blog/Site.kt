@@ -84,6 +84,8 @@ class Site (
             mailchimpManager = Mailchimp(oa, dbDir, mailchimpClientConfig)
             mailchimpManager.test()
         }
+
+        // @@ Facebook:  https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow
     }
 
     /**
