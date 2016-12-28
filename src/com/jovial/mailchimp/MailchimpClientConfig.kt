@@ -18,6 +18,7 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
     val client_id : String
     val auth_uri : String = "https://login.mailchimp.com/oauth2/authorize"
     val token_uri : String = "https://login.mailchimp.com/oauth2/token"
+    val metadata_uri : String = "https://login.mailchimp.com/oauth2/metadata"
     val client_secret : String
     val list_id : String
     val signup_url : String

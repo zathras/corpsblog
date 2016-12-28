@@ -17,7 +17,7 @@ class OAuthToken (jsonValue : Any){
     init {
         val m = jsonValue as HashMap<Any, Any>
         access_token = notNull(m, "access_token")
-        token_type = notNull(m, "token_type")
+        token_type = nullOK(m, "token_type") ?: "OAuth"     // Mailchimp doesn't give token_type
         val e = m["expires"]
         if (e == null) {
             // It's a response from the oauth server

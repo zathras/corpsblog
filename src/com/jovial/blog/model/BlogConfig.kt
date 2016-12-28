@@ -5,6 +5,7 @@ import com.jovial.mailchimp.MailchimpClientConfig
 import com.jovial.util.JsonIO
 import com.jovial.util.notNull
 import com.jovial.util.nullOK
+import com.jovial.util.processFileName
 import java.io.*
 import java.util.*
 
@@ -78,7 +79,7 @@ class BlogConfig(configFile: File) {
             } else {
                 mailchimpClient = MailchimpClientConfig(mailchimpClientName, configFile.parentFile)
             }
-            mailchimpOauthBrowser = nullOK(m, "mailchimpOauthBrowser") ?: "firefox"
+            mailchimpOauthBrowser = nullOK(m, "mailchimp_oauth_browser") ?: "firefox"
         } catch (e: Exception) {
             println()
             println("Error reading configuration file ${configFile.absolutePath}")

@@ -21,7 +21,8 @@ class OAuth (val authURL : String,
              val tokenFile : File,
              val authParams : String = "",
              val tokenURL : String,
-             val browser : String)
+             val browser : String,
+             val localhostName : String)
 {
     private var savedToken: OAuthToken? = null
 
@@ -36,10 +37,11 @@ class OAuth (val authURL : String,
             } else {
                 val url = URL(authURL
                                 + "?client_id=" + urlEncode(clientId)
-                                + "&redirect_uri=" + urlEncode("http://localhost:7001/corpsblog_oauth")
-                                + authParams
-                                + "&response_type=code")
+                                + "&redirect_uri=" + urlEncode("http://$localhostName:7001/corpsblog_oauth")
+                                + "&response_type=code"
+                                + authParams)
 
+                println("@@ Sending browser to $url")
                 val pb = ProcessBuilder(browser, url.toString())
                 try {
                     val p = pb.start()
@@ -55,18 +57,19 @@ class OAuth (val authURL : String,
                 val server = SimpleHttp(7001)
                 println("Running server to wait for OAuth redirect from browser...")
                 val query = server.run()
-                if (!query.startsWith("/corpsblog_oauth?code=")) {
-                    throw IOException("Failed to get Google authorization:  $query")
+                val queryStart = "/corpsblog_oauth?code="
+                if (!query.startsWith(queryStart)) {
+                    throw IOException("Failed to get authorization:  $query")
                 }
-                val singleUseCode = query.drop(19)
+                val singleUseCode = query.drop(queryStart.length)
                 val tokenServer = URL(tokenURL)
                 val args = mapOf(
                         "code" to singleUseCode,
                         "client_id" to clientId,
                         "client_secret" to clientSecret,
-                        "redirect_uri" to "http://localhost:7001/corpsblog_oauth",
+                        "redirect_uri" to "http://$localhostName:7001/corpsblog_oauth",
                         "grant_type" to "authorization_code")
-                val jsonToken = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
+                val jsonToken = httpPostForm(tokenServer, args).readJsonValue() as HashMap<Any, Any>
                 token = OAuthToken(jsonToken)
                 tokenChanged = true
             }
@@ -84,7 +87,7 @@ class OAuth (val authURL : String,
                     "client_secret" to clientSecret,
                     "refresh_token" to rt,
                     "grant_type" to "refresh_token")
-            val jsonResult = httpPostForm(tokenServer, args).jsonValue() as HashMap<Any, Any>
+            val jsonResult = httpPostForm(tokenServer, args).readJsonValue() as HashMap<Any, Any>
             token.refreshToken(jsonResult)
             tokenChanged = true
         }
@@ -96,5 +99,4 @@ class OAuth (val authURL : String,
         }
         return token
     }
-
 }

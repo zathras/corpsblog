@@ -11,7 +11,7 @@ class PostResult (
         val connection : HttpURLConnection
 ) {
 
-    fun jsonValue() : Any {
+    fun readJsonValue() : Any {
         val result = JsonIO.readJSON(input)
         input.close()
         return result
@@ -35,18 +35,22 @@ fun httpPostForm(server: URL, args: Map<String, String>,
         content.append('=')
         content.append(urlEncode(value))
     }
-    val headers = mapOf<String, String>()
+    println("@@ posting to URL $server")
+    println("@@ content:  $content")
+    val headers = mapOf("Accept" to "application/json") // @@@@  Added when hacking mailchimp...
     return httpPost(server, content.toString().toByteArray(Charsets.UTF_8),
                     "application/x-www-form-urlencoded", headers)
     // UTF-8 is fine since urlencoded is all in ASCII7
 }
 
 /** Do an HTTP post of a JSON value, and receive a JSON value in return. */
-fun httpPostJSON(server: URL, content: Any,
+fun httpPostJSON(server: URL, content: Any?,
                  headers: Map<String, String> = mapOf<String, String>()) : PostResult
 {
     val sw = StringWriter()
-    JsonIO.writeJSON(sw, content)
+    if (content != null) {
+        JsonIO.writeJSON(sw, content)
+    }
     println("@@ post to $server")
     println("@@ posting $sw")
     return httpPost(server, sw.toString().toByteArray(Charsets.UTF_8),

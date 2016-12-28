@@ -65,7 +65,8 @@ class Site (
                            tokenFile = File(dbDir, "google_oauth.json"),
                            authParams = authParams,
                            tokenURL = googleClientConfig.token_uri,
-                           browser = blogConfig.googleOauthBrowser)
+                           browser = blogConfig.googleOauthBrowser,
+                           localhostName = "localhost")
             youtubeManager = YouTube(blogConfig.remote_upload, oa, dbDir)
         }
 
@@ -78,11 +79,10 @@ class Site (
                            clientSecret = mailchimpClientConfig.client_secret,
                            tokenFile = File(dbDir, "mailchimp_oauth.json"),
                            tokenURL = mailchimpClientConfig.token_uri,
-                           browser = blogConfig.mailchimpOauthBrowser)
-            mailchimpManager = Mailchimp(oa, dbDir,
-                                         listID = mailchimpClientConfig.list_id,
-                                         facebookPageIDs = mailchimpClientConfig.facebook_page_ids)
-            // @@@@ mailchimpManager.test()
+                           browser = blogConfig.mailchimpOauthBrowser,
+                           localhostName = "127.0.0.1")
+            mailchimpManager = Mailchimp(oa, dbDir, mailchimpClientConfig)
+            mailchimpManager.test()
         }
     }
 
