@@ -5,6 +5,7 @@ import com.jovial.oauth.OAuth
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostJSON
 import com.jovial.util.processFileName
+import com.jovial.util.urlEncode
 import java.io.*
 import java.net.URL
 import java.util.*
@@ -19,8 +20,24 @@ import java.util.*
  *
  * Created by billf on 12/10/16.
  */
-class YouTube(val remoteCommand: String?, val oAuth : OAuth, val dbDir: File) {
+class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteCommand: String?, val browser : String) {
 
+    val oAuth : OAuth
+
+    init {
+        val authParams =
+                "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube") +
+                        "&access_type=offline"
+        oAuth = OAuth(authURL = config.auth_uri,
+                      clientId = config.client_id,
+                      clientSecret = config.client_secret,
+                      tokenFile = File(dbDir, "google_oauth.json"),
+                      authParams = authParams,
+                      tokenURL = config.token_uri,
+                      browser = browser,
+                      localhostName = "localhost")
+
+    }
 
     private val uploadsFile = File(dbDir, "youtube_uploads.json")
     //

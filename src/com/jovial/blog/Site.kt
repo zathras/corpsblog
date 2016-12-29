@@ -56,36 +56,15 @@ class Site (
         if (googleClientConfig == null) {
             youtubeManager = null
         } else {
-            val authParams =
-                  "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube") +
-                  "&access_type=offline"
-            val oa = OAuth(authURL = googleClientConfig.auth_uri,
-                           clientId = googleClientConfig.client_id,
-                           clientSecret = googleClientConfig.client_secret,
-                           tokenFile = File(dbDir, "google_oauth.json"),
-                           authParams = authParams,
-                           tokenURL = googleClientConfig.token_uri,
-                           browser = blogConfig.googleOauthBrowser,
-                           localhostName = "localhost")
-            youtubeManager = YouTube(blogConfig.remote_upload, oa, dbDir)
+            youtubeManager = YouTube(dbDir, googleClientConfig, blogConfig.remote_upload, blogConfig.googleOauthBrowser)
         }
 
         val mailchimpClientConfig = blogConfig.mailchimpClient
         if (mailchimpClientConfig == null) {
             mailchimpManager = null
         } else {
-            val oa = OAuth(authURL = mailchimpClientConfig.auth_uri,
-                           clientId = mailchimpClientConfig.client_id,
-                           clientSecret = mailchimpClientConfig.client_secret,
-                           tokenFile = File(dbDir, "mailchimp_oauth.json"),
-                           tokenURL = mailchimpClientConfig.token_uri,
-                           browser = blogConfig.mailchimpOauthBrowser,
-                           localhostName = "127.0.0.1")
-            mailchimpManager = Mailchimp(oa, dbDir, mailchimpClientConfig)
-            mailchimpManager.test()
+            mailchimpManager = Mailchimp(dbDir, mailchimpClientConfig, blogConfig.mailchimpOauthBrowser)
         }
-
-        // @@ Facebook:  https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow
     }
 
     /**

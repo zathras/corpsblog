@@ -35,9 +35,7 @@ fun httpPostForm(server: URL, args: Map<String, String>,
         content.append('=')
         content.append(urlEncode(value))
     }
-    println("@@ posting to URL $server")
-    println("@@ content:  $content")
-    val headers = mapOf("Accept" to "application/json") // @@@@  Added when hacking mailchimp...
+    val headers = mapOf("Accept" to "application/json") // Added when hacking mailchimp, not sure it's needed...
     return httpPost(server, content.toString().toByteArray(Charsets.UTF_8),
                     "application/x-www-form-urlencoded", headers)
     // UTF-8 is fine since urlencoded is all in ASCII7
@@ -52,8 +50,6 @@ fun httpPostJSON(server: URL, content: Any?,
     if (content != null) {
         JsonIO.writeJSON(sw, content)
     }
-    println("@@ post to $server")
-    println("@@ posting $sw")
     return httpPost(server, sw.toString().toByteArray(Charsets.UTF_8),
                     "application/json; charset=UTF-8", headers, requestMethod)
 }
@@ -71,12 +67,10 @@ fun httpPost(server: URL,
     val conn = server.openConnection() as HttpURLConnection
     conn.setDoOutput(true);
     conn.setRequestMethod(requestMethod);
-    println("  @@ requestMethod is $requestMethod")
     conn.setRequestProperty("Content-Type", contentType)
     conn.setRequestProperty("Content-Length", contentBytes.size.toString())
     for ((key, value) in headers) {
         conn.setRequestProperty(key, value)
-        println("  @@ $key: $value")
     }
     // Content-Length is size in octets sent to the recipient.
     // cf. http://stackoverflow.com/questions/2773396/whats-the-content-length-field-in-http-header
