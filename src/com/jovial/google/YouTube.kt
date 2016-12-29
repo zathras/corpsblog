@@ -1,11 +1,12 @@
 package com.jovial.google
 
 import com.jovial.google.remote_hack.RemoteUpload
-import com.jovial.oauth.OAuth
+import com.jovial.webapi.OAuth
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostJSON
 import com.jovial.util.processFileName
 import com.jovial.util.urlEncode
+import com.jovial.webapi.WebService
 import java.io.*
 import java.net.URL
 import java.util.*
@@ -20,52 +21,46 @@ import java.util.*
  *
  * Created by billf on 12/10/16.
  */
-class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteCommand: String?, val browser : String) {
+class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteCommand: String?, val browser : String)
+    : WebService()
+{
 
     val oAuth : OAuth
 
-    init {
-        val authParams =
-                "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube") +
-                        "&access_type=offline"
-        oAuth = OAuth(authURL = config.auth_uri,
-                      clientId = config.client_id,
-                      clientSecret = config.client_secret,
-                      tokenFile = File(dbDir, "google_oauth.json"),
-                      authParams = authParams,
-                      tokenURL = config.token_uri,
-                      browser = browser,
-                      localhostName = "localhost")
-
-    }
-
-    private val uploadsFile = File(dbDir, "youtube_uploads.json")
+    protected override val dbFile = File(dbDir, "youtube_uploads.json")
     //
     // Map from absolute path of source video file to Youtube URL
     //
     private val videoUploads = mutableMapOf<File, URL>()
 
     init {
-        if (uploadsFile.exists()) {
-            val input = BufferedReader(InputStreamReader(FileInputStream(uploadsFile), "UTF-8"))
-            val m = JsonIO.readJSON(input) as HashMap<Any, Any>
-            for ((k, v) in m) {
+        val authParams =
+                "&scope=" + urlEncode("https://www.googleapis.com/auth/youtube") +
+                        "&access_type=offline"
+        oAuth = OAuth(authURL = config.auth_uri,
+                clientId = config.client_id,
+                clientSecret = config.client_secret,
+                tokenFile = File(dbDir, "google_oauth.json"),
+                authParams = authParams,
+                tokenURL = config.token_uri,
+                browser = browser,
+                localhostName = "localhost")
+
+        val m = readDbFile()
+        if (m != null) {
+            for ((k, v) in (m as Map<Any, Any>)) {
                 videoUploads[File(k as String)] = URL(v as String)
             }
-            input.close()
-        } else {
-            writeUploadsFile()      // To make sure we can
         }
+        writeUploadsFile()      // To make sure we can
     }
 
     private fun writeUploadsFile() {
-        val json = HashMap<Any, Any>()
+        val json = mutableMapOf<Any, Any>()
         for ((k, v) in videoUploads) {
             json[k.absolutePath] = v.toString()
         }
-        val output = BufferedWriter(OutputStreamWriter(FileOutputStream(uploadsFile), "UTF8"))
-        JsonIO.writeJSON(output, json)
-        output.close()
+        writeDbFile(json)
     }
 
     /**
@@ -113,8 +108,6 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
         val reply = httpPostJSON(server, videoResource, headers)
         while (reply.input.read() != -1) { }
         val uploadURL = URL(reply.connection.getHeaderField("Location"))
-        // @@ val uploadURL = URL("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails&upload_id=AEnB2Uq5Pq6uCU9fRT44OqIHqEuitnWvvOqAuuGTmL9V6VwM9Ysit-LRs3NnYHahnpUDQyBObrh2PW-XUGehGrS9BgiP8IWnJE7VTtuadXETdqpwGebyNXU")
-        println("@@ uploading to $uploadURL")
         val u = ResumableUpload(
                 authorization=authorization,
                 src=videoFile.toURI().toURL(),

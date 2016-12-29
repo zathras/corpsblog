@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 
 val MMMMyyyyFormat = SimpleDateFormat("MMMM yyyy")
 val ddFormat = SimpleDateFormat("dd")
+val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
 private val homeDir = System.getenv("HOME") ?: "/."
 // Null home?  I read about this on alt.windows.die.die.die somewhere

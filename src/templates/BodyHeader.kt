@@ -90,7 +90,7 @@ class BodyHeader (val config: BlogConfig,
       div(class_="panel-main") {
         div(class_="panel-main__inner panel-inverted") {
           div(class_="panel-main__content") {
-            a(href="${rootPath}", title="link to home of ${config.siteTitle}") {
+            a(href="${rootPath}index.html", title="link to home of ${config.siteTitle}") {
               img(src="${rootPath}${config.myProfilePhoto}", class_="user-image", alt="My Profile Photo")
               h1(class_="panel-cover__title panel-title") {
                 val htmlText = config.siteTitleBodyHTML
@@ -117,7 +117,7 @@ class BodyHeader (val config: BlogConfig,
                 ul(class_="navigation") {
                   li(class_="navigation__item") {
                     a(href="${rootPath}index.html", title="link to ${config.siteBaseURL} blog", class_="blog-button") {
-                      +"About"
+                      +"Main"
                     }
                   }
                   li(class_="navigation__item") {
@@ -190,22 +190,22 @@ class BodyHeader (val config: BlogConfig,
                     }
                   }
 
-                  // contact page
-                  li(class_="navigation__item") {
-                    a(href="${rootPath}contact.html", title="Contact", style="border: 0px") {
-                      img(src="${rootPath}images/xbiff.png", class_="icon-image")
-                      span(class_="label") {
-                        +"Contact"
-                      }
-                    }
-                  }
-
                   // RSS
                   li(class_="navigation__item") {
                     a(href=config.feedURL, title="Subscribe", target="_blank") {
                       i(class_="icon icon-rss") { }
                       span(class_="label") {
                         +"RSS"
+                      }
+                    }
+                  }
+
+                  // contact page
+                  li(class_="navigation__item") {
+                    a(href="${rootPath}contact.html", title="Contact", style="border: 0px") {
+                      img(src="${rootPath}images/xbiff.png", class_="icon-image")
+                      span(class_="label") {
+                        +"Contact"
                       }
                     }
                   }
@@ -218,6 +218,16 @@ class BodyHeader (val config: BlogConfig,
                         span(class_="label") {
                           +"E-mail"
                         }
+                      }
+                    }
+                  }
+
+                  // Mailchimp
+                  if (config.mailchimpClient != null) {
+                    li(class_="navigation__item") {
+                      val url = config.mailchimpClient.signup_url
+                      a(href=url, title="Subscribe", target="_blank", class_="blog-button") {
+                        +"Subscribe"
                       }
                     }
                   }

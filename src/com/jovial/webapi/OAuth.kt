@@ -1,4 +1,4 @@
-package com.jovial.oauth
+package com.jovial.webapi
 
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
@@ -91,7 +91,6 @@ class OAuth (val authURL : String,
             token.refreshToken(jsonResult)
             tokenChanged = true
         }
-        println("OAuth token expires ${token.expires}")
         if (tokenChanged) {
             val out = BufferedWriter(OutputStreamWriter(FileOutputStream(tokenFile), "UTF-8"))
             JsonIO.writeJSON(out, token.toJsonValue())

@@ -4,7 +4,7 @@ import com.jovial.blog.md.extensions.GalleryExtension
 import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
-import com.jovial.oauth.OAuth
+import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
 import com.jovial.google.remote_hack.UploadFromRemote
 import com.jovial.util.processFileName

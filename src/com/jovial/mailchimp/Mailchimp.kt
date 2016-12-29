@@ -1,8 +1,12 @@
 package com.jovial.mailchimp
 
-import com.jovial.oauth.OAuth
+import com.jovial.blog.Site
+import com.jovial.webapi.OAuth
 import com.jovial.util.JsonIO
+import com.jovial.util.ddMMMMyyyyDateFormat
 import com.jovial.util.httpPostJSON
+import com.jovial.webapi.WebService
+import templates.Post
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -14,9 +18,16 @@ import java.net.URL
  *
  * Created by billf on 12/23/16.
  */
-class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser : String) {
+class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser : String)
+    : WebService()
+{
 
     val oAuth : OAuth
+
+    protected override val dbFile = File(dbDir, "mailchimp.json")
+
+    val postsMailed = mutableSetOf<String>()
+    // Contains the absolute path of the generated posts
 
     init {
         oAuth = OAuth(authURL = config.auth_uri,
@@ -27,26 +38,89 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
                       browser = browser,
                       localhostName = "127.0.0.1")
 
+        val m = readDbFile()
+        if (m != null) {
+            for (p in (m as List<Any>)) {
+                postsMailed += p as String
+            }
+        }
+        writeMailedFile()      // To make sure we can
     }
 
-    fun test() {
+    private fun writeMailedFile() {
+        val json = postsMailed.toList()
+        writeDbFile(json)
+    }
+
+    /**
+     *  Generate notifications for site.  If site.publish is false and notifications are pending,
+     *  note this (via site.note())
+     */
+    fun generateNotifications(site : Site) {
+        val pending = mutableListOf<Post>()
+        for (p in site.posts) {
+            if (!postsMailed.contains(p.outputFile.absolutePath)) {
+                pending.add(p)
+                // site.posts is already sorted by date, so we shouldn't re-sort
+            }
+        }
+        if (pending.isEmpty()) {
+            return
+        }
+        if (!site.readyToSendToMailList()) {
+            for (p in pending) {
+                site.note("Pending mail list notification for ${p.outputFile.path}")
+            }
+            return
+        }
+        println("Sending mail list notification for ${pending.size} post(s).")
+
+        val subject = if (pending.size > 1) {
+            "${pending.size} new posts on ${site.blogConfig.siteTitle}"
+        } else {
+            "New post on ${site.blogConfig.siteTitle}"
+        }
+        val fromName = site.blogConfig.siteTitle
+        val html = StringBuilder()
+        // I don't generate plaintext, because Mailchip probably does a better job of
+        // making reasonable line breaks for Post.synopsis than I would.
+        val baseURL = site.blogConfig.siteBaseURL + "/"
+        for (p in pending) {
+            html.append("<h2>${p.title}</h2>\n")
+            html.append("<p><i>${ddMMMMyyyyDateFormat.format(p.date)}</i></p>\n")
+            html.append("<p>${p.synopsis}</p>\n")
+            val url = baseURL + "posts/" + p.outputFile.name
+            html.append("""<p>Read post:  <a href="$url">$url</a>${'\n'}""")
+        }
+        html.append("<p>&nbsp;</p>\n")
+        html.append("<p>&nbsp;</p>\n")
+        val imageURL = baseURL + config.maillist_blog_image
+        html.append("""<p><a href="$baseURL"><img src="$imageURL"></a></p>${'\n'}""")
+
+        sendMessage(subject, fromName, html.toString())
+
+        for (p in pending) {
+            postsMailed += p.outputFile.absolutePath
+        }
+        writeMailedFile()
+    }
+
+    private fun sendMessage(subjectLine: String, fromName: String, bodyHtml: String) {
         val token = oAuth.getToken()
 
         var url = URL(config.metadata_uri)
         val headers = mapOf("Authorization" to "${token.token_type} ${token.access_token}",
                             "content-type" to "application/json")
-        println(headers)
         val metadataResponse = httpPostJSON(url, null, headers).readJsonValue()
         val apiEndpoint = (metadataResponse as Map<Any, Any>)["api_endpoint"] as String
+        println("Got Mailchimp API endpoint:  $apiEndpoint")
 
         // Create a "campaign," that is, a mass e-mail
         // http://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/#create-post_campaigns
-        val subjectLine = "Test Using Mailchimp API"
         val newCampaignSettings = mutableMapOf<String, Any> (
                 "subject_line" to subjectLine,
-                // "from_name" to "The Adventures of Burkinabè Bill",
-                "from_name" to "Test Program",
-                "reply_to" to "billf@jovial.com",
+                "from_name" to fromName,
+                "reply_to" to config.reply_to,
                 "type" to "regular"
         )
         if (config.facebook_page_ids.size > 0) {
@@ -57,9 +131,9 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             newCampaignSettings["auto_fb_post"] = config.facebook_page_ids
             newCampaignSettings["fb_comments"] = true
             newCampaignSettings["social_card"] = mapOf(
-                    "image_url" to "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Harry_Whittier_Frees_-_What%27s_Delaying_My_Dinner.jpg/170px-Harry_Whittier_Frees_-_What%27s_Delaying_My_Dinner.jpg",
-                    "description" to "This is the description field of the social_card",
-                    "title" to "This is the title field of the social_card"
+                    "image_url" to config.social_card_image_url,
+                    "description" to subjectLine,
+                    "title" to fromName
             )
         }
         val newCampaignPostData = mutableMapOf<String, Any> (
@@ -72,15 +146,15 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         url = URL(apiEndpoint + "/3.0/campaigns")
         val newCampaignResponse = httpPostJSON(url, newCampaignPostData, headers).readJsonValue()
         val campaignId = (newCampaignResponse as Map<Any, Any>)["id"] as String
+        println("Created campaign $campaignId.")
 
-        var postData = mapOf("html" to """
-<p>This is a <b>test</b> message sent via MailChimp.</p>
-<p>With luck, it will post to facebook.  Here's a random link:
-<a href="https://en.wikipedia.org/wiki/Lolcat">Nostalgia</a>.  OK, that's enough of a test, I
-guess...  Now using hex page IDs!
-""")
+        val postData = mapOf("html" to bodyHtml)
         url = URL(apiEndpoint + "/3.0/campaigns/$campaignId/content")
-        val contentResponse = httpPostJSON(url, postData, headers, requestMethod = "PUT").readJsonValue()
+        val bodyResponse = httpPostJSON(url, postData, headers, requestMethod = "PUT").readJsonValue() as Map<Any, Any>
+        if (bodyResponse["html"] == null || bodyResponse["plain_text"] == null) {
+            throw IOException("Unexpected body response:  $bodyResponse")
+        }
+        // We don't use the content response, but it contains fields like "plain_text" and "html".
 
         url = URL(apiEndpoint + "/3.0/campaigns/$campaignId/actions/send")
         val sendResponse = httpPostJSON(url, null, headers)
@@ -90,5 +164,6 @@ guess...  Now using hex page IDs!
             throw IOException("Unexpected response code of $rc instead of 204")
         }
         sendResponse.input.close()
+        println("Sent campaign.")
     }
 }

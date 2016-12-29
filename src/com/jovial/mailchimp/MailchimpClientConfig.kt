@@ -22,6 +22,9 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
     val client_secret : String
     val list_id : String
     val signup_url : String
+    val reply_to : String   // e-mail address
+    val maillist_blog_image : String    // Path relative to the blog's root URL
+    val social_card_image_url : String
     val facebook_page_ids : List<String>
       // http://inlinevision.com/apps/how-to-find-your-facebook-page-id/ explains how to find a profile_id/page_id.
       // It appears that a profile_id is a page_id (as of this writing, that's not yet tested).
@@ -35,6 +38,9 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
         client_secret = notNull(m, "client_secret")
         list_id = notNull(m, "list_id")
         signup_url = notNull(m, "signup_url")
+        reply_to = notNull(m, "reply_to")
+        maillist_blog_image = notNull(m, "maillist_blog_image")
+        social_card_image_url = notNull(m, "social_card_image_url")
         val ids = m["facebook_page_ids"]
         if (ids == null) {
             facebook_page_ids = listOf<String>()

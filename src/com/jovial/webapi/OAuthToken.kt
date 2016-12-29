@@ -1,4 +1,4 @@
-package com.jovial.oauth
+package com.jovial.webapi
 
 import com.jovial.util.notNull
 import com.jovial.util.nullOK

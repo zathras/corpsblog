@@ -2,7 +2,7 @@ package com.jovial.blog
 
 import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.model.*
-import com.jovial.oauth.OAuth
+import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
 import com.jovial.lib.html.HTML
 import com.jovial.mailchimp.Mailchimp
@@ -171,13 +171,21 @@ class Site (
         }
         dependencies.write()
 
+        if (publish) {
+            println()
+            println("Site generation complete.  Ready to publish generated site.")
+            println()
+        }
+
+        mailchimpManager?.generateNotifications(this)
+
         checkForStrayOutputFiles(outputDir)
     }
 
     /**
      * Copy the built-in corpsblog assets
      */
-    fun copyCorpsblogAssets() {
+    private fun copyCorpsblogAssets() {
         val input = BufferedReader(InputStreamReader(
                         javaClass.getResourceAsStream("/src/resource_list.txt")!!, "UTF8"))
         val buffer = ByteArray(65536)
@@ -297,6 +305,22 @@ class Site (
         w.write(content)
         w.close();
         println("Wrote to file ${outFile.absolutePath}")
+    }
+
+    fun readyToSendToMailList() : Boolean {
+        if (!publish) {
+            return false;
+        }
+        println()
+        print("Has the blog been published?  Answer \"y\" to send mail list notifications.  ")
+        System.out.flush()
+
+        val answer = readLine()
+        println()
+        if (answer == null || !(answer.toLowerCase().trim().startsWith("y"))) {
+            return false
+        }
+        return true;
     }
 
     private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {

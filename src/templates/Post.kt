@@ -4,6 +4,7 @@ import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
 import com.jovial.lib.html.HTML
 import com.jovial.lib.html.html
+import com.jovial.util.ddMMMMyyyyDateFormat
 import java.io.File
 import java.text.SimpleDateFormat
 
@@ -11,7 +12,6 @@ import java.text.SimpleDateFormat
  * Created by w.foote on 11/3/2016.
  */
 
-private val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
 class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: String, val outputFile: File) {
 
