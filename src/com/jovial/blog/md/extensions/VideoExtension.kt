@@ -60,7 +60,11 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
             """width="100%""""
         } else {
             out.append("<center>")
-            """height="480""""   // @@ Do better than this!
+            if (height > 480) {
+                """height="480""""
+            } else {
+                """height="$height""""
+            }
         }
         out.append("""
 <video $dim controls>

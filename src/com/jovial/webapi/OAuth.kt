@@ -41,7 +41,7 @@ class OAuth (val authURL : String,
                                 + "&response_type=code"
                                 + authParams)
 
-                println("@@ Sending browser to $url")
+                println("OAuth Sending browser to $url")
                 val pb = ProcessBuilder(browser, url.toString())
                 try {
                     val p = pb.start()
