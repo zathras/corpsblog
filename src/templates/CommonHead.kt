@@ -23,7 +23,7 @@ class CommonHead(val config: BlogConfig,
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     meta(name="description", content=config.siteDescription)
     meta(name="author",  content=config.siteAuthor)
-    link(href=config.feedURL, rel="alternate", type="application/rss+xml", title="RSS Feed")
+    link(href=config.siteBaseURL+"/feed.xml", rel="alternate", type="application/rss+xml", title="RSS Feed")
     meta(name="keywords", content="")
     meta(name="generator", content="CorpsBlog")
     link(rel="stylesheet", href="${rootPath}css/main.css")

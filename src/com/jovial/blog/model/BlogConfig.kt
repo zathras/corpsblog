@@ -16,7 +16,6 @@ import java.util.*
 class BlogConfig(configFile: File) {
 
     public val siteBaseURL : String
-    public val feedURL : String
     public val siteDescription : String
     public val siteAuthor : String
     public val siteTitle: String
@@ -86,6 +85,5 @@ class BlogConfig(configFile: File) {
             println()
             throw e
         }
-        feedURL = siteBaseURL + "/feed.xml"
     }
 }

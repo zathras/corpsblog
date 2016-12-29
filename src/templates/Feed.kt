@@ -24,7 +24,7 @@ class Feed(val config: BlogConfig,
   <channel>
     <title>${config.siteTitle}</title>
     <link>${config.siteBaseURL}</link>
-    <atom:link href="${config.siteBaseURL}/${config.feedURL}" rel="self" type="application/rss+xml" />
+    <atom:link href="${config.siteBaseURL}/feed.xml" rel="self" type="application/rss+xml" />
     <description>${config.siteDescription}</description>
     <language>en-us</language>
     <pubDate>${dateFormat.format(Date())}</pubDate>
