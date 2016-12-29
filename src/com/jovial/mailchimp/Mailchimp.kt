@@ -82,8 +82,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         }
         val fromName = site.blogConfig.siteTitle
         val html = StringBuilder()
-        // I don't generate plaintext, because Mailchip probably does a better job of
-        // making reasonable line breaks for Post.synopsis than I would.
+        // I don't generate plaintext, because Mailchip does a fine job of it.
         val baseURL = site.blogConfig.siteBaseURL + "/"
         for (p in pending) {
             html.append("<h2>${p.title}</h2>\n")
