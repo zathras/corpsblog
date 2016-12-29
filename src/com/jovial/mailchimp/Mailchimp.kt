@@ -163,6 +163,6 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             throw IOException("Unexpected response code of $rc instead of 204")
         }
         sendResponse.input.close()
-        println("Sent campaign.")
+        println("Sent notification to mail list subscribers.")
     }
 }
