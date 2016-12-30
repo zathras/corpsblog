@@ -20,6 +20,7 @@ import java.util.*
  */
 
 private fun usage() {
+    println()
     println("Usage:  corpsblog (publish | offline | fb | remote_hack)")
     println()
     println("    publish")
