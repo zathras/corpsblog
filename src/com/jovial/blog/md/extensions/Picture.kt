@@ -174,7 +174,7 @@ class Picture (
                 scaled.flush()
             }
         }
-        return baseDir.name + "/" + relName
+        return "pictures/" + baseDir.name + "/" + relName
     }
 
     private fun generateSquare(site: Site, baseDir: File, relName: String, maxSize: Int): String {
@@ -204,6 +204,6 @@ class Picture (
             ImageIO.write(square, "jpeg", dest)
             square .flush()
         }
-        return baseDir.name + "/" + relName
+        return "pictures/" + baseDir.name + "/" + relName
     }
 }

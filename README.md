@@ -64,14 +64,15 @@ The output looks like this:
 * index.html
 * posts
   * 2017-06-15-first-optional-name.html
-  * 2017-06-15-first-optional-name-gallery
-    * Pictures, in directories "large," "small" and "mosaic"
   * 2017-06-15-second-optional-name-2.html
-  * 2017-06-15-second optional-name-2-gallery
-    * Pictures
   * 2017-07-12.html
-  * 2017-07-12-gallery
-    * Pictures
+  * pictures
+    * 2017-06-15-first-optional-name-1
+      * Pictures, in directories "large," "small" and "mosaic"
+    * 2017-06-15-second optional-name-2
+      * Pictures
+    * 2017-07-12-1
+      * Pictures
   * videos
      * 2017-07-12-video-0.mp4
 
