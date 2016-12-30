@@ -37,8 +37,7 @@ Targets:
 	srcdir="src"
 	bootclasspath="${jdk.home}/jre/lib/rt.jar"
 	target="1.7"
-	source="1.7"
-    >
+	source="1.7">
         <withKotlin/>
     </javac>
     <jar destfile="${out.dir}/${out.jar}"
@@ -49,6 +48,23 @@ Targets:
     <exec executable="${user.home}/lib/corpsblog_remote_upload.scp">
       <arg value="out/corpsblog.jar"/>
     </exec>
+  </target>
+
+  <target name="build">
+    <mkdir dir="${out.dir}"/>
+    <delete dir="${out.dir}/classes" failonerror="false"/>
+    <mkdir dir="${out.dir}/classes"/>
+    <javac destdir="${out.dir}/classes" 
+    	includeAntRuntime="false" 
+	srcdir="src"
+	bootclasspath="${jdk.home}/jre/lib/rt.jar">
+        <withKotlin/>
+    </javac>
+    <jar destfile="${out.dir}/${out.jar}"
+         manifest="src/META-INF/MANIFEST.MF">
+        <fileset dir="${out.dir}/classes"/>
+	<zipfileset src="${kotlin.dir}/lib/kotlin-runtime.jar"/>
+    </jar>
   </target>
 
   <target name="check-jar">
