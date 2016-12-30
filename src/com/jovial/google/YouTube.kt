@@ -117,6 +117,10 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
         val youtubeURL = if (remoteCommand == null) {
             u.upload()
         } else {
+            // @@ Need to git push the video file, and give the appropriate URL
+            // @@ That can be done in corpsblog_remote_upload
+            // @@
+            // @@  Easier if we put all videos in one directory...  Then "git add ." will suffice
             RemoteUpload(processFileName(remoteCommand), u).upload()
         }
         videoUploads[videoFile.absoluteFile] = youtubeURL
