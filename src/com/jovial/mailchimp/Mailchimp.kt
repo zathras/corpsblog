@@ -53,6 +53,17 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
     }
 
     /**
+     *  Check notifications for site, and tell the user (via site.note())
+     */
+    fun checkNotifications(site : Site) {
+        for (p in site.posts) {
+            if (!postsMailed.contains(p.outputFile.absolutePath)) {
+                site.note("Pending mail list notification for ${p.outputFile.path}")
+            }
+        }
+    }
+
+    /**
      *  Generate notifications for site.  If site.publish is false and notifications are pending,
      *  note this (via site.note())
      */
@@ -65,12 +76,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             }
         }
         if (pending.isEmpty()) {
-            return
-        }
-        if (!site.readyToSendToMailList()) {
-            for (p in pending) {
-                site.note("Pending mail list notification for ${p.outputFile.path}")
-            }
+            println("No mail list notification is pending.")
             return
         }
         println("Sending mail list notification for ${pending.size} post(s).")

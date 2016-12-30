@@ -6,6 +6,9 @@ import java.util.*
 /**
  * Created by w.foote on 11/3/2016.
  *
+ * This set of definitions creates a grammar for "groovy-like builders" for HTML.
+ * Basically, you write Kotlin code that evaluates to a string containing HTML.
+ *
  * Initial version copied from com.example.html at
  * http://kotlinlang.org/docs/reference/type-safe-builders.html
  */

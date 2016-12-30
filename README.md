@@ -1,11 +1,11 @@
 # CorpsBlog static site generator
 -------
 
-# This is not working software!
+# This is not tested software!
 ![Danger Image](docs/images/danger.jpg "Danger!")
 
-As of this writing, this is not functional software.  I'm just working
-on it.
+As of this writing, this is software hasn't been thoroughly tested.  It seems
+to work OK, but I haven't put it in production yet.
 
 # Corpsblog
 CorpsBlog is yet another static site builder.  I took a look around at
@@ -59,7 +59,7 @@ involving [Mooré](https://en.wikipedia.org/wiki/Mossi_language) :-)
 
 #Output Directory Structure
 
-The output will look something like this:
+The output looks like this:
 
 * index.html
 * posts

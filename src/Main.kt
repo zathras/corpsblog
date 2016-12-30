@@ -28,8 +28,8 @@ private fun usage() {
     println("    offline")
     println("        Trial run; don't upload anything (e.g. no YouTube uploads)")
     println()
-    println("    fb")
-    println("        Post to Facebook about recent activity (do this after git push)")
+    println("    mail")
+    println("        Post to mail list about recent activity (do this after git push)")
     println()
     println("    remote_hack (advanced)")
     println("        The remote shell side of a remote YouTube upload.")
@@ -46,11 +46,13 @@ fun main(args : Array<String>) {
         "remote_hack" -> UploadFromRemote(args.drop(1)).run()
         "publish" -> generateSite(true, args.drop(1))
         "offline" -> generateSite(false, args.drop(1))
-        "fb" -> postToFacebook(args.drop(1))
+        "mail" -> postToMaillist(args.drop(1))
+        else -> usage()
     }
+    System.exit(0)
 }
 
-private fun generateSite(publish: Boolean, args: List<String>) {
+private fun generateSite(publish: Boolean, args: List<String>) : Site {
     val inputDir=File("test")
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
     val site = Site(
@@ -78,9 +80,16 @@ private fun generateSite(publish: Boolean, args: List<String>) {
         site.printErrors()
         System.exit(1)
     }
-    System.exit(0)
+    return site
 }
 
-private fun postToFacebook(args: List<String>) {
-    throw RuntimeException("@@ not implemented")
+private fun postToMaillist(args: List<String>) {
+    val site = generateSite(publish=false, args=args)
+    val mgr = site.mailchimpManager
+    if (mgr == null) {
+        println("Mailchimp not configured, so I can't post to a maillist.")
+        System.exit(0)
+    } else {
+        mgr.generateNotifications(site)
+    }
 }

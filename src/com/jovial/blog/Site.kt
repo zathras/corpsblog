@@ -171,13 +171,7 @@ class Site (
         }
         dependencies.write()
 
-        if (publish) {
-            println()
-            println("Site generation complete.  Ready to publish generated site.")
-            println()
-        }
-
-        mailchimpManager?.generateNotifications(this)
+        mailchimpManager?.checkNotifications(this)
 
         checkForStrayOutputFiles(outputDir)
     }
@@ -305,22 +299,6 @@ class Site (
         w.write(content)
         w.close();
         println("Wrote to file ${outFile.absolutePath}")
-    }
-
-    fun readyToSendToMailList() : Boolean {
-        if (!publish) {
-            return false;
-        }
-        println()
-        print("Has the blog been published?  Answer \"y\" to send mail list notifications.  ")
-        System.out.flush()
-
-        val answer = readLine()
-        println()
-        if (answer == null || !(answer.toLowerCase().trim().startsWith("y"))) {
-            return false
-        }
-        return true;
     }
 
     private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {
