@@ -69,7 +69,10 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
      */
     fun getVideoURL(asset: File) : URL?  = videoUploads[asset.absoluteFile]
 
-    fun uploadVideo(videoFile : File, description: String) : URL {
+    /**
+     * Upload the given video to Yutube.  Record the YT URL in the database, and return it.
+     */
+    fun uploadVideo(videoFile : File, videoDestURL : URL, description: String) : URL {
         val token = oAuth.getToken()
 
         val snippet = HashMap<String, Any>()
@@ -102,25 +105,29 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
                 "X-Upload-Content-Length" to videoFile.length().toString(),
                 "X-Upload-Content-Type" to "video/*"
         )
+
         val server = URL("https://www.googleapis.com/upload/youtube/v3/videos"
                          + "?uploadType=resumable"
                          + "&part=snippet,status,contentDetails")
         val reply = httpPostJSON(server, videoResource, headers)
         while (reply.input.read() != -1) { }
         val uploadURL = URL(reply.connection.getHeaderField("Location"))
+        val videoSrc = if (remoteCommand == null) {
+            videoFile.toURI().toURL()
+        } else {
+            println(videoFile);
+            println(videoFile.absolutePath);
+            videoDestURL
+        }
         val u = ResumableUpload(
                 authorization=authorization,
-                src=videoFile.toURI().toURL(),
+                src=videoSrc,
                 size=videoFile.length(),
                 contentType="video/*",
                 dest=uploadURL)
         val youtubeURL = if (remoteCommand == null) {
             u.upload()
         } else {
-            // @@ Need to git push the video file, and give the appropriate URL
-            // @@ That can be done in corpsblog_remote_upload
-            // @@
-            // @@  Easier if we put all videos in one directory...  Then "git add ." will suffice
             RemoteUpload(processFileName(remoteCommand), u).upload()
         }
         videoUploads[videoFile.absoluteFile] = youtubeURL

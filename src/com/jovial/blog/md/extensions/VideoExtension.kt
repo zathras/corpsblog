@@ -36,7 +36,12 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
 	var s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
         val destFileName = context.postBaseName + "-video-" + context.videoURLs.size + extension
-	val destFile = File(context.outputDir, destFileName)
+        val videosDir = File(context.outputDir, "videos")
+        // Putting videos in their own directory makes it easier to push them to the git repository before
+        // doing the youtube upload, e.g. using "git add videos".  This makes it easier to build a workflow
+        // that uses the remote hack of uploading videos to YouTube via an external shell account.
+        videosDir.mkdirs()
+	val destFile = File(videosDir, destFileName)
         context.dependsOn.add(sourceFile)
 
         // Read the caption
@@ -68,13 +73,14 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         }
         out.append("""
 <video $dim controls>
-    <source src="${destFile.name}">
+    <source src="videos/${destFile.name}">
 </video>""")
         if (width > height) {
             out.append("<center>\n")
         }
         out.append("<br>\n")
-        val upload = getYoutubeURL(sourceFile, caption, context)
+        val destURL = URL(site.blogConfig.siteBaseURL + "/posts/videos/" + destFile.name)
+        val upload = getYoutubeURL(sourceFile, destURL, caption, context)
         if (upload == null) {
             context.videoURLs.add("Pending for $sourceFile")
             out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
@@ -98,7 +104,7 @@ ${caption}
         return true
     }
 
-    private fun getYoutubeURL(src : File, caption: String, context : PostContent) : URL? {
+    private fun getYoutubeURL(src : File, destURL : URL, caption: String, context : PostContent) : URL? {
         val yt = site.youtubeManager
         if (yt == null) {
             return null
@@ -117,6 +123,6 @@ ${caption}
         } else {
             "$caption\n\n$seeMe"
         }
-        return yt.uploadVideo(src, description)
+        return yt.uploadVideo(src, destURL, description)
     }
 }
