@@ -30,8 +30,14 @@ specific needs in mind:
    my site generator, without referring to any external documentation
    or depending on anything that I might not have on my local computer.
 
-Kotlin is a pefectly expressive language, so I see no need to invent yet
-more languages on top of it, like a template language.
+Kotlin is a perfectly expressive language, so I saw no need to invent yet
+more languages on top of it, like a template language.  I used the
+"Groovy-like builder" way of making HTML templates.  I'm pretty happy with
+how that worked out.  In retrospect, just building strings directly would 
+have been fine, too, but it was kind of fun understanding the ins-and-outs
+of the builder idiom.  See the HTML class in
+src/com/jovial/lib/html/Html.kt (on Github 
+[here](https://github.com/zathras/corpsblog/blob/master/src/com/jovial/lib/html/Html.kt) - startInitAssert()/endInitAssert() was interesting and subtle).
 
 # Exernal Code
 
