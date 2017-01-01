@@ -1,8 +1,8 @@
-package templates
+package com.jovial.templates
 
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
-import com.jovial.lib.html.BodyTag
+import com.jovial.templates.lib.BodyTag
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,6 +22,6 @@ class Footer (val config: BlogConfig, val rootPath: String) {
     }
     script(type="text/javascript", src="${rootPath}js/jquery-1.11.3.min.js") { }
     script(type="text/javascript", src="${rootPath}js/main.js") { }
-    GoogleAnalytics(config, rootPath).generate(this)
+    GoogleAnalytics(config).generate(this)
   }
 }

@@ -1,9 +1,9 @@
-package templates
+package com.jovial.templates
 
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
-import com.jovial.lib.html.HTML
-import com.jovial.lib.html.html
+import com.jovial.templates.lib.HTML
+import com.jovial.templates.lib.html
 import com.jovial.util.MMMMyyyyFormat
 import com.jovial.util.ddFormat
 

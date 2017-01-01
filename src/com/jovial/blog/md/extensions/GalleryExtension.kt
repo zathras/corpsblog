@@ -6,8 +6,8 @@ import com.github.rjeschke.txtmark.Emitter
 import com.github.rjeschke.txtmark.Line
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
-import com.jovial.lib.html.BodyTag
-import com.jovial.lib.html.bodyFragment
+import com.jovial.templates.lib.BodyTag
+import com.jovial.templates.lib.bodyFragment
 import com.jovial.util.processFileName
 import java.io.File
 import java.util.*

@@ -1,11 +1,11 @@
-package templates
+package com.jovial.templates
 
 import com.jovial.blog.model.BlogConfig
 import com.jovial.blog.model.PostContent
-import com.jovial.lib.html.Body
-import com.jovial.lib.html.BodyTag
-import com.jovial.lib.html.Element
-import com.jovial.lib.html.Tag
+import com.jovial.templates.lib.Body
+import com.jovial.templates.lib.BodyTag
+import com.jovial.templates.lib.Element
+import com.jovial.templates.lib.Tag
 
 /**
  * Disqus integration.  Disqus is a system for allowing comments.

@@ -46,6 +46,7 @@ class BlogConfig(configFile: File) {
     init {
         try {
             val input = BufferedReader(InputStreamReader(FileInputStream(configFile), "UTF-8"))
+            @Suppress("UNCHECKED_CAST")
             val m = JsonIO.readJSON(input) as HashMap<Any, Any>
             input.close()
             siteBaseURL = notNull(m, "siteBaseURL")

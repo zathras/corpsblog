@@ -6,7 +6,7 @@ import com.jovial.util.JsonIO
 import com.jovial.util.ddMMMMyyyyDateFormat
 import com.jovial.util.httpPostJSON
 import com.jovial.webapi.WebService
-import templates.Post
+import com.jovial.templates.Post
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -40,6 +40,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
 
         val m = readDbFile()
         if (m != null) {
+            @Suppress("UNCHECKED_CAST")
             for (p in (m as List<Any>)) {
                 postsMailed += p as String
             }
@@ -117,6 +118,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         val headers = mapOf("Authorization" to "${token.token_type} ${token.access_token}",
                             "content-type" to "application/json")
         val metadataResponse = httpPostJSON(url, null, headers).readJsonValue()
+        @Suppress("UNCHECKED_CAST")
         val apiEndpoint = (metadataResponse as Map<Any, Any>)["api_endpoint"] as String
         println("Got Mailchimp API endpoint:  $apiEndpoint")
 
@@ -150,11 +152,13 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         )
         url = URL(apiEndpoint + "/3.0/campaigns")
         val newCampaignResponse = httpPostJSON(url, newCampaignPostData, headers).readJsonValue()
+        @Suppress("UNCHECKED_CAST")
         val campaignId = (newCampaignResponse as Map<Any, Any>)["id"] as String
         println("Created campaign $campaignId.")
 
         val postData = mapOf("html" to bodyHtml)
         url = URL(apiEndpoint + "/3.0/campaigns/$campaignId/content")
+        @Suppress("UNCHECKED_CAST")
         val bodyResponse = httpPostJSON(url, postData, headers, requestMethod = "PUT").readJsonValue() as Map<Any, Any>
         if (bodyResponse["html"] == null || bodyResponse["plain_text"] == null) {
             throw IOException("Unexpected body response:  $bodyResponse")

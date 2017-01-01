@@ -21,8 +21,10 @@ class GoogleClientConfig(file : String, defaultDir: File?){
 
     init {
         val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, defaultDir)), "UTF-8"))
+        @Suppress("UNCHECKED_CAST")
         val m = JsonIO.readJSON(input) as HashMap<Any, Any>
         input.close()
+        @Suppress("UNCHECKED_CAST")
         val cm = m["installed"]!! as HashMap<Any, Any>
         client_id = notNull(cm, "client_id")
         project_id = notNull(cm, "project_id")

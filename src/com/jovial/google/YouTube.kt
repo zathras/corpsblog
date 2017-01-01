@@ -48,6 +48,7 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
 
         val m = readDbFile()
         if (m != null) {
+            @Suppress("UNCHECKED_CAST")
             for ((k, v) in (m as Map<Any, Any>)) {
                 videoUploads[File(k as String)] = URL(v as String)
             }

@@ -1,4 +1,4 @@
-package templates
+package com.jovial.templates
 
 import com.jovial.blog.Site
 import java.text.SimpleDateFormat

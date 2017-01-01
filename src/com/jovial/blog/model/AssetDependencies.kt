@@ -34,13 +34,15 @@ class AssetDependencies  {
         if (files == null) {
             this.fileTimes = listOf<Pair<File, Long>>()
         } else {
+            @Suppress("UNCHECKED_CAST")
             val fl = files as ArrayList<ArrayList<Any>>
-            this.fileTimes = files.map { Pair(File(it[0] as String), (it[1] as Number).toLong()) }
+            this.fileTimes = fl.map { Pair(File(it[0] as String), (it[1] as Number).toLong()) }
         }
         val values = jsonRecord["values"]
         if (values == null) {
             this.values = listOf<String>()
         } else {
+            @Suppress("UNCHECKED_CAST")
             this.values = values as ArrayList<String>
         }
     }

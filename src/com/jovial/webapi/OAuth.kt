@@ -44,7 +44,7 @@ class OAuth (val authURL : String,
                 println("OAuth Sending browser to $url")
                 val pb = ProcessBuilder(browser, url.toString())
                 try {
-                    val p = pb.start()
+                    pb.start()
                 } catch (ex : IOException) {
                     println("Unable to start $browser")
                     println("Please start manually.")
@@ -69,6 +69,7 @@ class OAuth (val authURL : String,
                         "client_secret" to clientSecret,
                         "redirect_uri" to "http://$localhostName:7001/corpsblog_oauth",
                         "grant_type" to "authorization_code")
+                @Suppress("UNCHECKED_CAST")
                 val jsonToken = httpPostForm(tokenServer, args).readJsonValue() as HashMap<Any, Any>
                 token = OAuthToken(jsonToken)
                 tokenChanged = true
@@ -87,6 +88,7 @@ class OAuth (val authURL : String,
                     "client_secret" to clientSecret,
                     "refresh_token" to rt,
                     "grant_type" to "refresh_token")
+            @Suppress("UNCHECKED_CAST")
             val jsonResult = httpPostForm(tokenServer, args).readJsonValue() as HashMap<Any, Any>
             token.refreshToken(jsonResult)
             tokenChanged = true

@@ -4,11 +4,11 @@ import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.model.*
 import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
-import com.jovial.lib.html.HTML
+import com.jovial.templates.lib.HTML
 import com.jovial.mailchimp.Mailchimp
 import com.jovial.util.processFileName
 import com.jovial.util.urlEncode
-import templates.*
+import com.jovial.templates.*
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption

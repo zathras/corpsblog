@@ -70,8 +70,7 @@ class ResumableUpload (
             conn.setRequestProperty("Content-Range", "bytes ${skip}-${size-1}/$size")
         }
         conn.setRequestProperty("Content-Type", contentType)
-        var outClosed = false
-        var inClosed = true
+        var inOpened = false
         try {
             val out = conn.outputStream
             val buffer = ByteArray(256 * 256)
@@ -82,13 +81,9 @@ class ResumableUpload (
                 }
                 out.write(buffer, 0, len)
             }
-            out.close()
-            srcInput.close()
-            outClosed = true
-            inClosed = false
+            inOpened = true
             val input = getConnectionReader(conn)
             val result = JsonIO.readJSON(input)
-            input.close()
             val youtubeID : String? = if (result is Map<*, *>) {
                 val x = result["id"]
                 if (x is String) {
@@ -99,7 +94,6 @@ class ResumableUpload (
             } else {
                 null
             }
-            inClosed = true
             if (conn.responseCode == 200) {
                 if (youtubeID != null) {
                     return URL("https://www.youtube.com/watch?v=$youtubeID")
@@ -111,11 +105,9 @@ class ResumableUpload (
                 // So, retry
             }
         } finally {
-            if (!outClosed) {
-                conn.outputStream.close()
-                srcInput.close()
-            }
-            if (!inClosed) {
+            conn.outputStream.close()
+            srcInput.close()
+            if (inOpened) {
                 getConnectionReader(conn).close()
             }
         }

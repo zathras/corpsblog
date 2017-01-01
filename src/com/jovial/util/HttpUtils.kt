@@ -23,8 +23,7 @@ class PostResult (
  * Do an HTTP post of a set of A-V pairs, where the value is
  * URLEncoded.  Receive a JSON value in return
  */
-fun httpPostForm(server: URL, args: Map<String, String>,
-                 headers: Map<String, String> = mapOf<String, String>()) : PostResult
+fun httpPostForm(server: URL, args: Map<String, String>) : PostResult
 {
     val content = StringBuffer()
     for ((key, value) in args) {

@@ -15,6 +15,7 @@ class OAuthToken (jsonValue : Any){
     public val refresh_token : String?
 
     init {
+        @Suppress("UNCHECKED_CAST")
         val m = jsonValue as HashMap<Any, Any>
         access_token = notNull(m, "access_token")
         token_type = nullOK(m, "token_type") ?: "OAuth"     // Mailchimp doesn't give token_type
@@ -50,6 +51,7 @@ class OAuthToken (jsonValue : Any){
      * Refresh this token from a JSON response from the server
      */
     fun refreshToken(jsonValue : Any) {
+        @Suppress("UNCHECKED_CAST")
         val m = jsonValue as HashMap<Any, Any>
         access_token = notNull(m, "access_token")
         token_type = notNull(m, "token_type")

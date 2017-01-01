@@ -32,6 +32,7 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
 
     init {
         val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, defaultDir)), "UTF-8"))
+        @Suppress("UNCHECKED_CAST")
         val m = JsonIO.readJSON(input) as HashMap<Any, Any>
         input.close()
         client_id = notNull(m, "client_id")
@@ -45,6 +46,7 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
         if (ids == null) {
             facebook_page_ids = listOf<String>()
         } else {
+            @Suppress("UNCHECKED_CAST")
             facebook_page_ids = ids as List<String>
         }
     }

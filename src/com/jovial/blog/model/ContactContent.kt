@@ -17,9 +17,9 @@ class ContactContent (
 ) : Content(txtmarkConfig)
 {
     protected override fun processHeader(key : String, value : String ) : Boolean {
+        @Suppress("UNUSED_EXPRESSION")
         when (key) {
             else        -> return false
         }
-        return true
     }
 }

@@ -47,11 +47,13 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
         val f = File(inputDir, dependencyFile)
         if (f.exists()) {
             val input = BufferedReader(InputStreamReader(FileInputStream(f), "UTF8"))
+            @Suppress("UNCHECKED_CAST")
             val json = JsonIO.readJSON(input) as HashMap<String, Any>
             input.close()
             if (json["version"] != "1.0") {
                 throw IOException("Version mismatch:  got ${json["version"]}")
             }
+            @Suppress("UNCHECKED_CAST")
             val readAssets = json["generatedAssets"] as List<HashMap<String, Any>>
             for (readAsset in readAssets) {
                 val a = AssetDependencies(readAsset)

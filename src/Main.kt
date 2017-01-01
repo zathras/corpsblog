@@ -8,7 +8,7 @@ import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
 import com.jovial.google.remote_hack.UploadFromRemote
 import com.jovial.util.processFileName
-import templates.Post
+import com.jovial.templates.Post
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
