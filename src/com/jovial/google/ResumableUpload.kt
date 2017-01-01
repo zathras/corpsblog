@@ -51,16 +51,21 @@ class ResumableUpload (
 
     private fun tryUpload(skip : Long) : URL {
         val srcInput = src.openStream()
-        var remain = skip
-        while (remain > 0L) {
-            remain -= srcInput.skip(remain)
-            if (remain > 0L) {
-                val result = srcInput.read()
-                remain--
-                if (result < 0) {
-                    throw NoRetryIOException("Unexpected EOF skipping in $src")
+        try {
+            var remain = skip
+            while (remain > 0L) {
+                remain -= srcInput.skip(remain)
+                if (remain > 0L) {
+                    val result = srcInput.read()
+                    remain--
+                    if (result < 0) {
+                        throw NoRetryIOException("Unexpected EOF skipping in $src")
+                    }
                 }
             }
+        } catch (e : Exception) {
+            srcInput.close()
+            throw e
         }
         val conn = openDest()
         if (skip == 0L) {
@@ -71,6 +76,7 @@ class ResumableUpload (
         }
         conn.setRequestProperty("Content-Type", contentType)
         var inOpened = false
+        var outClosed = false
         try {
             val out = conn.outputStream
             val buffer = ByteArray(256 * 256)
@@ -81,6 +87,8 @@ class ResumableUpload (
                 }
                 out.write(buffer, 0, len)
             }
+            outClosed = true
+            out.close()
             inOpened = true
             val input = getConnectionReader(conn)
             val result = JsonIO.readJSON(input)
@@ -105,7 +113,9 @@ class ResumableUpload (
                 // So, retry
             }
         } finally {
-            conn.outputStream.close()
+            if (!outClosed) {
+                conn.outputStream.close()
+            }
             srcInput.close()
             if (inOpened) {
                 getConnectionReader(conn).close()
