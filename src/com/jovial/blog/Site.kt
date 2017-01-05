@@ -110,6 +110,9 @@ class Site (
     fun generate() {
         dependencies.read()
 
+	// Copy the contents of the images directory to the output.
+	// These are for fixed images that go with the blog.
+	//
         val images = File(inputDir, "images")
         val fOutDir = File(outputDir, "images")
         fOutDir.mkdirs()

@@ -9,11 +9,15 @@ import com.jovial.google.YouTube
 import com.jovial.google.remote_hack.UploadFromRemote
 import com.jovial.util.processFileName
 import com.jovial.templates.Post
+import java.awt.Color
+import java.awt.Font
+import java.awt.image.BufferedImage
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.util.*
+import javax.imageio.ImageIO
 
 /**
  * Created by w.foote on 11/3/2016.
@@ -95,5 +99,19 @@ private fun postToMaillist(args: List<String>) {
         System.exit(0)
     } else {
         mgr.generateNotifications(site)
+    }
+}
+
+fun foo() {
+    val r = Random()
+    for (i in 1..1) {
+        val im = BufferedImage(200 + r.nextInt(2000), 200 + r.nextInt(2000), BufferedImage.TYPE_INT_RGB)
+        val g = im.getGraphics()
+        g.setFont(Font("Courier", Font.BOLD, im.getHeight() / 2))
+        g.setColor(Color(r.nextInt(255), r.nextInt(255), r.nextInt(255)))
+        g.fillRect(0, 0, 4000, 4000)
+        g.setColor(Color(r.nextInt(255), r.nextInt(255), r.nextInt(255)))
+        g.drawString(i.toString() ,im.getWidth() / 2, im.getHeight() * 7 / 8)
+        ImageIO.write(im, "JPEG", File("image_$i.jpg"))
     }
 }
