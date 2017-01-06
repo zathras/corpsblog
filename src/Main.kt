@@ -27,10 +27,10 @@ private fun usage() {
     println()
     println("Usage:  corpsblog (publish | offline | fb | remote_hack)")
     println()
-    println("    publish")
+    println("    publish <srcdir>")
     println("        Ready the target for \"git commit -a\" and \"git push\"")
     println()
-    println("    offline")
+    println("    offline <srcdir>")
     println("        Trial run; don't upload anything (e.g. no YouTube uploads)")
     println()
     println("    mail")
@@ -58,14 +58,15 @@ fun main(args : Array<String>) {
 }
 
 private fun generateSite(publish: Boolean, args: List<String>) : Site {
-    if (args.size != 0) {
+    if (args.size != 2) {
         usage()
     }
-    val inputDir=File("test")
+    val inputDir = File(args[0])
+    val outputDir = File(args[1])
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
     val site = Site(
             inputDir=inputDir,
-            outputDir=File("out/test"),
+            outputDir=outputDir,
             blogConfig=blogConfig,
             publish=publish
     )

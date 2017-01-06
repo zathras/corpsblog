@@ -75,25 +75,29 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
 <video $dim controls>
     <source src="videos/${destFile.name}">
 </video>""")
-        if (width > height) {
-            out.append("<center>\n")
-        }
-        out.append("<br>\n")
-        val destURL = URL(site.blogConfig.siteBaseURL + "/posts/videos/" + destFile.name)
-        val upload = getYoutubeURL(sourceFile, destURL, caption, context)
-        if (upload == null) {
-            context.videoURLs.add("Pending for $sourceFile")
-            out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
-            if (site.publish) {
-                site.error("Video not uploaded to YouTube:  $destFile")
-            } else {
-                site.note("Video not uploaded to YouTube:  $destFile")
+        if (site.blogConfig.googleClient != null) {
+            if (width > height) {
+                out.append("<center>\n")
             }
-        } else {
-            context.videoURLs.add(upload.toString())
-            out.append("""<em><a href="${upload.toString()}">(view on YouTube)</a></em>""")
+            out.append("<br>\n")
+            val destURL = URL(site.blogConfig.siteBaseURL + "/posts/videos/" + destFile.name)
+            val upload = getYoutubeURL(sourceFile, destURL, caption, context)
+            if (upload == null) {
+                context.videoURLs.add("Pending for $sourceFile")
+                out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
+                if (site.publish) {
+                    site.error("Video not uploaded to YouTube:  $destFile")
+                } else {
+                    site.note("Video not uploaded to YouTube:  $destFile")
+                }
+            } else {
+                context.videoURLs.add(upload.toString())
+                out.append("""<em><a href="${upload.toString()}">(view on YouTube)</a></em>""")
+            }
+            if (width > height) {
+                out.append("\n</center>\n")
+            }
         }
-        out.append("\n</center>\n")
 	if (caption.length > 0) {
 	    out.append("""
 <blockquote>
