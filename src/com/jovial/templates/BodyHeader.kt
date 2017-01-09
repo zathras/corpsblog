@@ -157,7 +157,7 @@ class BodyHeader (val config: BlogConfig,
                   // GitHub
                   if (config.shareGitHub != null) {
                     li(class_="navigation__item") {
-                      a(href="http://github.com/${config.shareGitHub}", title="${config.shareGitHub} on GitHub", target="_blank") {
+                      a(href="${config.shareGitHub}", title="${config.shareGitHub} on GitHub", target="_blank") {
                         i(class_="icon icon-social-github") {}
                         span(class_="label") {
                           +"GitHub"
