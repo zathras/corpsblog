@@ -35,7 +35,8 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val sourceFile = processFileName(currLine.value, site.postsSrcDir)
 	var s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
-        val destFileName = context.postBaseName + "-video-" + context.videoURLs.size + extension
+        context.videoCount++
+        val destFileName = context.postBaseName + "-video-" + context.videoCount + extension
         val videosDir = File(context.outputDir, "videos")
         // Putting videos in their own directory makes it easier to push them to the git repository before
         // doing the youtube upload, e.g. using "git add videos".  This makes it easier to build a workflow

@@ -40,6 +40,7 @@ class PostContent (
         get() = galleryCount > 0
 
     val videoURLs = mutableListOf<String>()
+    var videoCount = 0;
 
     override fun read(location: File) {
         date = fileDateFormat.parse(location.name)
