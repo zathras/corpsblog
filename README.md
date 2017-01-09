@@ -42,7 +42,7 @@ src/com/jovial/lib/html/Html.kt (on Github
 # Sample Output
 
 A build of the test blog included in this repository can be seen
-at http://github.io/zathras/corpsblog/
+at http://zathras.github.io/corpsblog/
 
 # Exernal Code
 
