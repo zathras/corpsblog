@@ -1,0 +1,63 @@
+.photogrid-1 {
+   line-height: 0;
+   line-width: 0;
+}
+
+.photogrid-1 img {
+  width: 60% ;
+  height: auto ;
+  float: left ;
+  border-radius: 0;
+  margin-left: 20%;
+}
+
+.photogrid-2 {
+   line-height: 0;
+   line-width: 0;
+}
+
+.photogrid-2 img {
+  width: 35% ;
+  margin-left: 15% ;
+  height: auto ;
+  float: left ;
+  border-radius: 0;
+}
+
+.photogrid-3 {
+   line-height: 0;
+   line-width: 0;
+}
+
+.photogrid-3 img {
+  width: 30% ;
+  margin-left: 5%;
+  height: auto ;
+  float: left ;
+  border-radius: 0;
+}
+
+.photogrid-33 {
+   line-height: 0;
+   line-width: 0;
+}
+
+.photogrid-33 img {
+  width: 25% ;
+  margin-left: 12%;
+  height: auto ;
+  float: left ;
+  border-radius: 0;
+}
+
+.photogrid-4 {
+   line-height: 0;
+   line-width: 0;
+}
+
+.photogrid-4 img {
+  width: 25% ;
+  height: auto ;
+  float: left ;
+  border-radius: 0;
+}

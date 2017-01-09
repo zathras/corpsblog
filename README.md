@@ -2,7 +2,7 @@
 -------
 
 # This is not tested software!
-![Danger Image](docs/images/danger.jpg "Danger!")
+![Danger Image](test/images/danger.jpg "Danger!")
 
 As of this writing, this is software hasn't been thoroughly tested.  It seems
 to work OK, but I haven't put it in production yet.
@@ -38,6 +38,11 @@ have been fine, too, but it was kind of fun understanding the ins-and-outs
 of the builder idiom.  See the HTML class in
 src/com/jovial/lib/html/Html.kt (on Github 
 [here](https://github.com/zathras/corpsblog/blob/master/src/com/jovial/lib/html/Html.kt) - startInitAssert()/endInitAssert() was interesting and subtle).
+
+# Sample Output
+
+A build of the test blog included in this repository can be seen
+at http://github.io/zathras/corpsblog/
 
 # Exernal Code
 

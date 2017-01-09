@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>
+      Test Post With Gallery
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Test Content for Corpsblog"/>
+    <meta name="author" content="Bloggy McBloggerson"/>
+    <link href="https://github.io/zathras/corpsblog//feed.xml" rel="alternate" title="RSS Feed" type="application/rss+xml"/>
+    <meta name="keywords" content=""/>
+    <meta name="generator" content="CorpsBlog"/>
+    <link href="../css/main.css" rel="stylesheet"/>
+    <link href="../css/photogrid.css" rel="stylesheet"/>
+    <link href="../photoswipe/photoswipe.css" rel="stylesheet"/>
+    <link href="../photoswipe/default-skin/default-skin.css" rel="stylesheet"/>
+    <link href="../images/favicons/manifest.json" rel="manifest"/>
+    <link href="../images/favicons/favicon.ico" rel="shortcut icon"/>
+    <script type="text/javascript">
+      var baseUrl = 'https://github.io/zathras/corpsblog/';
+      var baseUrlIndex = 'https://github.io/zathras/corpsblog//index.html'; 
+    </script>
+    <!--[if lt IE 9]>
+    <script src="../js/html5shim.min.js">
+    </script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="pswp__bg">
+      </div>
+      <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+          <div class="pswp__item">
+          </div>
+          <div class="pswp__item">
+          </div>
+          <div class="pswp__item">
+          </div>
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+          <div class="pswp__top-bar">
+            <div class="pswp__counter">
+            </div>
+            <button class="pswp__button pswp__button--close" title="Close (Esc)">
+            </button>
+            <button class="pswp__button pswp__button--share" title="Share">
+            </button>
+            <button class="pswp__button pswp__button--fs" title="Toggle fullscreen">
+            </button>
+            <button class="pswp__button pswp__button--zoom" title="Zoom in/out">
+            </button>
+            <div class="pswp__preloader">
+              <div class="pswp__preloader__icn">
+                <div class="pswp__preloader__cut">
+                  <div class="pswp__preloader__donut">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+            <div class="pswp__share-tooltip">
+            </div>
+          </div>
+          <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+          </button>
+          <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+          </button>
+          <div class="pswp__caption">
+            <div class="pswp__caption__center">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../photoswipe/photoswipe.min.js">
+    </script>
+    <script src="../photoswipe/photoswipe-ui-default.min.js">
+    </script>
+    <script type="text/javascript">
+      var pswpElement = document.querySelectorAll('.pswp')[0];
+      function openPhotoSwipe(index, items) {
+        var options = {
+          index: index-1
+        };
+        var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+        gallery.init();
+      }
+    </script>
+    <span class="mobile btn-mobile-menu">
+      <i class="icon icon-list btn-mobile-menu__icon">
+      </i>
+      <i class="icon icon-x-circle btn-mobile-close__icon hidden">
+      </i>
+    </span>
+    <header class="panel-cover" style="background-image: url(../images/cover.jpg); background-position: center;">
+      <div class="panel-main">
+        <div class="panel-main__inner panel-inverted">
+          <div class="panel-main__content">
+            <a href="../index.html" title="link to home of The Adventures of Bloggy McBloggerson">
+              <img src="../images/profile.jpg" alt="My Profile Photo" class="user-image">
+              <h1 class="panel-cover__title panel-title">
+                <i><em><font size="-1">THE ADVENTURES OF</font></em></i>
+                <img src="../images/bloggy_fancy.png" alt="*" width="90%">
+              </h1>
+            </a>
+            <hr class="panel-cover__divider">
+            <p class="panel-cover__description">
+              Test Content for Corpsblog
+            </p>
+            <hr class="panel-cover__divider panel-cover__divider--secondary">
+            <div class="navigation-wrapper">
+              <nav class="cover-navigation cover-navigation--primary">
+                <ul class="navigation">
+                  <li class="navigation__item">
+                    <a href="../index.html" title="link to https://github.io/zathras/corpsblog/ blog" class="blog-button">
+                      Main
+                    </a>
+                  </li>
+                  <li class="navigation__item">
+                    <a href="../archive.html" title="link to archive" class="blog-button">
+                      Archive
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+              <nav class="cover-navigation navigation--social">
+                <ul class="navigation">
+                  <li class="navigation__item">
+                    <a href="http://github.com/https://github.com/zathras/corpsblog/" title="https://github.com/zathras/corpsblog/ on GitHub" target="_blank">
+                      <i class="icon icon-social-github">
+                      </i>
+                      <span class="label">
+                        GitHub
+                      </span>
+                    </a>
+                  </li>
+                  <li class="navigation__item">
+                    <a href="../feed.xml" title="Subscribe" target="_blank">
+                      <i class="icon icon-rss">
+                      </i>
+                      <span class="label">
+                        RSS
+                      </span>
+                    </a>
+                  </li>
+                  <li class="navigation__item">
+                    <a href="../contact.html" title="Contact" style="border: 0px">
+                      <img src="../images/xbiff.png" alt="*" class="icon-image">
+                      <span class="label">
+                        Contact
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <div class="panel-cover--overlay">
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <div class="content-wrapper__inner">
+        <article class="post-container post-container--single">
+          <header class="post-header">
+            <div class="post-meta">
+              <time datetime="2013-08-25" class="post-meta__date date">
+                25 August 2013
+                &#8226;
+              </time>
+              <span class="post-meta__tags">
+                tags:  
+                <a href="../tags/blog.html">
+                  blog
+                </a>
+                <a href="../tags/champagne.html">
+                  champagne
+                </a>
+              </span>
+            </div>
+            <h1 class="post-title">
+            </h1>
+          </header>
+          <section class="post">
+            <p style="margin-right: 50px; margin-left: 30px">
+              <em>
+                This second post is rather long.  It demonstrates why I really kinda like the idea of putting the archive front-and-center.
+              </em>
+            </p>
+            <h2>Gallery 1</h2>
+<script type="text/javascript">
+  var pswpItems1 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/7.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/7.jpg',
+      w: 1383,
+      h: 1696,
+      title: 'Some more caption text'
+    }
+  ];
+</script>
+<section class="photogrid-1">
+  <a href="javascript:openPhotoSwipe(1, pswpItems1)">
+    <img src="pictures/2013-08-25-lorem-1/large/7.jpg" alt="*">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 2</h2>
+<script type="text/javascript">
+  var pswpItems2 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/4.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/4.jpg',
+      w: 820,
+      h: 557,
+      title: ''
+    }
+  ];
+</script>
+<section class="photogrid-2">
+  <a href="javascript:openPhotoSwipe(1, pswpItems2)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems2)">
+    <img src="pictures/2013-08-25-second-2/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 3</h2>
+<script type="text/javascript">
+  var pswpItems3 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/1.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/1.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/2.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/2.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }
+  ];
+</script>
+<section class="photogrid-3">
+  <a href="javascript:openPhotoSwipe(1, pswpItems3)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems3)">
+    <img src="pictures/2013-08-25-second-3/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(3, pswpItems3)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/2.jpg" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 4</h2>
+<script type="text/javascript">
+  var pswpItems4 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/1.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/1.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/2.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/2.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/3.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/3.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-second-4/large/4.jpg',
+      msrc: 'pictures/2013-08-25-second-4/small/4.jpg',
+      w: 1491,
+      h: 1920,
+      title: '<blank>'
+    }
+  ];
+</script>
+<section class="photogrid-3">
+  <a href="javascript:openPhotoSwipe(1, pswpItems4)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems4)">
+    <img src="pictures/2013-08-25-second-3/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(3, pswpItems4)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/2.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(4, pswpItems4)">
+    <img src="pictures/2013-08-25-second-4/mosaic/3.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(5, pswpItems4)">
+    <img src="pictures/2013-08-25-second-4/mosaic/4.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(1, pswpItems4)">
+    <img src="../images/grey.png" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 5</h2>
+<script type="text/javascript">
+  var pswpItems5 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/1.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/1.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/2.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/2.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/3.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/3.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/4.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/4.jpg',
+      w: 820,
+      h: 557,
+      title: ''
+    }
+  ];
+</script>
+<section class="photogrid-3">
+  <a href="javascript:openPhotoSwipe(1, pswpItems5)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems5)">
+    <img src="pictures/2013-08-25-second-3/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(3, pswpItems5)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/2.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(4, pswpItems5)">
+    <img src="pictures/2013-08-25-second-4/mosaic/3.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(5, pswpItems5)">
+    <img src="pictures/2013-08-25-second-2/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(1, pswpItems5)">
+    <img src="../images/grey.png" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 6</h2>
+<script type="text/javascript">
+  var pswpItems6 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/1.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/1.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/2.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/2.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/3.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/3.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/4.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/4.jpg',
+      w: 820,
+      h: 557,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/5.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/5.jpg',
+      w: 496,
+      h: 842,
+      title: ''
+    }
+  ];
+</script>
+<section class="photogrid-3">
+  <a href="javascript:openPhotoSwipe(1, pswpItems6)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems6)">
+    <img src="pictures/2013-08-25-second-3/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(3, pswpItems6)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/2.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(4, pswpItems6)">
+    <img src="pictures/2013-08-25-second-4/mosaic/3.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(5, pswpItems6)">
+    <img src="pictures/2013-08-25-second-2/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(6, pswpItems6)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/5.jpg" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Gallery 7</h2>
+<script type="text/javascript">
+  var pswpItems7 = [
+    {
+      src: 'pictures/2013-08-25-lorem-1/large/0.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/0.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/1.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/1.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/2.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/2.jpg',
+      w: 1080,
+      h: 1920,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/3.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/3.jpg',
+      w: 1920,
+      h: 1080,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/4.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/4.jpg',
+      w: 820,
+      h: 557,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/5.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/5.jpg',
+      w: 496,
+      h: 842,
+      title: ''
+    }, {
+      src: 'pictures/2013-08-25-lorem-1/large/6.jpg',
+      msrc: 'pictures/2013-08-25-lorem-1/small/6.jpg',
+      w: 1670,
+      h: 1373,
+      title: ''
+    }
+  ];
+</script>
+<section class="photogrid-4">
+  <a href="javascript:openPhotoSwipe(1, pswpItems7)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/0.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(2, pswpItems7)">
+    <img src="pictures/2013-08-25-second-3/mosaic/1.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(3, pswpItems7)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/2.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(4, pswpItems7)">
+    <img src="pictures/2013-08-25-second-4/mosaic/3.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(5, pswpItems7)">
+    <img src="pictures/2013-08-25-second-2/mosaic/1.jpg" alt="*">
+  </a>
+  <a href="javascript:openPhotoSwipe(6, pswpItems7)">
+    <img src="pictures/2013-08-25-lorem-1/mosaic/5.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(7, pswpItems7)">
+    <img src="pictures/2013-08-25-second-7/mosaic/6.jpg" alt="*" style="margin-left: 0">
+  </a>
+  <a href="javascript:openPhotoSwipe(1, pswpItems7)">
+    <img src="../images/grey.png" alt="*" style="margin-left: 0">
+  </a>
+</section>
+<div style="clear: both">
+</div>
+<h2>Not a gallery</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel diam purus. Curabitur ut nisi lacus.</p>
+<ul>
+<li><a href="http://example.org">http://example.org</a></li>
+<li><a href="http://example.org">Example.org</a></li>
+</ul>
+<p>Nam id nisl quam. Donec a lorem sit amet libero pretium vulputate vel ut purus. Suspendisse leo arcu,
+mattis et imperdiet luctus, pulvinar vitae mi. Quisque fermentum sollicitudin feugiat. Mauris nec leo
+ligula. Vestibulum tristique odio ut risus ultricies a hendrerit quam iaculis. Duis tempor elit sit amet
+ligula vehicula et iaculis sem placerat. Fusce dictum, metus at volutpat lacinia, elit massa auctor risus,
+id auctor arcu enim eu augue. Donec ultrices turpis in mi imperdiet ac venenatis sapien sodales. In
+consequat imperdiet nunc quis bibendum. Nulla semper, erat quis ornare tristique, lectus massa posuere
+libero, ut vehicula lectus nunc ut lorem. Aliquam erat volutpat.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel diam purus. Curabitur ut nisi lacus.</p>
+<ul>
+<li><a href="http://example.org">http://example.org</a></li>
+<li><a href="http://example.org">Example.org</a></li>
+</ul>
+<p>Nam id nisl quam. Donec a lorem sit amet libero pretium vulputate vel ut purus. Suspendisse leo arcu,
+mattis et imperdiet luctus, pulvinar vitae mi. Quisque fermentum sollicitudin feugiat. Mauris nec leo
+ligula. Vestibulum tristique odio ut risus ultricies a hendrerit quam iaculis. Duis tempor elit sit amet
+ligula vehicula et iaculis sem placerat. Fusce dictum, metus at volutpat lacinia, elit massa auctor risus,
+id auctor arcu enim eu augue. Donec ultrices turpis in mi imperdiet ac venenatis sapien sodales. In
+consequat imperdiet nunc quis bibendum. Nulla semper, erat quis ornare tristique, lectus massa posuere
+libero, ut vehicula lectus nunc ut lorem. Aliquam erat volutpat.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel diam purus. Curabitur ut nisi lacus.</p>
+<ul>
+<li><a href="http://example.org">http://example.org</a></li>
+<li><a href="http://example.org">Example.org</a></li>
+</ul>
+<p>Nam id nisl quam. Donec a lorem sit amet libero pretium vulputate vel ut purus. Suspendisse leo arcu,
+mattis et imperdiet luctus, pulvinar vitae mi. Quisque fermentum sollicitudin feugiat. Mauris nec leo
+ligula. Vestibulum tristique odio ut risus ultricies a hendrerit quam iaculis. Duis tempor elit sit amet
+ligula vehicula et iaculis sem placerat. Fusce dictum, metus at volutpat lacinia, elit massa auctor risus,
+id auctor arcu enim eu augue. Donec ultrices turpis in mi imperdiet ac venenatis sapien sodales. In
+consequat imperdiet nunc quis bibendum. Nulla semper, erat quis ornare tristique, lectus massa posuere
+libero, ut vehicula lectus nunc ut lorem. Aliquam erat volutpat.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel diam purus. Curabitur ut nisi lacus.</p>
+<ul>
+<li><a href="http://example.org">http://example.org</a></li>
+<li><a href="http://example.org">Example.org</a></li>
+</ul>
+<p>Nam id nisl quam. Donec a lorem sit amet libero pretium vulputate vel ut purus. Suspendisse leo arcu,</p>
+
+          </section>
+          <div style="clear: both">
+          </div>
+          &nbsp;
+          <div style="clear: both">
+          </div>
+          <nav class="arrow-nav">
+            <div class="newer">
+              <a href="2013-08-28-video.html">
+                ← NEWER
+              </a>
+            </div>
+            <div class="older">
+              <a href="2013-08-25-lorem.html">
+                OLDER →
+              </a>
+            </div>
+          </nav>
+        </article>
+      </div>
+      <footer class="footer">
+        <span class="footer__copyright">
+          &copy; 2017 Bloggy McBloggerson. 
+          <a href="../index.html">
+            About this site
+          </a>
+        </span>
+      </footer>
+      <script src="../js/jquery-1.11.3.min.js" type="text/javascript">
+      </script>
+      <script src="../js/main.js" type="text/javascript">
+      </script>
+    </div>
+  </body>
+</html>
