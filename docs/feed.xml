@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>The Adventures of Bloggy McBloggerson</title>
-    <link>https://github.io/zathras/corpsblog/</link>
-    <atom:link href="https://github.io/zathras/corpsblog//feed.xml" rel="self" type="application/rss+xml" />
+    <link>https://zathras.github.io/corpsblog/</link>
+    <atom:link href="https://zathras.github.io/corpsblog//feed.xml" rel="self" type="application/rss+xml" />
     <description>Test Content for Corpsblog</description>
     <language>en-us</language>
-    <pubDate>Mon, 9 Jan 2017 12:29:40 -0800</pubDate>
-    <lastBuildDate>Mon, 9 Jan 2017 12:29:40 -0800</lastBuildDate>
+    <pubDate>Mon, 9 Jan 2017 12:34:26 -0800</pubDate>
+    <lastBuildDate>Mon, 9 Jan 2017 12:34:26 -0800</lastBuildDate>
     <item>
       <title>First - Test Post With Gallery</title>
-      <link>https://github.io/zathras/corpsblog//posts/2013-08-25-lorem.html</link>
+      <link>https://zathras.github.io/corpsblog//posts/2013-08-25-lorem.html</link>
       <pubDate>Sun, 25 Aug 2013 00:00:00 -0700</pubDate>
       <guid isPermaLink="true">posts/2013-08-25-lorem.html</guid>
         <description>
@@ -19,7 +19,7 @@
     </item>
     <item>
       <title>Test Post With Gallery</title>
-      <link>https://github.io/zathras/corpsblog//posts/2013-08-25-second.html</link>
+      <link>https://zathras.github.io/corpsblog//posts/2013-08-25-second.html</link>
       <pubDate>Sun, 25 Aug 2013 00:00:00 -0700</pubDate>
       <guid isPermaLink="true">posts/2013-08-25-second.html</guid>
         <description>
@@ -28,7 +28,7 @@
     </item>
     <item>
       <title>Test of Videos</title>
-      <link>https://github.io/zathras/corpsblog//posts/2013-08-28-video.html</link>
+      <link>https://zathras.github.io/corpsblog//posts/2013-08-28-video.html</link>
       <pubDate>Wed, 28 Aug 2013 00:00:00 -0700</pubDate>
       <guid isPermaLink="true">posts/2013-08-28-video.html</guid>
         <description>
@@ -37,7 +37,7 @@
     </item>
     <item>
       <title>Last Test Post</title>
-      <link>https://github.io/zathras/corpsblog//posts/2013-09-01.html</link>
+      <link>https://zathras.github.io/corpsblog//posts/2013-09-01.html</link>
       <pubDate>Sun, 1 Sep 2013 00:00:00 -0700</pubDate>
       <guid isPermaLink="true">posts/2013-09-01.html</guid>
         <description>
