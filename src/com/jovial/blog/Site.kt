@@ -125,21 +125,26 @@ class Site (
             }
         }
         copyCorpsblogAssets()
-        val postFiles = postsSrcDir.list().
-                sortedBy { s -> s.toLowerCase() }.
-                filter {
-                    if (!it.toLowerCase().endsWith(".md")) {
-                        if (!File(postsSrcDir, it).isDirectory()) {
-                            println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
-                            // Directories are for assets referenced in a post, so we don't isssue a warning.
+        val dirContents = postsSrcDir.list()
+        if (dirContents == null) {
+            note("$postsSrcDir does not exist.")
+        } else {
+            val postFiles = postsSrcDir.list().
+                    sortedBy { s -> s.toLowerCase() }.
+                    filter {
+                        if (!it.toLowerCase().endsWith(".md")) {
+                            if (!File(postsSrcDir, it).isDirectory()) {
+                                println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
+                                // Directories are for assets referenced in a post, so we don't isssue a warning.
+                            }
+                            false
+                        } else {
+                            true
                         }
-                        false
-                    } else {
-                        true
                     }
-                }
-        for (i in 0..postFiles.size - 1) {
-            generatePost("posts", "../", postFiles, i)
+            for (i in 0..postFiles.size - 1) {
+                generatePost("posts", "../", postFiles, i)
+            }
         }
         for ((t, taggedPosts) in tagMap) {
             generateTagFile("tags", "../", t, taggedPosts)
