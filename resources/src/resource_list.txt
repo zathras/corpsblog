@@ -2,7 +2,6 @@
 ./images/plus-sign.png
 ./images/cover.jpg
 ./images/grey.png
-./images/xbiff.png
 ./images/favicons/favicon-32x32.png
 ./images/favicons/android-chrome-96x96.png
 ./images/favicons/mstile-70x70.png

@@ -23,12 +23,12 @@ class BlogConfig(configFile: File) {
     public val siteTitleBodyImage: String?
     public val myProfilePhoto : String
     public val coverImage : String
+    public val shareWeb: String?
     public val shareTwitter : String?
     public val shareLinkedIn : String?
     public val shareGitHub : String?
     public val shareFlickr : String?
     public val shareGarmin : String?    // The GPS company.
-    public val shareEmail : String?     // This is a "contact me" e-mail address
     public val shareDisqus : String?    // Blog comments, https://en.wikipedia.org/wiki/DisqusA
                                         // Ad-suported by taking a cut from "reveal," but blogs can opt out.
     public val googleAnalyticsAccount : String?
@@ -57,12 +57,12 @@ class BlogConfig(configFile: File) {
             siteTitleBodyImage = nullOK(m, "siteTitleBodyImage")
             myProfilePhoto = notNull(m, "myProfilePhoto")
             coverImage = notNull(m, "coverImage")
+            shareWeb = nullOK(m, "shareWeb")
             shareTwitter = nullOK(m, "shareTwitter")
             shareLinkedIn = nullOK(m, "shareLinkedIn")
             shareGitHub = nullOK(m, "shareGitHub")
             shareFlickr = nullOK(m, "shareFlickr")
             shareGarmin = nullOK(m, "shareGarmin")
-            shareEmail = nullOK(m, "shareEmail")
             shareDisqus = nullOK(m, "shareDisqus")
             googleAnalyticsAccount = nullOK(m, "googleAnalyticsAccount")
             googleOauthBrowser = nullOK(m, "googleOauthBrowser") ?: "firefox"

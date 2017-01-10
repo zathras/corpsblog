@@ -130,6 +130,18 @@ class BodyHeader (val config: BlogConfig,
               nav(class_="cover-navigation navigation--social") {
                 ul(class_="navigation") {
 
+                  // web
+                  if (config.shareWeb != null) {
+                    li(class_="navigation__item") {
+                      a(href=config.shareWeb, title=config.shareWeb, target="_blank") {
+                        i(class_="icon icon-web") {}
+                        span(class_="label") {
+                          +"Web"
+                        }
+                      }
+                    }
+                  }
+
                   // twitter
                   if (config.shareTwitter != null) {
                     li(class_="navigation__item") {
@@ -203,21 +215,9 @@ class BodyHeader (val config: BlogConfig,
                   // contact page
                   li(class_="navigation__item") {
                     a(href="${rootPath}contact.html", title="Contact", style="border: 0px") {
-                      img(src="${rootPath}images/xbiff.png", class_="icon-image")
+                      i(class_="icon icon-mail") {}
                       span(class_="label") {
                         +"Contact"
-                      }
-                    }
-                  }
-
-                  // email
-                  if (config.shareEmail != null) {
-                    li(class_="navigation__item") {
-                      a(href="mailto:${config.shareEmail}", title="E-mail Address", target="_blank") {
-                        i(class_="icon icon-mail") {}
-                        span(class_="label") {
-                          +"E-mail"
-                        }
                       }
                     }
                   }
