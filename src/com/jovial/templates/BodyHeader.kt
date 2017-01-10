@@ -214,8 +214,8 @@ class BodyHeader (val config: BlogConfig,
 
                   // contact page
                   li(class_="navigation__item") {
-                    a(href="${rootPath}contact.html", title="Contact", style="border: 0px") {
-                      i(class_="icon icon-mail") {}
+                    a(href="${rootPath}contact.html", title="Contact") {
+                      i(class_="icon icon-mail") { }
                       span(class_="label") {
                         +"Contact"
                       }
