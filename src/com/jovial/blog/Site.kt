@@ -110,21 +110,15 @@ class Site (
     fun generate() {
         dependencies.read()
 
-	// Copy the contents of the images directory to the output.
-	// These are for fixed images that go with the blog.
-	//
-        val images = File(inputDir, "images")
-        val fOutDir = File(outputDir, "images")
-        fOutDir.mkdirs()
-        for (s in images.list()) {
-            val inputFile = File(images, s)
-            val outputFile = File(fOutDir, s)
-            val dep = dependencies.get(outputFile)
-            if (dep.changed(listOf(inputFile))) {
-                Files.copy(inputFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-            }
-        }
+        // Copy the static files that come with corpsblog
         copyCorpsblogAssets()
+
+	// Copy the contents of the assets directory to the output.
+	// These are for fixed images that go with the blog, the CNAME
+        // file for github, etc.
+        copy(File(inputDir, "assets"), outputDir)
+
+        // Process the posts directory
         val dirContents = postsSrcDir.list()
         if (dirContents == null) {
             note("$postsSrcDir does not exist.")
@@ -182,6 +176,26 @@ class Site (
         mailchimpManager?.checkNotifications(this)
 
         checkForStrayOutputFiles(outputDir)
+    }
+
+    private fun copy(input : File, output : File) {
+        if (!input.exists()) {
+            note("Asset $input does not exist")
+        } else if (input.isDirectory) {
+            if (!output.isDirectory && !output.mkdirs()) {
+                error("Unable to make directory $output")
+                System.exit(1)
+            }
+            for (s in input.list()) {
+                copy(File(input, s), File(output, s))
+            }
+        } else {
+            val dep = dependencies.get(output)
+            if (dep.changed(listOf(input))) {
+                Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                println("Copying $input")
+            }
+        }
     }
 
     /**
