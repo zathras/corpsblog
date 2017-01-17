@@ -2,7 +2,7 @@
 -------
 
 # This is not tested software!
-![Danger Image](test/images/danger.jpg "Danger!")
+![Danger Image](test/assets/images/danger.jpg "Danger!")
 
 As of this writing, this is software hasn't been thoroughly tested.  It seems
 to work OK, but I haven't put it in production yet.
