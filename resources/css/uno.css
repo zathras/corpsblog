@@ -1109,9 +1109,9 @@ pre {
 
 .footer {
 	display: block;
-	padding: 2em 0 0 0;
+	padding: 0.5em 0 0 0;
 	border-top: 2px solid #dddddd;
-	font-size: .9em;
+	font-size: 0.7em;
 	color: #838383; }
 
 .footer__copyright {

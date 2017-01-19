@@ -15,6 +15,9 @@ class Footer (val config: BlogConfig, val rootPath: String) {
     footer(class_ = "footer") {
       span(class_ = "footer__copyright") {
         +"&copy; ${year} ${config.siteAuthor}. "
+        if (config.disclaimer != null) {
+          +config.disclaimer
+        }
         a(href = "${rootPath}index.html") {
           +"About this site"
         }

@@ -18,6 +18,7 @@ class BlogConfig(configFile: File) {
     public val siteBaseURL : String
     public val siteDescription : String
     public val siteAuthor : String
+    public val disclaimer : String?
     public val siteTitle: String
     public val siteTitleBodyHTML: String?
     public val siteTitleBodyImage: String?
@@ -53,6 +54,7 @@ class BlogConfig(configFile: File) {
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")
             siteTitle = notNull(m, "siteTitle")
+            disclaimer = nullOK(m, "disclaimer")
             siteTitleBodyHTML = nullOK(m, "siteTitleBodyHTML")
             siteTitleBodyImage = nullOK(m, "siteTitleBodyImage")
             myProfilePhoto = notNull(m, "myProfilePhoto")
