@@ -64,6 +64,7 @@ Targets:
          manifest="src/META-INF/MANIFEST.MF">
         <fileset dir="${out.dir}/classes"/>
 	<zipfileset src="${kotlin.dir}/lib/kotlin-runtime.jar"/>
+	<fileset dir="resources"/>
     </jar>
   </target>
 

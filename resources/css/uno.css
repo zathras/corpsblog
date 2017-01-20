@@ -1,5 +1,4 @@
-@import 'http://fonts.googleapis.com/css?family=Roboto+Slab:300,400)';
-@import 'http://fonts.googleapis.com/css?family=Merriweather&#8217'
+@import url(../fonts/merriweather_roboto.css);
 /* http://meyerweb.com/eric/tools/css/reset/
 	 v2.0 | 20110126
 	 License: none (public domain)
@@ -927,7 +926,7 @@ html {
 
 body {
 	font-family: "Merriweather", serif;
-	font-size: 1.3em;
+	font-size: 1.0em;
 	color: #000000; }
 
 ::selection {

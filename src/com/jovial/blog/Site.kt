@@ -212,11 +212,14 @@ class Site (
             } else if (line.startsWith("src/") || line.startsWith("./src/")) {
                 continue
             }
+            val modifiedTime = input.readLine()
+            if (modifiedTime == null) {
+                throw IOException("Malformed resource_list.txt")
+            }
+            modifiedTime.toLong()   // Generate NumberFormatException if not a file modified time
             val outputFile = File(outputDir, line)
             val dependsOn = dependencies.get(outputFile)
-            if (dependsOn.changed(listOf<File>())) {
-                // We don't really depend on anything, because our source is intrinsic.
-                // This records the copy, and it checks for the existence of the destination.
+            if (dependsOn.changed(listOf<File>(), listOf(modifiedTime))) {
                 println("Copying " + line)
                 outputFile.parentFile.mkdirs()
                 val resOut = FileOutputStream(outputFile)
