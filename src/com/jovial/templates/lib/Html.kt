@@ -325,7 +325,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("height", height)
         t.addAttribute("width", width)
     }
-    fun hr(class_: String?) {
+    fun hr(class_: String? = null) {
         val t = initTag(Hr(this), {})
         t.addAttribute("class", class_)
     }

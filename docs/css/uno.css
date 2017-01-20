@@ -961,24 +961,24 @@ h5 {
 
 h1 {
 	margin-top: 0;
-	font-size: 3.8em;
+	font-size: 2.5em;
 	line-height: 1.2em;
 	letter-spacing: .05em; }
 
 h2 {
-	font-size: 2.8em; }
+	font-size: 2.2em; }
 
 h3 {
-	font-size: 2.4em; }
+	font-size: 2.0em; }
 
 h4 {
 	font-size: 1.8em; }
 
 h4 {
-	font-size: 1.5em; }
+	font-size: 1.6em; }
 
 h5 {
-	font-size: 1.3em; }
+	font-size: 1.4em; }
 
 p {
 	margin-bottom: 1.3em;
@@ -1109,9 +1109,9 @@ pre {
 
 .footer {
 	display: block;
-	padding: 2em 0 0 0;
+	padding: 0.5em 0 0 0;
 	border-top: 2px solid #dddddd;
-	font-size: .9em;
+	font-size: 0.7em;
 	color: #838383; }
 
 .footer__copyright {
@@ -1463,6 +1463,11 @@ i {
 	width: 30%;
 	margin: 2.2em 0 2.1em 0;
 	border-top: 1px solid #dddddd; }
+
+.hr-grey {
+	width: 100%;
+	margin: 1em 1em 1em 1em;
+	border-top: 1px solid rgb(100, 100, 100); }
 
 *:focus {
 	outline: none; }
