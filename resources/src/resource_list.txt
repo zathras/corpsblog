@@ -102,12 +102,16 @@ fonts/Merriweather.woff2
 1484930364000
 fonts/glyphicons-halflings-regular.svg
 1478459478000
+fonts/Merriweather.ttf
+1485029884000
 fonts/glyphicons-halflings-regular.ttf
 1478459478000
 fonts/Roboto_Slab_300.svg
 1484930369000
 fonts/Roboto_Slab_400.woff
 1484930372000
+fonts/Roboto_Slab_400.ttf
+1485029946000
 fonts/Roboto_Slab_300.eot
 1484930367000
 fonts/Merriweather.svg
@@ -115,7 +119,7 @@ fonts/Merriweather.svg
 fonts/glyphicons-halflings-regular.eot
 1478459478000
 fonts/merriweather_roboto.css
-1484933461000
+1485030212000
 fonts/foundation-icons/foundation-icons.woff
 1478459478000
 fonts/foundation-icons/foundation-icons.eot
@@ -134,6 +138,8 @@ fonts/Roboto_Slab_400.eot
 1484930371000
 fonts/Merriweather.woff
 1484930363000
+fonts/Roboto_Slab_300.ttf
+1485029963000
 fonts/Roboto_Slab_400.woff2
 1484930372000
 css/photogrid.css

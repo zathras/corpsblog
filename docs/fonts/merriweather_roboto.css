@@ -1,5 +1,6 @@
 /*
  * Created with bash script from https://github.com/neverpanic/google-font-download
+ * Added ttf versions manually.
  *
  * Command:
  *   ./google-font-download.sh -f eot,woff,woff2,svg Merriweather "Roboto Slab:300" "Roboto Slab:400"
@@ -19,7 +20,8 @@
 		/* from https://fonts.gstatic.com/s/merriweather/v13/RFda8w1V0eDZheqfcyQ4EOgdm0LZdjqr5-oayXSOefg.woff2 */
 		url('Merriweather.woff2') format('woff2'),
 		/* from https://fonts.gstatic.com/l/font?kit=RFda8w1V0eDZheqfcyQ4EFlIn5tFQcqMuf-jhyJP0ps&skey=379c1eccf863c625&v=v13#Merriweather */
-		url('Merriweather.svg#Merriweather') format('svg');
+		url('Merriweather.svg#Merriweather') format('svg'),
+		url('Merriweather.ttf') format('truetype');
 }
 @font-face {
 	font-family: 'Roboto Slab';
@@ -35,7 +37,8 @@
 		/* from https://fonts.gstatic.com/s/robotoslab/v6/dazS1PrQQuCxC3iOAJFEJUo2lTMeWA_kmIyWrkNCwPc.woff2 */
 		url('Roboto_Slab_300.woff2') format('woff2'),
 		/* from https://fonts.gstatic.com/l/font?kit=dazS1PrQQuCxC3iOAJFEJT4dnM32POWavC8T_whbZeI&skey=5b48fccf0dc70db6&v=v6#RobotoSlab */
-		url('Roboto_Slab_300.svg#RobotoSlab') format('svg');
+		url('Roboto_Slab_300.svg#RobotoSlab') format('svg'),
+		url('Roboto_Slab_300.ttf') format('truetype');
 }
 @font-face {
 	font-family: 'Roboto Slab';
@@ -51,5 +54,6 @@
 		/* from https://fonts.gstatic.com/s/robotoslab/v6/y7lebkjgREBJK96VQi37Zo4P5ICox8Kq3LLUNMylGO4.woff2 */
 		url('Roboto_Slab_400.woff2') format('woff2'),
 		/* from https://fonts.gstatic.com/l/font?kit=y7lebkjgREBJK96VQi37ZnNsigHlcrQGNV8nkUSFQfc&skey=a9ad6a4717e923f0&v=v6#RobotoSlab */
-		url('Roboto_Slab_400.svg#RobotoSlab') format('svg');
+		url('Roboto_Slab_400.svg#RobotoSlab') format('svg'),
+		url('Roboto_Slab_400.ttf') format('truetype');
 }
