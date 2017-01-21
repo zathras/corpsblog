@@ -1,25 +1,18 @@
-/*
- * Created with bash script from https://github.com/neverpanic/google-font-download
- *
- * Command:
- *   ./google-font-download.sh -f eot,woff,woff2,svg Merriweather "Roboto Slab:300" "Roboto Slab:400"
- */
-
 @font-face {
 	font-family: 'Merriweather';
 	font-style: normal;
-	font-weight: normal;
+	font-weight: 400;
 	src:
 		local('Merriweather'),
 		local('Merriweather-Regular'),
 		/* from https://fonts.gstatic.com/s/merriweather/v13/RFda8w1V0eDZheqfcyQ4EHZ2MAKAc2x4R1uOSeegc5U.eot */
-		url('Merriweather.eot?#iefix') format('embedded-opentype'),
+		url('Merriweather_400.eot?#iefix') format('embedded-opentype'),
 		/* from https://fonts.gstatic.com/s/merriweather/v13/RFda8w1V0eDZheqfcyQ4EHhCUOGz7vYGh680lGh-uXM.woff */
-		url('Merriweather.woff') format('woff'),
+		url('Merriweather_400.woff') format('woff'),
 		/* from https://fonts.gstatic.com/s/merriweather/v13/RFda8w1V0eDZheqfcyQ4EOgdm0LZdjqr5-oayXSOefg.woff2 */
-		url('Merriweather.woff2') format('woff2'),
+		url('Merriweather_400.woff2') format('woff2'),
 		/* from https://fonts.gstatic.com/l/font?kit=RFda8w1V0eDZheqfcyQ4EFlIn5tFQcqMuf-jhyJP0ps&skey=379c1eccf863c625&v=v13#Merriweather */
-		url('Merriweather.svg#Merriweather') format('svg');
+		url('Merriweather_400.svg#Merriweather') format('svg');
 }
 @font-face {
 	font-family: 'Roboto Slab';
