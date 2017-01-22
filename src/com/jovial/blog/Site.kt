@@ -12,6 +12,7 @@ import com.jovial.templates.*
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.FileTime
 
 /**
  * Class to generate the site.
@@ -216,7 +217,7 @@ class Site (
             if (modifiedTime == null) {
                 throw IOException("Malformed resource_list.txt")
             }
-            modifiedTime.toLong()   // Generate NumberFormatException if not a file modified time
+            val modifiedTimeMS = modifiedTime.toLong()      // Throw NumberFormatException if malformed
             val outputFile = File(outputDir, line)
             val dependsOn = dependencies.get(outputFile)
             if (dependsOn.changed(listOf<File>(), listOf(modifiedTime))) {
@@ -233,6 +234,7 @@ class Site (
                 }
                 resIn.close()
                 resOut.close()
+                Files.setLastModifiedTime(outputFile.toPath(), FileTime.fromMillis(modifiedTimeMS))
             }
         }
         input.close()
