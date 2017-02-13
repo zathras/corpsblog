@@ -78,6 +78,10 @@ abstract class Tag(private val parent: Element, val name: String) : Element {
             //
             // This assertion catches that error, because head's parent is html, but
             // head's init is called recursively during the call to body's.
+            //
+            // In Kotlin 1.1, this problem can be solved, and made into a compile-time error using
+            // @DslMarker.  See https://kotlinlang.org/docs/reference/whatsnew11.html and
+            // https://github.com/Kotlin/KEEP/blob/master/proposals/scope-control-for-implicit-receivers.md
         }
         if (init != null) {
             tag.init()
