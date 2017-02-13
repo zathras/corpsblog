@@ -135,6 +135,8 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             // I take that to mean "it's broken."  They didn't say when it might be fixed, or give me
             // a way of tracking the issue.  The format of the strings in auto_fb_post is undocumented,
             // but it's maybe a decimal or a hex number?
+            //
+            // See http://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/#create-post_campaigns
             newCampaignSettings["auto_fb_post"] = config.facebook_page_ids
             newCampaignSettings["fb_comments"] = true
             newCampaignSettings["social_card"] = mapOf(
