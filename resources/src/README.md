@@ -4,7 +4,4 @@ enumerates all the files to be copied -- that's needed because there's no
 way to get a directory listing within a JAR.
 
 Files in the src directory and its subdirectories will be not be copied,
-even if they're mentioned in resource_list.txt.  That way, you can do this:
-
-    cd ..
-    find . -type f > src/resource_list.txt
+even if they're mentioned in resource_list.txt.

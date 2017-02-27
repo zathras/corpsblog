@@ -74,6 +74,8 @@
 .newer p {
   float: left;
   width: 90%;
+  font-size: 87%;
+  color:  #606060;
 }
 .older {
   width: 50%;
@@ -83,4 +85,6 @@
 .older p {
   float: right;
   width: 90%;
+  font-size: 87%;
+  color:  #606060;
 }
