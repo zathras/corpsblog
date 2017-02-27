@@ -331,6 +331,9 @@ class Site (
     private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {
         var found = foundInput
         for (s in dir.list()) {
+            if (s.equals(".git")) {
+                continue
+            }
             val f = File(dir, s)
             if (f.isDirectory) {
                 if (checkForStrayOutputFiles(f, found)) {
