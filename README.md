@@ -1,11 +1,12 @@
 # CorpsBlog static site generator
 -------
 
-# This is not tested software!
+# This is not thoroughly tested software!
 ![Danger Image](test/assets/images/danger.jpg "Danger!")
 
-As of this writing, this is software hasn't been thoroughly tested.  It seems
-to work OK, but I haven't put it in production yet.
+This is software hasn't been thoroughly tested.  I am using it for
+my blog, and it works fine, but I haven't given it the kind of
+rigorous testing one would give a professional product.
 
 # Corpsblog
 CorpsBlog is yet another static site builder.  I took a look around at
