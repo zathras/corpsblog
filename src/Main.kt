@@ -25,7 +25,7 @@ import javax.imageio.ImageIO
 
 private fun usage() {
     println()
-    println("Usage:  corpsblog (publish | offline | fb | remote_hack)")
+    println("Usage:  corpsblog (publish | offline | mail | remote_hack)")
     println()
     println("    publish <srcdir> <destdir>")
     println("        Ready the target for \"git commit -a\" and \"git push\"")
@@ -33,7 +33,7 @@ private fun usage() {
     println("    offline <srcdir> <destdir>")
     println("        Trial run; don't upload anything (e.g. no YouTube uploads)")
     println()
-    println("    mail")
+    println("    mail <srcdir> <destdir>")
     println("        Post to mail list about recent activity (do this after git push)")
     println()
     println("    remote_hack (advanced)")
