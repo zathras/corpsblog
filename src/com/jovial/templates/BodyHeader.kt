@@ -154,10 +154,22 @@ class BodyHeader (val config: BlogConfig,
                     }
                   }
 
+                  // Facebook
+                  if (config.shareFacebook != null) {
+                    li(class_="navigation__item") {
+                      a(href="https://www.facebook.com/${config.shareFacebook}", title="${config.shareFacebook} on Facebook", target="_blank") {
+                        i(class_="icon icon-social-facebook") {}
+                        span(class_="label") {
+                          +"Facebook"
+                        }
+                      }
+                    }
+                  }
+
                   // LinkedIn
                   if (config.shareLinkedIn != null) {
                     li(class_="navigation__item") {
-                      a(href="http://www.linkedin.com/${config.shareLinkedIn}", title="${config.shareLinkedIn} on LinkedIn", target="_blank") {
+                      a(href="http://www.linkedin.com/in/${config.shareLinkedIn}", title="${config.shareLinkedIn} on LinkedIn", target="_blank") {
                         i(class_="icon icon-social-linkedin") {}
                         span(class_="label") {
                           +"LinkedIn"

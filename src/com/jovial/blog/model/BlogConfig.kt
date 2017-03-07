@@ -27,6 +27,7 @@ class BlogConfig(configFile: File) {
     public val shareWeb: String?
     public val shareTwitter : String?
     public val shareLinkedIn : String?
+    public val shareFacebook : String?
     public val shareGitHub : String?
     public val shareFlickr : String?
     public val shareGarmin : String?    // The GPS company.
@@ -62,6 +63,7 @@ class BlogConfig(configFile: File) {
             shareWeb = nullOK(m, "shareWeb")
             shareTwitter = nullOK(m, "shareTwitter")
             shareLinkedIn = nullOK(m, "shareLinkedIn")
+            shareFacebook = nullOK(m, "shareFacebook")
             shareGitHub = nullOK(m, "shareGitHub")
             shareFlickr = nullOK(m, "shareFlickr")
             shareGarmin = nullOK(m, "shareGarmin")
