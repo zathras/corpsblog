@@ -23,6 +23,26 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
   public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
     head {
       CommonHead(blogConfig, content.title, content.rootPath, content.hasGallery).generate(this)
+      //
+      // Facebook metadata:
+      //
+      meta(property="og:url", content=blogConfig.siteBaseURL + "posts/" + outputFile.name)
+      if (content.title != "") {
+        meta(property="og:title", content=title)
+      }
+      if (blogConfig.siteTitle != "") {
+        meta(property="og:site_name", content=blogConfig.siteTitle)
+      }
+      meta(property="og:type",content="blog")
+      val t = content.thumbnail
+      val st = blogConfig.defaultPostThumbnail
+      if (t != null) {
+        meta(property="og:image", content=blogConfig.siteBaseURL + "posts/" + t.socialImageName)
+        meta(property="og:image:width", content="${t.socialImageSize.width}")
+        meta(property="og:image:height", content="${t.socialImageSize.height}")
+      } else if (st != null) {
+        meta(property="og:image", content=blogConfig.siteBaseURL + st)
+      }
     }
     body {
       BodyHeader(blogConfig, content.rootPath, content.hasGallery).generate(this)

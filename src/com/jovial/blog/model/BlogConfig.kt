@@ -38,6 +38,8 @@ class BlogConfig(configFile: File) {
     public val googleClient : GoogleClientConfig?
     public val mailchimpClient : MailchimpClientConfig?
     public val mailchimpOauthBrowser : String         // Used for Mailchimp OAuth login flow.  Defaults to firefox.
+    public val defaultPostThumbnail : String?         // Relative to base directory
+    public val indexThumbnail : String?               // Like the above, but for index.html
 
     /**
      * Name of the remote shell command for YouTube uploads, if one exists.  See
@@ -84,6 +86,8 @@ class BlogConfig(configFile: File) {
                 mailchimpClient = MailchimpClientConfig(mailchimpClientName, configFile.parentFile)
             }
             mailchimpOauthBrowser = nullOK(m, "mailchimp_oauth_browser") ?: "firefox"
+            defaultPostThumbnail = nullOK(m, "default_post_thumbnail")
+            indexThumbnail = nullOK(m, "index_thumbnail")
         } catch (e: Exception) {
             println()
             println("Error reading configuration file ${configFile.absolutePath}")

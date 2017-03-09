@@ -143,12 +143,14 @@ abstract class HeadTag(parent: Element, name: String) : TagWithText(parent, name
     fun meta(charset: String? = null,
              name: String? = null,
              author: String? = null,
+             property: String? = null,
              content: String? = null)
     {
         val t = initTag(Meta(this), {})
         t.addAttribute("charset", charset)
         t.addAttribute("name", name)
         t.addAttribute("author", author)
+        t.addAttribute("property", property)
         t.addAttribute("content", content)
     }
     fun link(href: String,
