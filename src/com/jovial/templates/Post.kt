@@ -16,9 +16,9 @@ import java.text.SimpleDateFormat
 
 class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: String, val outputFile: File) {
 
-  val title = content.title
+  val title : String = content.title
   val date = content.date
-  val synopsis = content.synopsis
+  val synopsis : String = content.synopsis
 
   public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
     head {
@@ -27,11 +27,11 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
       // Facebook metadata:
       //
       meta(property="og:url", content=blogConfig.siteBaseURL + "posts/" + outputFile.name)
-      if (content.title != "") {
+      if (title != "") {
         meta(property="og:title", content=title)
       }
-      if (blogConfig.siteTitle != "") {
-        meta(property="og:site_name", content=blogConfig.siteTitle)
+      if (synopsis != "") {
+        meta(property="og:site_name", content=synopsis)
       }
       meta(property="og:type",content="blog")
       val t = content.thumbnail
