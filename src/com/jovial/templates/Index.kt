@@ -19,6 +19,21 @@ class Index(val blogConfig : BlogConfig,
 
         head {
             CommonHead(blogConfig, blogConfig.siteTitle, rootPath).generate(this)
+            //
+            // Facebook metadata:
+            //
+            meta(property="og:url", content=blogConfig.siteBaseURL + "/index.html")
+            if (blogConfig.siteTitle != "") {
+                meta(property="og:title", content=blogConfig.siteTitle)
+            }
+            if (blogConfig.siteDescription != "") {
+                meta(property="og:site_name", content=blogConfig.siteDescription)
+            }
+            meta(property="og:type",content="blog")
+            val st = blogConfig.defaultPostThumbnail
+            if (st != null) {
+                meta(property="og:image", content=blogConfig.siteBaseURL + st)
+            }
         }
         body {
             BodyHeader(blogConfig, rootPath).generate(this)
