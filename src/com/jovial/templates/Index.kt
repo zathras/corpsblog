@@ -27,7 +27,7 @@ class Index(val blogConfig : BlogConfig,
                 meta(property="og:title", content=blogConfig.siteTitle)
             }
             if (blogConfig.siteDescription != "") {
-                meta(property="og:site_name", content=blogConfig.siteDescription)
+                meta(property="og:description", content=blogConfig.siteDescription)
             }
             meta(property="og:type",content="blog")
             val st = blogConfig.defaultPostThumbnail
