@@ -31,7 +31,10 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
         meta(property="og:title", content=title)
       }
       if (synopsis != "") {
-        meta(property="og:site_name", content=synopsis)
+        meta(property="og:description", content=synopsis)
+      }
+      if (blogConfig.siteTitle != "") {
+        meta(property="og:site_title", content=blogConfig.siteTitle)
       }
       meta(property="og:type",content="blog")
       val t = content.thumbnail
