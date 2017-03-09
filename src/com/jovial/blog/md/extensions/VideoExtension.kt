@@ -76,6 +76,9 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
 <video $dim controls>
     <source src="videos/${destFile.name}">
 </video>""")
+        if (width <= height) {
+            out.append("\n</center>")
+        }
         if (site.blogConfig.googleClient != null) {
             if (width > height) {
                 out.append("<center>\n")
