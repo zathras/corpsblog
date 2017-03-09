@@ -41,8 +41,22 @@ class Archive(val config : BlogConfig,
                     +post.content.title
                   }
                   br()
-                  em {
-                    +post.content.synopsis
+                  val t = post.content.thumbnail
+                  if (t == null) {
+                    em {
+                      +post.content.synopsis
+                    }
+                  } else {
+                    div(style="float: left") {
+                      img(src = "${rootPath}posts/${t.archiveImageName}", align = "left",
+                          width = "${t.archiveImageSize.width}", height = "${t.archiveImageSize.height}")
+                    }
+                    div (style="margin-left: ${t.archiveImageSize.width + 16}px") {
+                      em {
+                        +post.content.synopsis
+                      }
+                    }
+                    div (style="clear: both") { }
                   }
                 }
                 i++

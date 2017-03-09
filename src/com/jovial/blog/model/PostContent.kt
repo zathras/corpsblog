@@ -2,7 +2,10 @@ package com.jovial.blog.model
 
 import com.github.rjeschke.txtmark.Configuration
 import com.github.rjeschke.txtmark.Processor
+import com.jovial.blog.Site
 import com.jovial.util.escapeHtml
+import com.jovial.blog.md.extensions.Thumbnail
+import com.jovial.util.processFileName
 import java.io.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -20,8 +23,9 @@ private val commaSplitRegex = Regex(" *, *")
 
 class PostContent (
         txtmarkConfig : Configuration,
+        val site : Site,
         val outputDir : File,
-        val postBaseName: String,  /** Name to use for any generated directories within outputDir, etc. */
+        val postBaseName: String,/** Name to use for any generated directories within outputDir, etc. */
         val rootPath : String,/** Relative to the base directory of the blog within our site **/
         val dependsOn : MutableList<File>  /** Our post depends on all of its generated pictures; we record that here */
 ) : Content(txtmarkConfig)
@@ -33,6 +37,8 @@ class PostContent (
     var date : Date = Date(0)
         private set
     var tags : List<String> = listOf<String>()
+        private set
+    var thumbnail : Thumbnail? = null  /** See also default_post_thumbnail in the blog config file.  */
         private set
     var galleryCount = 0
 
@@ -52,11 +58,30 @@ class PostContent (
     }
 
     protected override fun processHeader(key : String, value : String ) : Boolean {
-        when (key) {
-            "tags"      -> tags = value.split(commaSplitRegex)
-            "synopsis"  -> synopsis = escapeHtml(value)
-            "title"     -> title = escapeHtml(value)
-            else        -> return false
+        if (key == "tags") {
+            if (tags.size > 0) {
+                throw ParseError("Tags specified twice")
+            }
+            tags = value.split(commaSplitRegex)
+        } else if (key == "synopsis") {
+            if (synopsis != "") {
+                throw ParseError("Synopsis specified twice")
+            }
+            synopsis = escapeHtml(value)
+        } else if (key == "title") {
+            if (title != "") {
+                throw ParseError("Title specified twice")
+            }
+            title = escapeHtml(value)
+        } else if (key == "thumbnail") {
+            if (thumbnail != null) {
+                throw ParseError("Thumbnail specified twice")
+            }
+            val sourceName = processFileName(value, site.postsSrcDir)
+            val t = Thumbnail(sourceName, site, outputDir, postBaseName)
+            thumbnail = t
+        } else {
+            return false
         }
         return true
     }

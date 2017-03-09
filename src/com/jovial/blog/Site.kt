@@ -263,7 +263,7 @@ class Site (
         val postOutputDir = File(outputDir, pathTo)
         val outputFile = File(postOutputDir, "$baseName.html")
         val dependencyFiles = mutableListOf<File>()
-        val content = PostContent(txtmarkPostConfig, postOutputDir, baseName, pathFrom, dependencyFiles)
+        val content = PostContent(txtmarkPostConfig, this, postOutputDir, baseName, pathFrom, dependencyFiles)
         val inputFile = File(inputDir, "$pathTo/$name")
         dependencyFiles.add(inputFile)
         content.read(inputFile)
@@ -277,6 +277,9 @@ class Site (
         if (newerName != null) dependencyValues.add(newerName)
         for (u in content.videoURLs) {
             dependencyValues.add(u)
+        }
+        if (content.thumbnail != null) {
+            dependencyFiles.add(content.thumbnail!!.source)
         }
         val dependsOn = dependencies.get(outputFile)
         if (dependsOn.changed(dependencyFiles, dependencyValues)) {

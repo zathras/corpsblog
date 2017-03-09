@@ -18,11 +18,11 @@ import javax.imageio.ImageIO
  */
 
 class Picture (
-        val source : File,
+        source : File,
         val galleryDir : File,
         val caption : String
-) {
-    private var sourceImage: BufferedImage? = null
+    )                           : AbstractImage(source)
+{
     public var largeImage: String? = null /** file name of big image, including gallery dir name */
         private set
 
@@ -63,94 +63,7 @@ class Picture (
             }
         }
         // 384 is arbitrary, but it is 1920/5
-        if (sourceImage != null) {
-            sourceImage!!.flush()
-            sourceImage = null
-        }
-    }
-
-    private fun getImage(): BufferedImage {
-        var im = sourceImage
-        if (im != null) {
-            return im;
-        }
-        try {
-	    println("Processing ${source.absolutePath}")
-            im = ImageIO.read(source)!!
-        } catch (ex : IOException) {
-            println("Error reading $source")
-            throw ex
-        }
-        try {
-            val jpegParser = JpegHeaders(source.absoluteFile.toString())
-            // Didn't bother to check filename extension, since that could be wrong anyway.
-            // Instead, I rely on the JPEG parser to throw an exception if it gets a different
-            // image type.
-            val orientation = jpegParser.app1Header?.getValue(App1Header.Tag.ORIENTATION)?.
-                    asEnumeration as? Orientation
-            val xform: AffineTransform? = when (orientation?.asLong()) {
-                null, Orientation.TOP_LEFT ->
-                    null
-                Orientation.TOP_RIGHT -> {
-                    val t = AffineTransform()
-                    t.scale(-1.0, 1.0)
-                    t.translate(-im.width.toDouble(), 0.0)
-                    t
-                }
-                Orientation.BOTTOM_RIGHT -> {
-                    val t = AffineTransform()
-                    t.translate(im.width.toDouble(), im.height.toDouble())
-                    t.quadrantRotate(2)
-                    t
-                }
-                Orientation.BOTTOM_LEFT -> {
-                    val t = AffineTransform()
-                    t.scale(1.0, -1.0)
-                    t.translate(0.0, -im.height.toDouble())
-                    t
-                }
-                Orientation.LEFT_TOP -> {
-                    val t = AffineTransform()
-                    t.quadrantRotate(3)
-                    t.scale(-1.0, 1.0)
-                    t
-                }
-                Orientation.RIGHT_TOP -> {
-                    val t = AffineTransform()
-                    t.translate(im.height.toDouble(), 0.0)
-                    t.quadrantRotate(1)
-                    t
-                }
-                Orientation.RIGHT_BOTTOM -> {
-                    val t = AffineTransform()
-                    t.scale(-1.0, 1.0)
-                    t.translate(-im.height.toDouble(), 0.0)
-                    t.translate(0.0, im.width.toDouble())
-                    t.quadrantRotate(3)
-                    t
-                }
-                Orientation.LEFT_BOTTOM -> {
-                    val t = AffineTransform()
-                    t.translate(0.0, im.width.toDouble())
-                    t.quadrantRotate(3)
-                    t
-                }
-                else -> {
-                    null
-                }
-            }
-            if (xform != null) {
-                val op = AffineTransformOp(xform, null)
-                val newImage = op.filter(im, null)
-                im.flush()
-                im = newImage
-            }
-        } catch (ignored: Exception) {
-            // This seems to happen with valid JPEG images that don't have rotation data.
-            // I'm not sure why, but it's harmless.
-        }
-        sourceImage = im
-        return im
+        flushSourceImage()
     }
 
     private fun doGenerate(site: Site, baseDir: File, relName: String, maxDimension: Int): String {

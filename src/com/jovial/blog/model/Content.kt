@@ -41,8 +41,12 @@ abstract class Content(
             }
             val key = line.substring(0, i)
             val value = line.substring(i + 1)
-            if (!processHeader(key, value)) {
-                throw ParseError("""Unrecognized key "$key" at line $lineNumber of $location""")
+            try {
+                if (!processHeader(key, value)) {
+                    throw ParseError("""Unrecognized key "$key" at line $lineNumber of $location""")
+                }
+            } catch (ex : Exception) {
+                throw ParseError("""Error at line $lineNumber of $location:  "$ex"""")
             }
         }
         readBody(input)

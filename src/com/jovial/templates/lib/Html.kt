@@ -319,6 +319,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
             alt: String? = null,
             class_: String? = null,
             style: String? = null,
+            align: String? = null,
             width: String? = null,
             height: String? = null)
     {
@@ -327,6 +328,7 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
         t.addAttribute("alt", alt ?: "*")
         t.addAttribute("class", class_)
         t.addAttribute("style", style)
+        t.addAttribute("align", align)
         t.addAttribute("height", height)
         t.addAttribute("width", width)
     }
@@ -338,6 +340,19 @@ abstract class BodyTag(parent: Element, name: String) : TagWithText(parent, name
     fun footer(class_: String, init: Footer.() -> Unit) {
         val t = initTag(Footer(this), init)
         t.attributes += Pair("class", class_)
+    }
+    //
+    // This definition of table could be greatly improved to add static correctness checking.
+    //
+    fun table(init: Table.() -> Unit) = initTag(Table(this), init)
+    fun tr(init: Tr.() -> Unit) = initTag(Tr(this), init)
+    fun td(align: String? = null,
+           valign: String? = null,
+           init: Td.() -> Unit)
+    {
+        val t = initTag(Td(this), init)
+        t.addAttribute("align", align)
+        t.addAttribute("valign", valign)
     }
 }
 
@@ -380,6 +395,9 @@ class Hr(parent: Element) : BodyTag(parent, "hr") {
 }
 class Noscript(parent: Element) : BodyTag(parent, "noscript")
 class Footer(parent: Element) : BodyTag(parent, "footer")
+class Table(parent: Element) : BodyTag(parent, "table")
+class Td(parent: Element) : BodyTag(parent, "td")
+class Tr(parent: Element) : BodyTag(parent, "tr")
 
 
 private class RootNode : Element {
