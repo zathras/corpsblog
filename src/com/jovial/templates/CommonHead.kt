@@ -38,7 +38,7 @@ class CommonHead(val config: BlogConfig,
 
     script(type="text/javascript") {
 	  +"var baseUrl = '${config.siteBaseURL}';"
-	  +"var baseUrlIndex = '${config.siteBaseURL}/index.html'; "
+	  +"var baseUrlIndex = '${config.siteBaseURL}index.html'; "
     }
 
     //  HTML5 shim, for IE6-8 support of HTML5 elements
