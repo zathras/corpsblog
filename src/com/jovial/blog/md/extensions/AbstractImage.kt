@@ -98,8 +98,8 @@ abstract  class AbstractImage(
                 im = newImage
             }
         } catch (ignored: Exception) {
-            // This seems to happen with valid JPEG images that don't have rotation data.
-            // I'm not sure why, but it's harmless.
+            println("  Warning:  Ignoring $ignored")
+            println("    Check rotation of result?")
         }
         sourceImage = im
         return im
