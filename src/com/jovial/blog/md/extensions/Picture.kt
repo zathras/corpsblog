@@ -1,16 +1,12 @@
 package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
-import net.sourceforge.jheader.App1Header
-import net.sourceforge.jheader.JpegHeaders
-import net.sourceforge.jheader.enumerations.Orientation
+import com.jovial.util.JpegMetadata
 import java.awt.Dimension
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
-import java.awt.image.RescaleOp
 import java.io.File
-import java.io.IOException
 import javax.imageio.ImageIO
 
 /**
@@ -51,8 +47,9 @@ class Picture (
             // Often the image is there already, so we just always parse the image to extract the width and
             // height.  It's an image we generated, so this is safe -- it's definitely a jpeg.
             val largeImageFile = File(galleryDir, "large/$name.jpg")
-            val jpegParser = JpegHeaders(largeImageFile.absoluteFile.toString())
-            largeImageSize = Dimension(jpegParser.width, jpegParser.height)
+            val jpegMetadata = JpegMetadata(largeImageFile)
+            jpegMetadata.read()
+            largeImageSize = jpegMetadata.size!!
             smallImage = doGenerate(site, galleryDir, "small/$name.jpg", 384)
         }
         if (doGallery && mosaicImage == null) {

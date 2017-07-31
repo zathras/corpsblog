@@ -1,7 +1,7 @@
 package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
-import net.sourceforge.jheader.JpegHeaders
+import com.jovial.util.JpegMetadata
 import java.awt.Dimension
 import java.awt.Image
 import java.awt.geom.AffineTransform
@@ -64,8 +64,9 @@ class Thumbnail(
                 scaled.flush()
             }
         }
-        val jpegParser = JpegHeaders(dest.absoluteFile.toString())
-        val size = Dimension(jpegParser.width, jpegParser.height)
+        val jpegMetadata = JpegMetadata(dest)
+        jpegMetadata.read()
+        val size = jpegMetadata.size!!
         return Pair(fileName, size)
     }
 }

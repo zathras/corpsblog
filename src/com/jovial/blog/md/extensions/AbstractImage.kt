@@ -1,9 +1,8 @@
 package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
-import net.sourceforge.jheader.App1Header
-import net.sourceforge.jheader.JpegHeaders
-import net.sourceforge.jheader.enumerations.Orientation
+import com.jovial.util.JpegMetadata
+import com.jovial.util.JpegMetadata.Orientation
 import java.awt.Dimension
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
@@ -34,14 +33,12 @@ abstract  class AbstractImage(
             throw ex
         }
         try {
-            val jpegParser = JpegHeaders(source.absoluteFile.toString())
+            val jpegMetadata = JpegMetadata(source.absoluteFile)
+            jpegMetadata.read()
             // Didn't bother to check filename extension, since that could be wrong anyway.
-            // Instead, I rely on the JPEG parser to throw an exception if it gets a different
-            // image type.
-            val orientation = jpegParser.app1Header?.getValue(App1Header.Tag.ORIENTATION)?.
-                    asEnumeration as? Orientation
-            val xform: AffineTransform? = when (orientation?.asLong()) {
-                null, Orientation.TOP_LEFT ->
+            // Instead, the JPEG parser checks if it's really a JPEG File at the beginning.
+            val xform: AffineTransform? = when (jpegMetadata.orientation) {
+                null, JpegMetadata.Orientation.TOP_LEFT ->
                     null
                 Orientation.TOP_RIGHT -> {
                     val t = AffineTransform()
@@ -86,9 +83,6 @@ abstract  class AbstractImage(
                     t.translate(0.0, im.width.toDouble())
                     t.quadrantRotate(3)
                     t
-                }
-                else -> {
-                    null
                 }
             }
             if (xform != null) {
