@@ -36,7 +36,8 @@ abstract  class AbstractImage(
             val jpegMetadata = JpegMetadata(source.absoluteFile)
             jpegMetadata.read()
             // Didn't bother to check filename extension, since that could be wrong anyway.
-            // Instead, the JPEG parser checks if it's really a JPEG File at the beginning.
+            // Instead, the JPEG parser checks if it's really a JPEG File by sniffing the
+            // first few bytes..
             val xform: AffineTransform? = when (jpegMetadata.orientation) {
                 null, JpegMetadata.Orientation.TOP_LEFT ->
                     null
