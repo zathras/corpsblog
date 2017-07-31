@@ -124,11 +124,8 @@ private class ExifReader(val jpeg : DataStream) {
             }
         } else {
             for (shift in 0..(bytes-1)) {
-                var digit = readByte()
-                for (j in 1..shift) {
-                    digit = digit shl 8
-                }
-                result = result or digit
+                val digit = readByte()
+                result = result or (digit shl (8 * shift))
             }
         }
         return result
