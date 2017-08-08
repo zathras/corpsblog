@@ -12,8 +12,6 @@ import java.text.SimpleDateFormat
  * Created by w.foote on 11/3/2016.
  */
 
-// @@ TO DO:  Add the facebook meta-tags, both here and in index.html
-
 class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: String, val outputFile: File) {
 
   val title : String = content.title
