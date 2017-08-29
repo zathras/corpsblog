@@ -124,7 +124,6 @@ class HTML
         HTMLElement.body,
         HTMLElement.frame,
         HTMLElement.frameset,
-        HTMLElement.iframe,
         HTMLElement.script,
         HTMLElement.object,
     };
