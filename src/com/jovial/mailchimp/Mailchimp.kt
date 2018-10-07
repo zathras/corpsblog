@@ -134,7 +134,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             // As of 12/28/16, Mailchimp support said there "was an issue with" posting to Facebook.
             // I take that to mean "it's broken."  They didn't say when it might be fixed, or give me
             // a way of tracking the issue.  The format of the strings in auto_fb_post is undocumented,
-            // but it's maybe a decimal or a hex number?
+            // but according to MailChimp support on 2/28/2017, it is decimal.
             //
             // See http://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/#create-post_campaigns
             newCampaignSettings["auto_fb_post"] = config.facebook_page_ids

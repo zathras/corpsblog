@@ -84,6 +84,7 @@ import java.util.*;
  * @author Bill Foote (http://jovial.com)
  */
 
+@SuppressWarnings("unchecked")
 public class JsonIO {
 
     //
@@ -443,11 +444,11 @@ public class JsonIO {
             if (ch >= '0' && ch <= '9') {
                 digitSeen = true;
                 if (value <= (Integer.MIN_VALUE / 10)) {
-                    // It might or mignt not overflow if it's ==
+                    // It might or mightn't not overflow if it's ==
                     return readLong(rdr, negative, value, ch);
                 }
                 value *= 10;
-                value -= (ch - '0');    // value is negative
+                value -= (ch - '0');    // value is negative because -Integer.MIN_VALUE > Integer.MAX_VALUE
                 rdr.mark(1);
                 ch = rdr.read();
             } else if (ch == '.') {
@@ -458,9 +459,9 @@ public class JsonIO {
             } else if (digitSeen) {
                 rdr.reset();
                 if (negative) {
-                    return new Integer(value);
+                    return value;
                 } else {
-                    return new Integer(-value);
+                    return -value;
                 }
             } else {
                 throwUnexpected(ch);
@@ -503,20 +504,20 @@ public class JsonIO {
                 return readDouble(rdr, negative, value, true);
             } else if (ch == 'e' || ch == 'E') {
                 double v = negative ? ((double) value) : (-((double) value));
-                readScientific(rdr, v);
+                return readScientific(rdr, v);
             } else {
                 rdr.reset();
                 if (negative) {
                     if (value >= Integer.MIN_VALUE) {
-                        return new Integer((int) value);
+                        return (int) value;
                     } else {
-                        return new Long(value);
+                        return value;
                     }
                 } else {
                     if (value >= -Integer.MAX_VALUE) {
-                        return new Integer((int) -value);
+                        return (int) -value;
                     } else {
-                        return new Long(-value);
+                        return -value;
                     }
                 }
             }
@@ -548,9 +549,9 @@ public class JsonIO {
             } else {
                 rdr.reset();
                 if (negative) {
-                    return new Double(value);
+                    return value;
                 } else {
-                    return new Double(-value);
+                    return -value;
                 }
             }
         }
@@ -569,9 +570,9 @@ public class JsonIO {
             } else {
                 rdr.reset();
                 if (negative) {
-                    return new Double(value);
+                    return value;
                 } else {
-                    return new Double(-value);
+                    return -value;
                 }
             }
         }
@@ -608,9 +609,9 @@ public class JsonIO {
             } else {
                 rdr.reset();
                 if (expNegative) {
-                    return new Double(value / Math.pow(10.0, exp));
+                    return value / Math.pow(10.0, exp);
                 } else {
-                    return new Double(value * Math.pow(10.0, exp));
+                    return value * Math.pow(10.0, exp);
                 }
             }
         }
