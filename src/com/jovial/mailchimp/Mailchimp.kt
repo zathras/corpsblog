@@ -1,6 +1,7 @@
 package com.jovial.mailchimp
 
 import com.jovial.blog.Site
+import com.jovial.os.Stdout
 import com.jovial.webapi.OAuth
 import com.jovial.util.JsonIO
 import com.jovial.util.ddMMMMyyyyDateFormat
@@ -77,10 +78,10 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             }
         }
         if (pending.isEmpty()) {
-            println("No mail list notification is pending.")
+            Stdout.println("No mail list notification is pending.")
             return
         }
-        println("Sending mail list notification for ${pending.size} post(s).")
+        Stdout.println("Sending mail list notification for ${pending.size} post(s).")
 
         val subject = if (pending.size > 1) {
             "${pending.size} new posts on ${site.blogConfig.siteTitle}"
@@ -90,7 +91,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         val fromName = site.blogConfig.siteTitle
         val html = StringBuilder()
         // I don't generate plaintext, because Mailchip does a fine job of it.
-        val baseURL = site.blogConfig.siteBaseURL + "/"
+        val baseURL = site.blogConfig.siteBaseURL
         for (p in pending) {
             html.append("<h2>${p.title}</h2>\n")
             html.append("<p><i>${ddMMMMyyyyDateFormat.format(p.date)}</i></p>\n")
@@ -120,7 +121,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         val metadataResponse = httpPostJSON(url, null, headers).readJsonValue()
         @Suppress("UNCHECKED_CAST")
         val apiEndpoint = (metadataResponse as Map<Any, Any>)["api_endpoint"] as String
-        println("Got Mailchimp API endpoint:  $apiEndpoint")
+        Stdout.println("Got Mailchimp API endpoint:  $apiEndpoint")
 
         // Create a "campaign," that is, a mass e-mail
         // http://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/#create-post_campaigns
@@ -156,7 +157,7 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         val newCampaignResponse = httpPostJSON(url, newCampaignPostData, headers).readJsonValue()
         @Suppress("UNCHECKED_CAST")
         val campaignId = (newCampaignResponse as Map<Any, Any>)["id"] as String
-        println("Created campaign $campaignId.")
+        Stdout.println("Created campaign $campaignId.")
 
         val postData = mapOf("html" to bodyHtml)
         url = URL(apiEndpoint + "/3.0/campaigns/$campaignId/content")
@@ -175,6 +176,6 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
             throw IOException("Unexpected response code of $rc instead of 204")
         }
         sendResponse.input.close()
-        println("Sent notification to mail list subscribers.")
+        Stdout.println("Sent notification to mail list subscribers.")
     }
 }

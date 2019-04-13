@@ -15,8 +15,8 @@ import java.util.*
 private val dateFormat = SimpleDateFormat("MM/dd/yy")
 
 class IndexContent (
-        txtmarkConfig : Configuration
-) : Content(txtmarkConfig)
+        val txtmarkConfig : Configuration<Content>
+) : Content()
 {
     var date : Date = Date(0)
         private set
@@ -27,5 +27,9 @@ class IndexContent (
             else        -> return false
         }
         return true
+    }
+
+    override fun readBody(input: Reader) {
+        body = Processor<Content>(input, txtmarkConfig).process(this)
     }
 }

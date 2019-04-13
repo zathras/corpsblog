@@ -22,7 +22,7 @@ class Index(val blogConfig : BlogConfig,
             //
             // Facebook metadata:
             //
-            meta(property="og:url", content=blogConfig.siteBaseURL + "/index.html")
+            meta(property="og:url", content=blogConfig.siteBaseURL + "index.html")
             if (blogConfig.siteTitle != "") {
                 meta(property="og:title", content=blogConfig.siteTitle)
             }

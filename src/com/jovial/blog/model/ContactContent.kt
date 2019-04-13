@@ -13,13 +13,17 @@ import java.util.*
  */
 
 class ContactContent (
-        txtmarkConfig : Configuration
-) : Content(txtmarkConfig)
+        val txtmarkConfig : Configuration<Content>
+) : Content()
 {
     protected override fun processHeader(key : String, value : String ) : Boolean {
         @Suppress("UNUSED_EXPRESSION")
         when (key) {
             else        -> return false
         }
+    }
+
+    override fun readBody(input: Reader) {
+        body = Processor<Content>(input, txtmarkConfig).process(this)
     }
 }

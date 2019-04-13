@@ -42,6 +42,16 @@ fun notNull(map: Map<Any, Any>, key: Any) : String {
     }
 }
 
+/**
+ * Utility to make sure a string ends with a slash
+ */
+fun withSlashAtEnd(s: String) : String =
+    if (s.endsWith('/')) {
+        s
+    } else {
+        s + '/'
+    }
+
 public fun escapeHtml(line: String) =
         line.replace("<", "&lt;", false).
                 replace(">", "&gt;").

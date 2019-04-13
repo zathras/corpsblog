@@ -96,7 +96,7 @@ public class JsonIO {
     //
     // The maximum long value's most significant digit
     //
-    private static long LONG_MAX_MSD = 9000000000000000000l;
+    private static long LONG_MAX_MSD = 9000000000000000000L;
 
     /**
      * Write a JSON object to out.  The argument must correspond to the

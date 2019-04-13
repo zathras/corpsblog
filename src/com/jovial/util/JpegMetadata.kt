@@ -1,6 +1,6 @@
 package com.jovial.util
 
-import java.awt.Dimension
+import com.jovial.os.OSImage
 import java.io.*
 
 import com.jovial.util.JpegMetadata.Orientation.TOP_LEFT
@@ -40,7 +40,7 @@ class JpegMetadata(val src : File) {
     }
 
     var isJpeg = false;
-    var size : Dimension? = null
+    var size : OSImage.Size? = null
         private set
 
     var orientation : Orientation? = null
@@ -75,12 +75,12 @@ class JpegMetadata(val src : File) {
                     // Once we hit image data, there's no more metadata to read.
                     return;
                 }
-                var len = jpeg.readShort()
+                val len = jpeg.readShort()
                 if (b == SOF0) {
                     jpeg.readByte()     // precision
                     val height = jpeg.readShort()
                     val width = jpeg.readShort()
-                    size = Dimension(width, height)
+                    size = OSImage.Size(width, height)
                     jpeg.skip(len - 7)
                 } else if (b == EXIF_MARKER) {
                     val exif = ExifReader(jpeg)
@@ -160,9 +160,9 @@ private class ExifReader(val jpeg : DataStream) {
         skip(offset - (bytesRead - 6))
         val numTags = readInt(2)
         for (i in 1..numTags) {
-            val tag = readInt(2)
-            val fmt = readInt(2)
-            val numComponents = readInt(4)
+            val tag = readInt(2)  // tag
+            readInt(2)  // fmt
+            readInt(4)   // numComponents
             val value = readInt(4)
             if (tag == 0x112) {     // orientation
                 orientation = when (value) {

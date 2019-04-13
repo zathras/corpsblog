@@ -1,7 +1,8 @@
 package com.jovial.google
 
-import com.jovial.google.remote_hack.RemoteUpload
 import com.jovial.webapi.OAuth
+import com.jovial.os.OSRemoteUpload
+import com.jovial.os.Stdout
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostJSON
 import com.jovial.util.processFileName
@@ -71,7 +72,7 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
     fun getVideoURL(asset: File) : URL?  = videoUploads[asset.absoluteFile]
 
     /**
-     * Upload the given video to Yutube.  Record the YT URL in the database, and return it.
+     * Upload the given video to Youtube.  Record the YT URL in the database, and return it.
      */
     fun uploadVideo(videoFile : File, videoDestURL : URL, description: String) : URL {
         val token = oAuth.getToken()
@@ -116,8 +117,8 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
         val videoSrc = if (remoteCommand == null) {
             videoFile.toURI().toURL()
         } else {
-            println(videoFile);
-            println(videoFile.absolutePath);
+            Stdout.println(videoFile.toString());
+            Stdout.println(videoFile.absolutePath);
             videoDestURL
         }
         val u = ResumableUpload(
@@ -126,10 +127,11 @@ class YouTube(val dbDir: File, val config : GoogleClientConfig, val remoteComman
                 size=videoFile.length(),
                 contentType="video/*",
                 dest=uploadURL)
-        val youtubeURL = if (remoteCommand == null) {
-            u.upload()
+        val remote = OSRemoteUpload(remoteCommand, u)
+        val youtubeURL = if (remote.enabled) {
+            remote.upload()
         } else {
-            RemoteUpload(processFileName(remoteCommand), u).upload()
+            u.upload()
         }
         videoUploads[videoFile.absoluteFile] = youtubeURL
         writeUploadsFile()

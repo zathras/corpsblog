@@ -28,12 +28,12 @@ public class Emitter<ContextType>
     /** Link references. */
     private final HashMap<String, LinkRef> linkRefs      = new HashMap<String, LinkRef>();
     /** The configuration. */
-    private final Configuration            config;
+    private final Configuration<ContextType>    config;
     /** Extension flag. */
     public boolean                         useExtensions = false;
 
     /** Constructor. */
-    public Emitter(final Configuration config)
+    public Emitter(final Configuration<ContextType> config)
     {
         this.config = config;
         this.useExtensions = config.forceExtendedProfile;

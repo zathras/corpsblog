@@ -22,13 +22,13 @@ private val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
 private val commaSplitRegex = Regex(" *, *")
 
 class PostContent (
-        txtmarkConfig : Configuration,
+        val txtmarkConfig : Configuration<PostContent>,
         val site : Site,
         val outputDir : File,
         val postBaseName: String,/** Name to use for any generated directories within outputDir, etc. */
         val rootPath : String,/** Relative to the base directory of the blog within our site **/
         val dependsOn : MutableList<File>  /** Our post depends on all of its generated pictures; we record that here */
-) : Content(txtmarkConfig)
+) : Content()
 {
     var title : String = ""     /** Title, escaped for HTML */
         private set

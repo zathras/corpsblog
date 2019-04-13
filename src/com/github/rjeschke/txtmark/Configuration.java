@@ -24,7 +24,7 @@ import java.util.List;
  * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
  * @since 0.7
  */
-public class Configuration
+public class Configuration<ContextType>
 {
     final boolean                     safeMode;
     final boolean                     panicMode;
@@ -34,7 +34,7 @@ public class Configuration
     final boolean                     forceExtendedProfile;
     final boolean                     allowSpacesInFencedDelimiters;
     final SpanEmitter                 specialLinkEmitter;
-    final List<TxtmarkExtension>      extensions;
+    final List<TxtmarkExtension<ContextType>>   extensions;
 
     /**
      * <p>
@@ -72,7 +72,7 @@ public class Configuration
                   final BlockEmitter codeBlockEmitter,
                   final boolean forceExtendedProfile, final SpanEmitter specialLinkEmitter,
                   final boolean allowSpacesInFencedDelimiters, final boolean panicMode,
-                  final List<TxtmarkExtension> extensions)
+                  final List<TxtmarkExtension<ContextType>> extensions)
     {
         this.safeMode = safeMode;
         this.encoding = encoding;
@@ -90,9 +90,9 @@ public class Configuration
      *
      * @return A new Builder instance.
      */
-    public static Builder builder()
+    public static <ContextType> Builder<ContextType> builder()
     {
-        return new Builder();
+        return new Builder<ContextType>();
     }
 
     /**
@@ -101,7 +101,7 @@ public class Configuration
      * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
      * @since 0.7
      */
-    public static class Builder
+    public static class Builder<ContextType>
     {
         private boolean      safeMode                      = false;
         private boolean      panicMode                     = false;
@@ -111,13 +111,13 @@ public class Configuration
         private Decorator    decorator                     = new DefaultDecorator();
         private BlockEmitter codeBlockEmitter              = null;
         private SpanEmitter  specialLinkEmitter            = null;
-        private List<TxtmarkExtension> extensions = new ArrayList<TxtmarkExtension>();
+        private List<TxtmarkExtension<ContextType>> extensions = new ArrayList<TxtmarkExtension<ContextType>>();
 
         /**
          * Constructor.
          *
          */
-        Builder()
+        public Builder()
         {
             // empty
         }
@@ -130,7 +130,7 @@ public class Configuration
          * @return This builder
          * @since 0.7
          */
-        public Builder enableSafeMode()
+        public Builder<ContextType> enableSafeMode()
         {
             this.safeMode = true;
             return this;
@@ -142,7 +142,7 @@ public class Configuration
          * @return This builder.
          * @since 0.7
          */
-        public Builder forceExtentedProfile()
+        public Builder<ContextType> forceExtentedProfile()
         {
             this.forceExtendedProfile = true;
             return this;
@@ -158,7 +158,7 @@ public class Configuration
          * @return This builder
          * @since 0.7
          */
-        public Builder setSafeMode(final boolean flag)
+        public Builder<ContextType> setSafeMode(final boolean flag)
         {
             this.safeMode = flag;
             return this;
@@ -174,7 +174,7 @@ public class Configuration
          * @return This builder
          * @since 0.7
          */
-        public Builder setEncoding(final String encoding)
+        public Builder<ContextType> setEncoding(final String encoding)
         {
             this.encoding = encoding;
             return this;
@@ -191,7 +191,7 @@ public class Configuration
          * @see DefaultDecorator
          * @since 0.7
          */
-        public Builder setDecorator(final Decorator decorator)
+        public Builder<ContextType> setDecorator(final Decorator decorator)
         {
             this.decorator = decorator;
             return this;
@@ -208,7 +208,7 @@ public class Configuration
          * @see BlockEmitter
          * @since 0.7
          */
-        public Builder setCodeBlockEmitter(final BlockEmitter emitter)
+        public Builder<ContextType> setCodeBlockEmitter(final BlockEmitter emitter)
         {
             this.codeBlockEmitter = emitter;
             return this;
@@ -222,7 +222,7 @@ public class Configuration
          * @return This builder.
          * @since 0.7
          */
-        public Builder setSpecialLinkEmitter(final SpanEmitter emitter)
+        public Builder<ContextType> setSpecialLinkEmitter(final SpanEmitter emitter)
         {
             this.specialLinkEmitter = emitter;
             return this;
@@ -236,7 +236,7 @@ public class Configuration
          * @return This builder.
          * @since 0.12
          */
-        public Builder setAllowSpacesInFencedCodeBlockDelimiters(final boolean allow)
+        public Builder<ContextType> setAllowSpacesInFencedCodeBlockDelimiters(final boolean allow)
         {
             this.allowSpacesInFencedDelimiters = allow;
             return this;
@@ -251,7 +251,7 @@ public class Configuration
          * @return This builder.
          * @since 0.12
          */
-        public Builder setEnablePanicMode(final boolean panic)
+        public Builder<ContextType> setEnablePanicMode(final boolean panic)
         {
             this.panicMode = panic;
             return this;
@@ -264,7 +264,7 @@ public class Configuration
          * @return This builder.
          * @since 0.12
          */
-        public Builder enablePanicMode()
+        public Builder<ContextType> enablePanicMode()
         {
             this.panicMode = true;
             return this;
@@ -277,7 +277,7 @@ public class Configuration
          *
          * @param extension
          */
-        public Builder addExtension(TxtmarkExtension extension) {
+        public Builder<ContextType> addExtension(TxtmarkExtension<ContextType> extension) {
             extensions.add(extension);
             return this;
         }
@@ -288,9 +288,9 @@ public class Configuration
          * @return a Configuration instance
          * @since 0.7
          */
-        public Configuration build()
+        public Configuration<ContextType> build()
         {
-            return new Configuration(this.safeMode, this.encoding, this.decorator, this.codeBlockEmitter,
+            return new Configuration<ContextType>(this.safeMode, this.encoding, this.decorator, this.codeBlockEmitter,
                     this.forceExtendedProfile, this.specialLinkEmitter, this.allowSpacesInFencedDelimiters,
                     this.panicMode, this.extensions);
         }

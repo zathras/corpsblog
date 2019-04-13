@@ -24,7 +24,7 @@ class Feed(val config: BlogConfig,
   <channel>
     <title>${config.siteTitle}</title>
     <link>${config.siteBaseURL}</link>
-    <atom:link href="${config.siteBaseURL}/feed.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${config.siteBaseURL}feed.xml" rel="self" type="application/rss+xml" />
     <description>${config.siteDescription}</description>
     <language>en-us</language>
     <pubDate>${dateFormat.format(Date())}</pubDate>
@@ -34,7 +34,7 @@ class Feed(val config: BlogConfig,
             sb.append("""
     <item>
       <title>${p.title}</title>
-      <link>${config.siteBaseURL}/${p.pathTo}/${p.outputFile.name}</link>
+      <link>${config.siteBaseURL}${p.pathTo}/${p.outputFile.name}</link>
       <pubDate>${dateFormat.format(p.date)}</pubDate>
       <guid isPermaLink="true">${p.pathTo}/${p.outputFile.name}</guid>
         <description>

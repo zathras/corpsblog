@@ -6,11 +6,10 @@ import com.github.rjeschke.txtmark.Line
 import com.github.rjeschke.txtmark.TxtmarkExtension
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
+import com.jovial.os.OSFiles
 import com.jovial.util.processFileName
 import java.io.File
 import java.net.URL
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import java.util.*
 
 /**
@@ -33,7 +32,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val height = Integer.parseInt(dimensionStrings[1])
         currLine = currLine.next
         val sourceFile = processFileName(currLine.value, site.postsSrcDir)
-	var s = sourceFile.name
+	val s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
         context.videoCount++
         val destFileName = context.postBaseName + "-video-" + context.videoCount + extension
@@ -57,7 +56,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         // Copy the video file
         val dep = site.dependencies.get(destFile)
         if (dep.changed(listOf(sourceFile))) {
-            Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            OSFiles.copyReplace(sourceFile, destFile)
         }
 
         // Make a video tag
@@ -84,7 +83,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                 out.append("<center>\n")
             }
             out.append("<br>\n")
-            val destURL = URL(site.blogConfig.siteBaseURL + "/posts/videos/" + destFile.name)
+            val destURL = URL(site.blogConfig.siteBaseURL + "posts/videos/" + destFile.name)
             val upload = getYoutubeURL(sourceFile, destURL, caption, context)
             if (upload == null) {
                 context.videoURLs.add("Pending for $sourceFile")
@@ -124,7 +123,7 @@ ${caption}
         if (!site.publish) {
             return null;
         }
-        val postURL = site.blogConfig.siteBaseURL + "/posts/${context.postBaseName}.html"
+        val postURL = site.blogConfig.siteBaseURL + "posts/${context.postBaseName}.html"
         val seeMe = "This video is from the blog post at $postURL"
         val description = if (caption.length == 0) {
             seeMe

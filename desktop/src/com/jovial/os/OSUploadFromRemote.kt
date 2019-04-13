@@ -1,4 +1,4 @@
-package com.jovial.google.remote_hack
+package com.jovial.os
 
 import java.net.URL
 import com.jovial.google.ResumableUpload
@@ -8,7 +8,7 @@ import java.io.IOException
 /**
  * Created by billf on 12/11/16.
  */
-class UploadFromRemote (val args : List<String>) {
+class OSUploadFromRemote (val args : List<String>) {
 
     fun run() : Unit {
         if (args.size != 5) {
@@ -26,6 +26,6 @@ class UploadFromRemote (val args : List<String>) {
                     dest = URL(urlDecode(args[4]))
         )
         val url = ru.upload()
-        println(url)
+        Stdout.println(url)
     }
 }

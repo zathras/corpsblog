@@ -2,10 +2,8 @@ package com.jovial.blog.model
 
 import com.jovial.google.GoogleClientConfig
 import com.jovial.mailchimp.MailchimpClientConfig
-import com.jovial.util.JsonIO
-import com.jovial.util.notNull
-import com.jovial.util.nullOK
-import com.jovial.util.processFileName
+import com.jovial.os.Stdout
+import com.jovial.util.*
 import java.io.*
 import java.util.*
 
@@ -15,7 +13,7 @@ import java.util.*
 
 class BlogConfig(configFile: File) {
 
-    public val siteBaseURL : String
+    public val siteBaseURL : String     // Terminated with a "/"
     public val siteDescription : String
     public val siteAuthor : String
     public val disclaimer : String?
@@ -53,7 +51,7 @@ class BlogConfig(configFile: File) {
             @Suppress("UNCHECKED_CAST")
             val m = JsonIO.readJSON(input) as HashMap<Any, Any>
             input.close()
-            siteBaseURL = notNull(m, "siteBaseURL")
+            siteBaseURL = withSlashAtEnd(notNull(m, "siteBaseURL"))
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")
             siteTitle = notNull(m, "siteTitle")
@@ -89,9 +87,10 @@ class BlogConfig(configFile: File) {
             defaultPostThumbnail = nullOK(m, "default_post_thumbnail")
             indexThumbnail = nullOK(m, "index_thumbnail")
         } catch (e: Exception) {
-            println()
-            println("Error reading configuration file ${configFile.absolutePath}")
-            println()
+            Stdout.println()
+            Stdout.println("Error reading configuration file ${configFile.absolutePath}")
+            Stdout.println("    $e")
+            Stdout.println()
             throw e
         }
     }

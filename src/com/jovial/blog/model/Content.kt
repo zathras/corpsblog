@@ -7,9 +7,7 @@ import java.io.*
 /**
  * Created by billf on 11/14/16.
  */
-abstract class Content(
-        val txtmarkConfig: Configuration
-) {
+abstract class Content () {
     var body : String = ""      /** Body of the content, in HTML */
         protected set
 
@@ -55,7 +53,6 @@ abstract class Content(
 
     protected abstract fun processHeader(key: String, value: String) :  Boolean
 
-    protected open fun readBody(input: Reader) {
-        body = Processor<Content>(input, txtmarkConfig).process(this)
-    }
+    protected abstract fun readBody(input: Reader);
+    //{ body = Processor<ConfigType>(input, txtmarkConfig).process(this) }
 }

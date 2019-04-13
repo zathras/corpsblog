@@ -45,7 +45,7 @@ public class Processor<ContextType>
     /** The emitter. */
     private final Emitter<ContextType> emitter;
     /** The Configuration. */
-    final Configuration   config;
+    final Configuration<ContextType>   config;
     /** Extension flag. */
     private boolean       useExtensions = false;
 
@@ -55,7 +55,7 @@ public class Processor<ContextType>
      * @param reader
      *            The input reader.
      */
-    public Processor(final Reader reader, final Configuration config)
+    public Processor(final Reader reader, final Configuration<ContextType> config)
     {
         this.reader = reader;
         this.config = config;
@@ -63,7 +63,7 @@ public class Processor<ContextType>
         this.emitter = new Emitter<ContextType>(this.config);
     }
 
-    public Processor(final String input, final Configuration config) {
+    public Processor(final String input, final Configuration<ContextType> config) {
         this(new StringReader(input), config);
     }
 

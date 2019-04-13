@@ -31,7 +31,7 @@ class Sitemap (val site : Site, val indexDate: Date){
     private fun addFile(sb: StringBuffer, fileName: String, date: Date) {
         sb.append("""
     <url>
-        <loc>${site.blogConfig.siteBaseURL}/${fileName}</loc>
+        <loc>${site.blogConfig.siteBaseURL}${fileName}</loc>
         <lastmod>${dateFormat.format(date)}</lastmod>
     </url>""")
     }

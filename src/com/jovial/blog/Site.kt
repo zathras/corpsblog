@@ -1,18 +1,20 @@
 package com.jovial.blog
 
+import com.jovial.blog.md.extensions.GalleryExtension
 import com.jovial.blog.md.extensions.Picture
+import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.*
 import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
 import com.jovial.templates.lib.HTML
 import com.jovial.mailchimp.Mailchimp
+import com.jovial.os.OSFiles
+import com.jovial.os.OSResources
+import com.jovial.os.Stdout
 import com.jovial.util.processFileName
 import com.jovial.util.urlEncode
 import com.jovial.templates.*
 import java.io.*
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
-import java.nio.file.attribute.FileTime
 
 /**
  * Class to generate the site.
@@ -25,17 +27,22 @@ class Site (
         val blogConfig : BlogConfig,
         val publish : Boolean
 ){
-
-    var deferredTxtmarkConfig : com.github.rjeschke.txtmark.Configuration? = null
-
-    val txtmarkConfig: com.github.rjeschke.txtmark.Configuration by lazy {
-        deferredTxtmarkConfig!!
+    val txtmarkConfig: com.github.rjeschke.txtmark.Configuration<Content> by lazy {
+        com.github.rjeschke.txtmark.Configuration.Builder<Content>().
+            enableSafeMode().               // Escapes unsafe XML tags
+            forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
+            setEncoding("UTF-8").
+            build()
     }
 
-    var deferredTxtmarkPostConfig : com.github.rjeschke.txtmark.Configuration? = null
-
-    val txtmarkPostConfig: com.github.rjeschke.txtmark.Configuration by lazy {
-        deferredTxtmarkPostConfig!!
+    val txtmarkPostConfig: com.github.rjeschke.txtmark.Configuration<PostContent> by lazy {
+        com.github.rjeschke.txtmark.Configuration.Builder<PostContent>().
+            enableSafeMode().               // Escapes unsafe XML tags
+            forceExtentedProfile().         // Include txtmark extensions.  Note misspelling :-)
+            setEncoding("UTF-8").
+            addExtension(GalleryExtension(this)).
+            addExtension(VideoExtension(this)).
+            build()
     }
 
     val dbDir = File(outputDir.canonicalPath + ".db")
@@ -80,21 +87,21 @@ class Site (
 
 
     public fun error(message: String) {
-        println(message)
+        Stdout.println(message)
         errors.add(message)
     }
 
     public fun note(message: String) {
-        println(message)
+        Stdout.println(message)
         notes.add(message)
     }
 
     public fun printNotes() : Unit {
         if (!notes.isEmpty()) {
-            println()
-            println("Notes about site generation:")
+            Stdout.println()
+            Stdout.println("Notes about site generation:")
             for (e in notes) {
-                println("    $e")
+                Stdout.println("    $e")
             }
         }
     }
@@ -102,9 +109,9 @@ class Site (
     public fun hasErrors() : Boolean = !errors.isEmpty()
 
     public fun printErrors() : Unit {
-        println("Site errors:")
+        Stdout.println("Site errors:")
         for (e in errors) {
-            println("    $e")
+            Stdout.println("    $e")
         }
     }
 
@@ -129,7 +136,7 @@ class Site (
                     filter {
                         if (!it.toLowerCase().endsWith(".md")) {
                             if (!File(postsSrcDir, it).isDirectory()) {
-                                println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
+                                Stdout.println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
                                 // Directories are for assets referenced in a post, so we don't isssue a warning.
                             }
                             false
@@ -193,8 +200,8 @@ class Site (
         } else {
             val dep = dependencies.get(output)
             if (dep.changed(listOf(input))) {
-                Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING)
-                println("Copying $input")
+                OSFiles.copyReplace(input, output)
+                Stdout.println("Copying $input")
             }
         }
     }
@@ -204,7 +211,7 @@ class Site (
      */
     private fun copyCorpsblogAssets() {
         val input = BufferedReader(InputStreamReader(
-                        javaClass.getResourceAsStream("/src/resource_list.txt")!!, "UTF8"))
+                        OSResources.getResourceAsStream("/src/resource_list.txt"), "UTF8"))
         val buffer = ByteArray(65536)
         while (true) {
             val line = input.readLine()
@@ -221,10 +228,10 @@ class Site (
             val outputFile = File(outputDir, line)
             val dependsOn = dependencies.get(outputFile)
             if (dependsOn.changed(listOf<File>(), listOf(modifiedTime))) {
-                println("Copying " + line)
+                Stdout.println("Copying " + line)
                 outputFile.parentFile.mkdirs()
                 val resOut = FileOutputStream(outputFile)
-                val resIn = javaClass.getResource("/" + line).openStream()
+                val resIn = OSResources.getResourceAsStream("/" + line)
                 while (true) {
                     val read = resIn.read(buffer)
                     if (read == -1) {
@@ -234,7 +241,7 @@ class Site (
                 }
                 resIn.close()
                 resOut.close()
-                Files.setLastModifiedTime(outputFile.toPath(), FileTime.fromMillis(modifiedTimeMS))
+                OSFiles.setLastModifiedTimeMS(outputFile, modifiedTimeMS)
             }
         }
         input.close()
@@ -245,7 +252,6 @@ class Site (
      *
      * @param pathTo    Relative path from the base directory to the posts directory
      * @param pathFrom  Relative path back to the root (like "../")
-     * @param name      Name of the file within pathTo, ending in ".md"
      */
     private fun generatePost(pathTo: String, pathFrom: String, src: List<String>, index: Int) {
         val name = src[index]
@@ -328,7 +334,7 @@ class Site (
         val w = OutputStreamWriter(FileOutputStream(outFile), "UTF-8")
         w.write(content)
         w.close();
-        println("Wrote to file ${outFile.absolutePath}")
+        Stdout.println("Wrote to file ${outFile.absolutePath}")
     }
 
     private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {
@@ -345,9 +351,9 @@ class Site (
             } else if (dependencies.check(f) == null) {
                 if (!found) {
                     found = true
-                    println("Warning -- Stray files found in output directory:")
+                    Stdout.println("Warning -- Stray files found in output directory:")
                 }
-                println("    $f")
+                Stdout.println("    $f")
             }
         }
         return found

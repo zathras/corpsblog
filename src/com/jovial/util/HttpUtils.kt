@@ -1,5 +1,6 @@
 package com.jovial.util
 
+import com.jovial.os.Stdout
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
 import java.io.*
@@ -100,18 +101,18 @@ fun getConnectionReader(conn : HttpURLConnection) : Reader {
     } catch (ex : IOException) {
         try {
             val err = BufferedReader(InputStreamReader(conn.errorStream, charset))
-            println("Error from server:")
+            Stdout.println("Error from server:")
             while (true) {
                 val c = err.read()
                 if (c == -1) {
                     break;
                 }
-                print(c.toChar())
+                Stdout.print(c.toChar())
             }
-            println()
-            println()
+            Stdout.println()
+            Stdout.println()
         } catch (ex: Exception) {
-            println("Error trying to read error message:  $ex")
+            Stdout.println("Error trying to read error message:  $ex")
         }
         throw ex
     }

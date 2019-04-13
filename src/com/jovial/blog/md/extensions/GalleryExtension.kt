@@ -34,6 +34,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         currLine = currLine.next
         val pictures = ArrayList<Picture>()
         while (currLine != null) {
+            @Suppress("UNCHECKED_CAST")
             currLine = addPicture(currLine, emitter, galleryDir, pictures)
         }
 

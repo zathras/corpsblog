@@ -1,13 +1,9 @@
 package com.jovial.blog.md.extensions
 
 import com.jovial.blog.Site
+import com.jovial.os.OSImage
 import com.jovial.util.JpegMetadata
-import java.awt.Dimension
-import java.awt.geom.AffineTransform
-import java.awt.image.AffineTransformOp
-import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 /**
  * Created by billf on 11/7/16.
@@ -22,7 +18,7 @@ class Picture (
     public var largeImage: String? = null /** file name of big image, including gallery dir name */
         private set
 
-    public var largeImageSize: Dimension? = null
+    public var largeImageSize: OSImage.Size? = null
         private set
 
     var smallImage: String? = null /** file name of small image, including gallery dir */
@@ -67,19 +63,15 @@ class Picture (
         val dest = File(baseDir, relName)
         val dep = site.dependencies.get(dest)
         if (dep.changed(listOf(source))) {
-            var im = getImage()
+            val im = getImage()
             dest.parentFile.mkdirs()
-            val maxSrc = if (im.width > im.height) im.width else im.height
+            val maxSrc = if (im.size.width > im.size.height) im.size.width else im.size.height
             val scaled = if (maxDimension > maxSrc) {
                 im
             } else {
-                val scaleFactor = maxDimension.toDouble() / maxSrc.toDouble()
-                val xform = AffineTransform.getScaleInstance(scaleFactor, scaleFactor)
-                val op = AffineTransformOp(xform, null)
-                val newImage = op.filter(im, null)
-                newImage
+                im.scaledBy(maxDimension.toDouble() / maxSrc.toDouble())
             }
-            ImageIO.write(scaled, "jpeg", dest)
+            scaled.writeJpeg(dest)
             if (scaled != im) {
                 scaled.flush()
             }
@@ -91,28 +83,12 @@ class Picture (
         val dest = File(baseDir, relName)
         val dep = site.dependencies.get(dest)
         if (dep.changed(listOf(source))) {
-            var im = getImage()
+            val im = getImage()
             dest.parentFile.mkdirs()
-            val minDimension = Math.min(im.width, im.height)
-            val size = Math.min(maxSize, minDimension)
-            val square  = BufferedImage(size, size, im.type)
-            val g = square.createGraphics();
-            val scaleFactor = size.toDouble() / minDimension.toDouble()
-            g.scale(scaleFactor, scaleFactor)
-            val dx = if (im.width > minDimension) {
-                (minDimension - im.width) / 2
-            } else {
-                0
-            }
-            val dy = if (im.height > minDimension) {
-                (minDimension - im.height) / 2
-            } else {
-                0
-            }
-            g.drawImage(im, dx, dy, null)
-            g.dispose()
-            ImageIO.write(square, "jpeg", dest)
-            square .flush()
+            val minDimension = Math.min(im.size.width, im.size.height)
+            val size: Int = Math.min(maxSize, minDimension)
+            val square = im.scaledToSquare(size)
+            square.writeJpeg(dest)
         }
         return "pictures/" + baseDir.name + "/" + relName
     }

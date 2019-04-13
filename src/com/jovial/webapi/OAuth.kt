@@ -1,5 +1,7 @@
 package com.jovial.webapi
 
+import com.jovial.os.OSBrowser
+import com.jovial.os.Stdout
 import com.jovial.server.SimpleHttp
 import com.jovial.util.JsonIO
 import com.jovial.util.httpPostForm
@@ -21,7 +23,7 @@ class OAuth (val authURL : String,
              val tokenFile : File,
              val authParams : String = "",
              val tokenURL : String,
-             val browser : String,
+             val browser : String,              // Ignored on Android
              val localhostName : String)
 {
     private var savedToken: OAuthToken? = null
@@ -41,21 +43,10 @@ class OAuth (val authURL : String,
                                 + "&response_type=code"
                                 + authParams)
 
-                println("OAuth Sending browser to $url")
-                val pb = ProcessBuilder(browser, url.toString())
-                try {
-                    pb.start()
-                } catch (ex : IOException) {
-                    println("Unable to start $browser")
-                    println("Please start manually.")
-                    println()
-                    println(ex)
-                    println()
-                    println("URL:  $url")
-                    println()
-                }
+                Stdout.println("OAuth Sending browser to $url")
+                OSBrowser.launch(browser, url)
                 val server = SimpleHttp(7001)
-                println("Running server to wait for OAuth redirect from browser...")
+                Stdout.println("Running server to wait for OAuth redirect from browser...")
                 val query = server.run()
                 val queryStart = "/corpsblog_oauth?code="
                 if (!query.startsWith(queryStart)) {
@@ -81,7 +72,7 @@ class OAuth (val authURL : String,
             if (rt == null) {
                 throw IOException("Expired token, refresh_token not given")
             }
-            println("Old oauth token, refreshing -- expiry was ${token.expires}")
+            Stdout.println("Old oauth token, refreshing -- expiry was ${token.expires}")
             val tokenServer = URL(tokenURL)
             val args = mapOf(
                     "client_id" to clientId,
