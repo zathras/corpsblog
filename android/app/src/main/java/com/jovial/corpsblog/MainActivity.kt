@@ -21,6 +21,11 @@ import java.io.File
 import java.io.PrintStream
 import java.nio.charset.StandardCharsets
 import java.util.prefs.Preferences
+import android.content.Intent
+import android.content.ActivityNotFoundException
+import android.net.Uri
+import android.webkit.WebView
+
 
 open private class ViewLookup {
     protected fun<T: View> AppCompatActivity.findView(id: Int) : T = findViewById<T>(id)!!
@@ -52,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             val destDirText : TextView = findView(R.id.destDirText)
             val publishButton : Button = findView(R.id.publishButton)
             val mailButton : Button = findView(R.id.mailButton)
+            val viewButton : Button = findView(R.id.viewButton)
             val outputText : TextView = findView(R.id.outputText)
             val outputTextSV : ScrollView = findView(R.id.outputTextSV)
         }
@@ -130,6 +136,18 @@ class MainActivity : AppCompatActivity() {
                 Stdout.println("Done mailing.")
             }
         }
+        ui.viewButton.setOnClickListener {
+            val index = File(ui.destDirText.text.toString(), "index.html")
+            if (!index.exists()) {
+                Toast.makeText(
+                    this, "${index.absolutePath} does not exist.", Toast.LENGTH_LONG
+                ).show()
+            } else {
+                val intent = Intent(this, ViewBlog::class.java)
+                intent.putExtra("url", index.toURL().toString())
+                startActivity(intent)
+            }
+        }
         ui.outputText.text = Stdout.addListener(logListener)
         logListener("")     // Scroll to end
     }
@@ -156,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         ui.destDirButton.isEnabled = enabled
         ui.publishButton.isEnabled = enabled
         ui.mailButton.isEnabled = enabled
+        ui.viewButton.isEnabled = enabled
     }
 
     private fun runCorpsblog(task: () -> Unit) {
