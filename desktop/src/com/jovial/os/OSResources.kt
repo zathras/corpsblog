@@ -6,6 +6,6 @@ import java.io.InputStream
 object OSResources {
 
     fun getResourceAsStream(name: String) : InputStream =
-        javaClass.getResourceAsStream("/src/resource_list.txt") ?:
+        javaClass.getResourceAsStream(name) ?:
             (throw IOException("resource $name not found"))
 }

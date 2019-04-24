@@ -45,11 +45,9 @@ class Site (
             build()
     }
 
-    val dbDir = File(outputDir.canonicalPath + ".db")
-
     val postsSrcDir = File(inputDir, "posts")
 
-    val dependencies = DependencyManager(dbDir, "dependencies.json")
+    val dependencies = DependencyManager(blogConfig.dbDir, "dependencies.json")
 
     val youtubeManager : YouTube?
 
@@ -59,19 +57,20 @@ class Site (
     private val notes = mutableListOf<String>()
 
     init {
-        dbDir.mkdirs()
+        blogConfig.dbDir.mkdirs()
         val googleClientConfig = blogConfig.googleClient
         if (googleClientConfig == null) {
             youtubeManager = null
         } else {
-            youtubeManager = YouTube(dbDir, googleClientConfig, blogConfig.remote_upload, blogConfig.googleOauthBrowser)
+            youtubeManager = YouTube(blogConfig.dbDir, googleClientConfig, blogConfig.remote_upload,
+                                     blogConfig.googleOauthBrowser)
         }
 
         val mailchimpClientConfig = blogConfig.mailchimpClient
         if (mailchimpClientConfig == null) {
             mailchimpManager = null
         } else {
-            mailchimpManager = Mailchimp(dbDir, mailchimpClientConfig, blogConfig.mailchimpOauthBrowser)
+            mailchimpManager = Mailchimp(blogConfig.dbDir, mailchimpClientConfig, blogConfig.mailchimpOauthBrowser)
         }
     }
 

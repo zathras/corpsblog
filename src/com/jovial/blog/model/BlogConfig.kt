@@ -13,6 +13,7 @@ import java.util.*
 
 class BlogConfig(configFile: File) {
 
+    public val dbDir : File
     public val siteBaseURL : String     // Terminated with a "/"
     public val siteDescription : String
     public val siteAuthor : String
@@ -51,6 +52,7 @@ class BlogConfig(configFile: File) {
             @Suppress("UNCHECKED_CAST")
             val m = JsonIO.readJSON(input) as HashMap<Any, Any>
             input.close()
+            dbDir = File(configFile.parent, notNull(m, "dbDir"))
             siteBaseURL = withSlashAtEnd(notNull(m, "siteBaseURL"))
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")
