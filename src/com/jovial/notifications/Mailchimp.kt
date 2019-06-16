@@ -1,17 +1,14 @@
-package com.jovial.mailchimp
+package com.jovial.notifications
 
 import com.jovial.blog.Site
 import com.jovial.os.Stdout
 import com.jovial.webapi.OAuth
-import com.jovial.util.JsonIO
 import com.jovial.util.ddMMMMyyyyDateFormat
 import com.jovial.util.httpPostJSON
 import com.jovial.webapi.WebService
 import com.jovial.templates.Post
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.URL
 
 /**
@@ -19,69 +16,35 @@ import java.net.URL
  *
  * Created by billf on 12/23/16.
  */
-class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser : String)
-    : WebService()
+class Mailchimp(dbDir: File, val config: MailchimpClientConfig, val browser : String)
+    : NotificationsService()
 {
 
     val oAuth : OAuth
 
     protected override val dbFile = File(dbDir, "mailchimp.json")
-
-    val postsMailed = mutableSetOf<String>()
-    // Contains the absolute path of the generated posts
+    protected override val serviceName = "mailchimp"
 
     init {
         oAuth = OAuth(authURL = config.auth_uri,
-                      clientId = config.client_id,
-                      clientSecret = config.client_secret,
-                      tokenFile = File(dbDir, "mailchimp_oauth.json"),
-                      tokenURL = config.token_uri,
-                      browser = browser,
-                      localhostName = "127.0.0.1")
-
-        val m = readDbFile()
-        if (m != null) {
-            @Suppress("UNCHECKED_CAST")
-            for (p in (m as List<Any>)) {
-                postsMailed += p as String
-            }
-        }
-        writeMailedFile()      // To make sure we can
+            clientId = config.client_id,
+            clientSecret = config.client_secret,
+            tokenFile = File(dbDir, "mailchimp_oauth.json"),
+            tokenURL = config.token_uri,
+            browser = browser,
+            localhostName = "127.0.0.1")
     }
 
-    private fun writeMailedFile() {
-        val json = postsMailed.toList()
-        writeDbFile(json)
-    }
-
-    /**
-     *  Check notifications for site, and tell the user (via site.note())
-     */
-    fun checkNotifications(site : Site) {
-        for (p in site.posts) {
-            if (!postsMailed.contains(p.outputFile.absolutePath)) {
-                site.note("Pending mail list notification for ${p.outputFile.path}")
-            }
-        }
-    }
 
     /**
      *  Generate notifications for site.  If site.publish is false and notifications are pending,
      *  note this (via site.note())
      */
     fun generateNotifications(site : Site) {
-        val pending = mutableListOf<Post>()
-        for (p in site.posts) {
-            if (!postsMailed.contains(p.outputFile.absolutePath)) {
-                pending.add(p)
-                // site.posts is already sorted by date, so we shouldn't re-sort
-            }
-        }
+        val pending = getPendingPostNotifications(site)
         if (pending.isEmpty()) {
-            Stdout.println("No mail list notification is pending.")
             return
         }
-        Stdout.println("Sending mail list notification for ${pending.size} post(s).")
 
         val subject = if (pending.size > 1) {
             "${pending.size} new posts on ${site.blogConfig.siteTitle}"
@@ -107,9 +70,9 @@ class Mailchimp (val dbDir: File, val config: MailchimpClientConfig, val browser
         sendMessage(subject, fromName, html.toString())
 
         for (p in pending) {
-            postsMailed += p.outputFile.absolutePath
+            postsSent += p.outputFile.absolutePath
         }
-        writeMailedFile()
+        writeSentFile()
     }
 
     private fun sendMessage(subjectLine: String, fromName: String, bodyHtml: String) {

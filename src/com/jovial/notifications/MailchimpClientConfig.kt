@@ -1,15 +1,13 @@
-package com.jovial.mailchimp
+package com.jovial.notifications
 
 import com.jovial.util.JsonIO
 import com.jovial.util.notNull
-import com.jovial.util.nullOK
 import com.jovial.util.processFileName
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.*
-import kotlin.properties.Delegates.notNull
 
 /**
  * Created by billf on 12/23/16.

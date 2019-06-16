@@ -1,4 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash
+echo "This needs to be updated for new source orgination, post-Android."
+echo "For now, just do this:"
+echo "mv ./desktop/out/artifacts/desktop_jar/desktop.jar ~/lib/corpsblog.jar"
+exit 1
 cd `dirname $0`
 rm -rf out
 mkdir -p out/java

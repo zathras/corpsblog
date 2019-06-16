@@ -73,9 +73,14 @@ private fun postToMaillist(args: List<String>) {
     val mgr = site.mailchimpManager
     if (mgr == null) {
         Stdout.println("Mailchimp not configured, so I can't post to a maillist.")
-        System.exit(0)
     } else {
         mgr.generateNotifications(site)
+    }
+    val ifttt = site.iftttManager
+    if (ifttt == null) {
+        Stdout.println("Ifttt not configured, so I can't post to Facebook Pages.")
+    } else {
+        ifttt.generateNotifications(site)
     }
 }
 

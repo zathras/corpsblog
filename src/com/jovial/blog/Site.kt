@@ -4,15 +4,12 @@ import com.jovial.blog.md.extensions.GalleryExtension
 import com.jovial.blog.md.extensions.Picture
 import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.*
-import com.jovial.webapi.OAuth
 import com.jovial.google.YouTube
-import com.jovial.templates.lib.HTML
-import com.jovial.mailchimp.Mailchimp
+import com.jovial.notifications.Ifttt
+import com.jovial.notifications.Mailchimp
 import com.jovial.os.OSFiles
 import com.jovial.os.OSResources
 import com.jovial.os.Stdout
-import com.jovial.util.processFileName
-import com.jovial.util.urlEncode
 import com.jovial.templates.*
 import java.io.*
 
@@ -53,6 +50,8 @@ class Site (
 
     val mailchimpManager : Mailchimp?
 
+    val iftttManager : Ifttt?
+
     private val errors = mutableListOf<String>()
     private val notes = mutableListOf<String>()
 
@@ -71,6 +70,13 @@ class Site (
             mailchimpManager = null
         } else {
             mailchimpManager = Mailchimp(blogConfig.dbDir, mailchimpClientConfig, blogConfig.mailchimpOauthBrowser)
+        }
+
+        val iftttClientConfig = blogConfig.iftttClient
+        if (iftttClientConfig == null) {
+            iftttManager = null
+        } else {
+            iftttManager = Ifttt(blogConfig.dbDir, iftttClientConfig)
         }
     }
 
@@ -181,6 +187,7 @@ class Site (
         dependencies.write()
 
         mailchimpManager?.checkNotifications(this)
+        iftttManager?.checkNotifications(this)
 
         checkForStrayOutputFiles(outputDir)
     }

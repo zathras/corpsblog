@@ -46,17 +46,18 @@ fun httpPostJSON(server: URL, content: Any?,
                  headers: Map<String, String> = mapOf<String, String>(),
                  requestMethod: String = "POST") : PostResult
 {
-    val sw = StringWriter()
-    if (content != null) {
-        JsonIO.writeJSON(sw, content)
+    val contentS = if (content === null) {
+        ""
+    } else {
+        JsonIO.valueToString(content)
     }
-    return httpPost(server, sw.toString().toByteArray(Charsets.UTF_8),
+    return httpPost(server, contentS.toByteArray(Charsets.UTF_8),
                     "application/json; charset=UTF-8", headers, requestMethod)
 }
 
 /**
  * Do an HTTP post of a byte array.
- * Returns an HttpURLConnection with a successfully opened input stream.
+ * Returns a PostResult with an appropriate reader for the HttpURLConnection
  */
 fun httpPost(server: URL,
              contentBytes : ByteArray,
@@ -64,21 +65,50 @@ fun httpPost(server: URL,
              headers: Map<String, String>,
              requestMethod : String = "POST") : PostResult
 {
-    val conn = server.openConnection() as HttpURLConnection
-    conn.setDoOutput(true);
-    conn.setRequestMethod(requestMethod);
-    conn.setRequestProperty("Content-Type", contentType)
-    conn.setRequestProperty("Content-Length", contentBytes.size.toString())
-    for ((key, value) in headers) {
-        conn.setRequestProperty(key, value)
-    }
+    val conn = httpPostRaw(server, contentBytes, contentType, headers, requestMethod)
+    return PostResult(getConnectionReader(conn), conn)
+}
+
+/**
+ * Do an HTTP post of a byte array.
+ * Returns an HttpURLConnection, ready for opening the input stream.
+ */
+fun httpPostRaw(server: URL,
+                contentBytes : ByteArray,
+                contentType: String,
+                headers: Map<String, String>,
+                requestMethod : String = "POST") : HttpURLConnection
+{
+    val conn = httpPostSetup(server, contentBytes.size, contentType, headers, requestMethod)
     // Content-Length is size in octets sent to the recipient.
     // cf. http://stackoverflow.com/questions/2773396/whats-the-content-length-field-in-http-header
     val os = conn.getOutputStream();
     os.write(contentBytes)
     os.close()
-    return PostResult(getConnectionReader(conn), conn)
+    return conn
 }
+
+/**
+ * Set up an HTTP post.
+ * Returns an HttpURLConnection, ready for opening the input and output streams.
+ */
+fun httpPostSetup(server: URL,
+                  contentLength: Int,        // Size in octets sent to the recipient
+                  contentType: String,
+                  headers: Map<String, String>,
+                  requestMethod : String = "POST") : HttpURLConnection
+{
+    val conn = server.openConnection() as HttpURLConnection
+    conn.setDoOutput(true);
+    conn.setRequestMethod(requestMethod);
+    conn.setRequestProperty("Content-Type", contentType)
+    conn.setRequestProperty("Content-Length", contentLength.toString())
+    for ((key, value) in headers) {
+        conn.setRequestProperty(key, value)
+    }
+    return conn
+}
+
 
 fun getConnectionReader(conn : HttpURLConnection) : Reader {
     val enc = conn.contentType
@@ -99,6 +129,7 @@ fun getConnectionReader(conn : HttpURLConnection) : Reader {
         val input = BufferedReader(InputStreamReader(conn.inputStream, charset))
         return input
     } catch (ex : IOException) {
+        val sb = StringBuffer()
         try {
             val err = BufferedReader(InputStreamReader(conn.errorStream, charset))
             Stdout.println("Error from server:")
@@ -108,13 +139,15 @@ fun getConnectionReader(conn : HttpURLConnection) : Reader {
                     break;
                 }
                 Stdout.print(c.toChar())
+                sb.append(c.toChar())
             }
             Stdout.println()
             Stdout.println()
+            err.close()
         } catch (ex: Exception) {
             Stdout.println("Error trying to read error message:  $ex")
         }
-        throw ex
+        throw IOException("Error from ${conn.url}:  $sb", ex)
     }
 }
 

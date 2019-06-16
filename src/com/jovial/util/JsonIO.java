@@ -54,9 +54,7 @@
 
 package com.jovial.util;
 
-import java.io.Reader;
-import java.io.Writer;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -98,6 +96,16 @@ public class JsonIO {
     //
     private static long LONG_MAX_MSD = 9000000000000000000L;
 
+
+    public static String valueToString(Object value) throws IOException {
+        StringWriter sw = new StringWriter();
+        writeJSON(sw, value);
+        return sw.toString();
+    }
+
+    public static Object stringToValue(String str) throws IOException {
+        return readJSON(new StringReader(str));
+    }
     /**
      * Write a JSON object to out.  The argument must correspond to the
      * JSON type as described in the class documentation, one of

@@ -1,7 +1,8 @@
 package com.jovial.blog.model
 
 import com.jovial.google.GoogleClientConfig
-import com.jovial.mailchimp.MailchimpClientConfig
+import com.jovial.notifications.IftttClientConfig
+import com.jovial.notifications.MailchimpClientConfig
 import com.jovial.os.Stdout
 import com.jovial.util.*
 import java.io.*
@@ -36,6 +37,7 @@ class BlogConfig(configFile: File) {
     public val googleOauthBrowser : String         // Used for Google OAuth login flow.  Defaults to firefox.
     public val googleClient : GoogleClientConfig?
     public val mailchimpClient : MailchimpClientConfig?
+    public val iftttClient : IftttClientConfig?
     public val mailchimpOauthBrowser : String         // Used for Mailchimp OAuth login flow.  Defaults to firefox.
     public val defaultPostThumbnail : String?         // Relative to base directory
     public val indexThumbnail : String?               // Like the above, but for index.html
@@ -84,6 +86,12 @@ class BlogConfig(configFile: File) {
                 mailchimpClient = null
             } else {
                 mailchimpClient = MailchimpClientConfig(mailchimpClientName, configFile.parentFile)
+            }
+            val iftttClientName = nullOK(m, "ifttt_id_file")
+            if (iftttClientName == null) {
+                iftttClient = null
+            } else {
+                iftttClient = IftttClientConfig(iftttClientName, configFile.parentFile)
             }
             mailchimpOauthBrowser = nullOK(m, "mailchimp_oauth_browser") ?: "firefox"
             defaultPostThumbnail = nullOK(m, "default_post_thumbnail")
