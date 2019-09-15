@@ -20,7 +20,7 @@ class GoogleClientConfig(file : String, defaultDir: File?){
     // We don't give the list of redirect_uris.  "http://localhost" isn't interesting.
 
     init {
-        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, defaultDir)), "UTF-8"))
+        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, null, defaultDir)), "UTF-8"))
         @Suppress("UNCHECKED_CAST")
         val m = JsonIO.readJSON(input) as HashMap<Any, Any>
         input.close()

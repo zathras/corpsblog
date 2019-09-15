@@ -29,7 +29,7 @@ class MailchimpClientConfig(file : String, defaultDir: File?){
       // cf. http://kb.mailchimp.com/integrations/facebook/connect-or-disconnect-the-facebook-integration
 
     init {
-        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, defaultDir)), "UTF-8"))
+        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, null, defaultDir)), "UTF-8"))
         @Suppress("UNCHECKED_CAST")
         val m = JsonIO.readJSON(input) as HashMap<Any, Any>
         input.close()

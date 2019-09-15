@@ -14,6 +14,7 @@ import java.util.*
 
 class BlogConfig(configFile: File) {
 
+    public val pathMap : Map<String, File>
     public val dbDir : File
     public val siteBaseURL : String     // Terminated with a "/"
     public val siteDescription : String
@@ -54,7 +55,19 @@ class BlogConfig(configFile: File) {
             @Suppress("UNCHECKED_CAST")
             val m = JsonIO.readJSON(input) as HashMap<Any, Any>
             input.close()
-            dbDir = File(configFile.parent, notNull(m, "dbDir"))
+            // An optional map of file prefix strings to something else.  This is useful
+            // when moving a blog between Android and a normal computer, since Android's
+            // file security model makes it hard to put everything in one place.
+            val pathMapBuild = mutableMapOf<String, File>()
+            val pathMapSrc = m["pathMap"]
+            if (pathMapSrc != null) {
+                pathMapSrc as Map<String, String>
+                for (e in pathMapSrc.entries) {
+                    pathMapBuild[e.key] = File(e.value)
+                }
+            }
+            pathMap = pathMapBuild;
+            dbDir = makeFile(configFile.parentFile, notNull(m, "dbDir"))
             siteBaseURL = withSlashAtEnd(notNull(m, "siteBaseURL"))
             siteDescription = notNull(m, "siteDescription")
             siteAuthor = notNull(m, "siteAuthor")

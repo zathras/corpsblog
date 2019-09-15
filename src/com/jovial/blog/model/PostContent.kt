@@ -77,7 +77,7 @@ class PostContent (
             if (thumbnail != null) {
                 throw ParseError("Thumbnail specified twice")
             }
-            val sourceName = processFileName(value, site.postsSrcDir)
+            val sourceName = processFileName(value, site.blogConfig.pathMap, site.postsSrcDir)
             val t = Thumbnail(sourceName, site, outputDir, postBaseName)
             thumbnail = t
         } else {

@@ -49,7 +49,7 @@ public class OSRemoteUpload {
         this.command = if (command == null) {
             null
         } else {
-            processFileName(command)
+            processFileName(command, null)
         }
         this.upload = upload
     }

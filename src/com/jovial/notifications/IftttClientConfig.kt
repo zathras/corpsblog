@@ -17,7 +17,7 @@ class IftttClientConfig(file : String, defaultDir: File?){
     val post_uri : String = "https://maker.ifttt.com/trigger/post/with/key/"
 
     init {
-        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, defaultDir)), "UTF-8"))
+        val input = BufferedReader(InputStreamReader(FileInputStream(processFileName(file, null, defaultDir)), "UTF-8"))
         @Suppress("UNCHECKED_CAST")
         val m = JsonIO.readJSON(input) as HashMap<Any, Any>
         input.close()

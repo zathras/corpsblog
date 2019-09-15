@@ -1,5 +1,6 @@
 package com.jovial.util
 
+import com.jovial.blog.model.BlogConfig
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -42,6 +43,13 @@ fun notNull(map: Map<Any, Any>, key: Any) : String {
     }
 }
 
+fun makeFile(defaultDir: File, name: String) : File =
+        if (name.startsWith("/")) {
+            File(name)
+        } else {
+            File(defaultDir, name)
+        }
+
 /**
  * Utility to make sure a string ends with a slash
  */
@@ -57,11 +65,11 @@ public fun escapeHtml(line: String) =
                 replace(">", "&gt;").
                 replace("&", "&amp;")
 
-public fun processFileName(name: String, pseudoHomeDir: File? = null) : File {
+public fun processFileName(name: String, pathMap: Map<String, File>?, pseudoHomeDir: File? = null) : File {
     if (name.startsWith("~/")) {
         return File(homeDir + name.substring(1))
     } else {
-        val f = File(name)
+        val f = mapPath(name, pathMap)
         if (pseudoHomeDir != null && !f.isAbsolute()) {
             return File(pseudoHomeDir, name)
         } else {
@@ -69,3 +77,15 @@ public fun processFileName(name: String, pseudoHomeDir: File? = null) : File {
         }
     }
 }
+
+private fun mapPath(name: String, pathMap: Map<String, File>?) : File {
+    if (pathMap != null) {
+        for (e in pathMap) {
+            if (name.startsWith(e.key)) {
+                return File(e.value, name.drop(e.key.length))
+            }
+        }
+    }
+    return File(name)
+}
+

@@ -45,7 +45,7 @@ abstract class NotificationsService ()
     fun checkNotifications(site : Site) {
         for (p in site.posts) {
             if (!postsSent.contains(p.outputFile.absolutePath)) {
-                site.note("Pending ifttt/FB notification for ${p.outputFile.path}")
+                site.note("Pending $serviceName notification for ${p.outputFile.path}")
             }
         }
     }

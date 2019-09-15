@@ -138,7 +138,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
                            emitter: Emitter<PostContent>,
                            galleryDir: File,
                            pictures: MutableList<Picture>) : Line? {
-        val sourceName = processFileName(start.value, site.postsSrcDir)
+        val sourceName = processFileName(start.value, site.blogConfig.pathMap, site.postsSrcDir)
         var line : Line? = start.next
         val caption = StringBuilder()
         while (line != null && line.value.startsWith(" ")) {

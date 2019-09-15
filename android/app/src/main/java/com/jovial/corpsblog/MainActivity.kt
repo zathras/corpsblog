@@ -129,9 +129,15 @@ class MainActivity : AppCompatActivity() {
                 val site = generateSite(true)
                 val mgr = site.mailchimpManager
                 if (mgr == null) {
-                    Stdout.println("***  Error:  Mailchimp not configured.")
+                    Stdout.println("NOTE:  Mailchimp not configured.")
                 } else {
                     mgr.generateNotifications(site)
+                }
+                val ifttt = site.iftttManager
+                if (ifttt == null) {
+                    Stdout.println("NOTE:  IFTTT not configured.")
+                } else {
+                    ifttt.generateNotifications(site)
                 }
                 Stdout.println("Done mailing.")
             }

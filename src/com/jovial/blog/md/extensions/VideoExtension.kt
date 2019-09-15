@@ -31,7 +31,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         val width = Integer.parseInt(dimensionStrings[0])
         val height = Integer.parseInt(dimensionStrings[1])
         currLine = currLine.next
-        val sourceFile = processFileName(currLine.value, site.postsSrcDir)
+        val sourceFile = processFileName(currLine.value, site.blogConfig.pathMap, site.postsSrcDir)
 	val s = sourceFile.name
         val extension = s.substring(s.lastIndexOf('.') .. s.length-1)
         context.videoCount++
