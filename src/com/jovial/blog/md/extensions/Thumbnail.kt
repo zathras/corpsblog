@@ -20,15 +20,23 @@ class Thumbnail(
     val archiveImageSize : OSImage.Size
     val socialImageName : String        /** Relative to posts directory  */
     val socialImageSize : OSImage.Size
+    val postImageName : String
+    val postImageSize : OSImage.Size
 
    init {
-        var r = doGenerate("archive", 114, 64)   //  I picked max size out of the air
-        archiveImageName = r.first
-        archiveImageSize = r.second     // Kotlin doesn't have destructuring assignment, I guess :-(
-        r = doGenerate("social", 476, 249)   // That's the size I observed on FB
-        socialImageName = r.first
-        socialImageSize = r.second
-        flushSourceImage()
+       var r = doGenerate("archive", 114, 64)   //  I picked max size out of the air
+       archiveImageName = r.first
+       archiveImageSize = r.second
+       // Kotlin doesn't have destructuring assignment, I guess :-(
+       // This is tempting, but doesn't work:  (archiveImageName, archiveImageSize) = r
+       r = doGenerate("social", 1080, 512)  // That's about 2x the expected height and width
+                                            // See https://github.com/zathras/corpsblog/issues/3
+       socialImageName = r.first
+       socialImageSize = r.second
+       r = doGenerate("post", 250, 120)
+       postImageName = r.first
+       postImageSize = r.second
+       flushSourceImage()
     }
 
     private fun doGenerate(dirName: String, maxWidth : Int, maxHeight : Int) : Pair<String, OSImage.Size> {

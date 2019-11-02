@@ -7,8 +7,11 @@ import com.jovial.templates.lib.html
 import com.jovial.util.ddMMMMyyyyDateFormat
 import java.io.File
 import java.text.SimpleDateFormat
+import kotlin.math.roundToInt
 
 /**
+ * A blog post.  The source of this class is basically a template of the HTML
+ * page that represents a blog post.
  * Created by w.foote on 11/3/2016.
  */
 
@@ -18,6 +21,7 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
   val date = content.date
   val synopsis : String = content.synopsis
 
+    /** Generate the HTML for this blog post */
   public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
     head {
       CommonHead(blogConfig, content.title, content.rootPath, content.hasGallery).generate(this)
@@ -67,9 +71,31 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
               }
             }
             section("post") {
-              p(style="margin-right: 50px; margin-left: 30px") {
-                em {
-                  +content.synopsis
+              val thumb = content.thumbnail
+              if (thumb != null || content.synopsis != "") {
+                div(style="margin-right: 50px; margin-left: 30px") {
+                  if (thumb != null) {
+                    val sz = thumb.postImageSize
+                    div(style = if (sz.height > sz.width) {
+                        "float: left; margin-right: 10px"
+                      } else {
+                         "text-align: center"
+                      })  {
+                      a(href=thumb.socialImageName) {
+                        img(src = thumb.postImageName, height = "${sz.height}", width = "${sz.width}")
+                      }
+                    }
+                    if (content.synopsis != "") {
+                      div() {
+                        br { }
+                        em {
+                          +content.synopsis
+                        }
+                      }
+                    }
+                    div (style="clear: both") { }
+                    br { }
+                  }
                 }
               }
               +content.body

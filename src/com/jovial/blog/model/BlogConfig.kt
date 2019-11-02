@@ -61,6 +61,7 @@ class BlogConfig(configFile: File) {
             val pathMapBuild = mutableMapOf<String, File>()
             val pathMapSrc = m["pathMap"]
             if (pathMapSrc != null) {
+                @Suppress("UNCHECKED_CAST")
                 pathMapSrc as Map<String, String>
                 for (e in pathMapSrc.entries) {
                     pathMapBuild[e.key] = File(e.value)
