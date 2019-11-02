@@ -1,7 +1,7 @@
 package com.jovial.blog
 
 import com.jovial.blog.md.extensions.GalleryExtension
-import com.jovial.blog.md.extensions.Picture
+import com.jovial.blog.md.extensions.GalleryPicture
 import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.*
 import com.jovial.google.YouTube
@@ -83,7 +83,7 @@ class Site (
     /**
      * We keep a record of all the generated we have, to avoid re-generating them
      */
-    val allPictures = mutableMapOf<File, Picture>()
+    val allPictures = mutableMapOf<File, GalleryPicture>()
 
     val posts = mutableListOf<Post>()
 
@@ -354,7 +354,7 @@ class Site (
                 if (checkForStrayOutputFiles(f, found)) {
                     found = true
                 }
-            } else if (dependencies.check(f) == null) {
+            } else if (dependencies.check(f)?.checkedThisTime != true) {
                 if (!found) {
                     found = true
                     Stdout.println("Warning -- Stray files found in output directory:")

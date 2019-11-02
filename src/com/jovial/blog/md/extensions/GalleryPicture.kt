@@ -9,7 +9,7 @@ import java.io.File
  * Created by billf on 11/7/16.
  */
 
-class Picture (
+class GalleryPicture (
         source : File,
         val galleryDir : File,
         val caption : String
@@ -31,7 +31,7 @@ class Picture (
      * Generate any images that need to be generated
      */
     fun generate(name: String, doGallery: Boolean, site: Site) {
-        val other = site.allPictures[source]
+        val other : GalleryPicture? = site.allPictures[source]
         if (other != null) {
             largeImage = other.largeImage
             largeImageSize = other.largeImageSize

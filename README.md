@@ -40,10 +40,17 @@ of the builder idiom.  See the Html class in
 src/com/jovial/lib/html/Html.kt (on Github 
 [here](https://github.com/zathras/corpsblog/blob/master/src/com/jovial/templates/lib/Html.kt) - startInitAssert()/endInitAssert() was interesting and subtle).
 
+# Some Design Documents
+
+This project started out for me as an exploration of Kotlin, so the
+deisgn early on was rather fluid.  Later I started to add some design
+documents; the can be found in the docs directory, which is published
+at http://zathras.github.io/corpsblog/.
+
 # Sample Output
 
 A build of the test blog included in this repository can be seen
-at http://zathras.github.io/corpsblog/
+at http://zathras.github.io/corpsblog/test/.  
 
 # Exernal Code
 

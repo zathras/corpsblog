@@ -8,11 +8,13 @@ import java.util.*
  * A dependency manaager records the assets that each of the generated products depends on.  This is done so that
  * we can avoid re-generating files needlessly.  Images take a long time to re-generate.  We also avoid
  * re-generating HTML files if there are no changes, so that the timestamp of the HTML file reflects when
- * the current version was first generated.
+ * the current version actually needed to be generated.
  *
  * Created by billf on 11/18/16.
  */
-class DependencyManager (val inputDir : File, val dependencyFile : String) {
+class DependencyManager (inputDir : File, dependencyFileName : String) {
+
+    private val dependencyFile = File(inputDir, dependencyFileName)
 
     private var generatedAssets = mutableMapOf<File, AssetDependencies>()
 
@@ -44,9 +46,8 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
      */
     fun read() {
         assert(generatedAssets.size == 0)
-        val f = File(inputDir, dependencyFile)
-        if (f.exists()) {
-            val input = BufferedReader(InputStreamReader(FileInputStream(f), "UTF8"))
+        if (dependencyFile.exists()) {
+            val input = dependencyFile.bufferedReader()
             @Suppress("UNCHECKED_CAST")
             val json = JsonIO.readJSON(input) as HashMap<String, Any>
             input.close()
@@ -69,7 +70,7 @@ class DependencyManager (val inputDir : File, val dependencyFile : String) {
         val json = HashMap<Any, Any>()
         json["version"] = "1.0"
         json["generatedAssets"] = generatedAssets.values.map { it.asJsonValue() }
-        val output = BufferedWriter(OutputStreamWriter(FileOutputStream(File(inputDir, dependencyFile)), "UTF8"))
+        val output = dependencyFile.bufferedWriter()
         JsonIO.writeJSON(output, json)
         output.close()
     }

@@ -6,7 +6,6 @@ import com.github.rjeschke.txtmark.Emitter
 import com.github.rjeschke.txtmark.Line
 import com.jovial.blog.Site
 import com.jovial.blog.model.PostContent
-import com.jovial.templates.lib.BodyTag
 import com.jovial.templates.lib.bodyFragment
 import com.jovial.util.processFileName
 import java.io.File
@@ -32,7 +31,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         galleryDir.mkdirs()
         // Parse the pictures from input
         currLine = currLine.next
-        val pictures = ArrayList<Picture>()
+        val pictures = ArrayList<GalleryPicture>()
         while (currLine != null) {
             @Suppress("UNCHECKED_CAST")
             currLine = addPicture(currLine, emitter, galleryDir, pictures)
@@ -41,10 +40,10 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
         // Prepare the images
         val needPlusIcon = pictures.size > 12
         var indexes : MutableList<Int>? = null
-        val gallery : MutableList<Picture> = if (!needPlusIcon) {
+        val gallery : MutableList<GalleryPicture> = if (!needPlusIcon) {
             pictures
         } else {
-            val list = ArrayList<Picture>(11)
+            val list = ArrayList<GalleryPicture>(11)
             indexes = ArrayList<Int>(11)
             for (i in 0..10) {
                 val index = (i * (pictures.size-1)) / 10
@@ -137,7 +136,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
     private fun addPicture(start: Line,
                            emitter: Emitter<PostContent>,
                            galleryDir: File,
-                           pictures: MutableList<Picture>) : Line? {
+                           pictures: MutableList<GalleryPicture>) : Line? {
         val sourceName = processFileName(start.value, site.blogConfig.pathMap, site.postsSrcDir)
         var line : Line? = start.next
         val caption = StringBuilder()
@@ -145,7 +144,7 @@ class GalleryExtension (val site: Site) : TxtmarkExtension<PostContent>() {
             emitter.extensionEmitText(caption, line.value)
             line = line.next
         }
-        pictures += Picture(sourceName, galleryDir, caption.toString())
+        pictures += GalleryPicture(sourceName, galleryDir, caption.toString())
         return line
     }
 

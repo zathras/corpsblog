@@ -17,19 +17,23 @@ import java.util.*
 class AssetDependencies  {
 
     val generatedAsset : File
-    private var values : List<String>
-    var fileTimes : List<Pair<File, Long>>
+    var fileTimes : List<Pair<File, Long>>  /** Files and their timestamps for files upon which this asset depends */
+    private var values : List<String>       /** Other values this asset depends on */
+    var checkedThisTime : Boolean /** Has this asset been checked during this run?  If not, it's stray. */
+        private set
 
 
     public constructor(generatedAsset: File)  {
         this.generatedAsset = generatedAsset
         this.values = listOf<String>()
         this.fileTimes = listOf<Pair<File, Long>>()
+        this.checkedThisTime = true
     }
 
     constructor (jsonRecord: HashMap<String, Any>) {
         this.generatedAsset = File(jsonRecord["asset"] as String)
         this.values = listOf<String>()
+        this.checkedThisTime = false
         val files = jsonRecord["files"]
         if (files == null) {
             this.fileTimes = listOf<Pair<File, Long>>()
@@ -55,6 +59,7 @@ class AssetDependencies  {
      * the asset depends on, like a file name.
      */
     fun changed(newFiles: List<File>, newValues: List<String> = listOf<String>()) : Boolean {
+        checkedThisTime = true
         val newFileTimes = newFiles.map { Pair(it.canonicalFile, it.lastModified()) }
         if (newValues != values || newFileTimes != fileTimes) {
             values = newValues
