@@ -22,7 +22,7 @@ class Site (
         val inputDir: File,
         val outputDir: File,
         val blogConfig : BlogConfig,
-        val publish : Boolean
+        val publishYT : Boolean       /** Publish with youtube links - see remote_hack command-line option */
 ){
     val txtmarkConfig: com.github.rjeschke.txtmark.Configuration<Content> by lazy {
         com.github.rjeschke.txtmark.Configuration.Builder<Content>().
@@ -343,23 +343,62 @@ class Site (
         Stdout.println("Wrote to file ${outFile.absolutePath}")
     }
 
-    private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false) : Boolean {
-        var found = foundInput
-        for (s in dir.list()) {
-            if (s.equals(".git")) {
+    fun deleteStrayFiles() {
+        val done = checkForStrayOutputFiles(outputDir, delete=true)
+        deleteEmptyDirectories(outputDir)
+        if (done) {
+            dependencies.write()
+        } else {
+            println("No stray files to remove.")
+        }
+    }
+
+    private fun deleteEmptyDirectories(dir: File)  {
+        for (f in dir.listFiles()) {
+            if (f.name.equals(".git")) {
                 continue
             }
-            val f = File(dir, s)
             if (f.isDirectory) {
-                if (checkForStrayOutputFiles(f, found)) {
+                deleteEmptyDirectories(f)
+            }
+        }
+        for (f in dir.listFiles()) {
+            return
+        }
+        if (dir.delete()) {
+            println("Removed empty directory $dir")
+        } else {
+            println("Unable to remove empty directory $dir")
+        }
+    }
+
+    private fun checkForStrayOutputFiles(dir : File, foundInput: Boolean = false, delete: Boolean = false) : Boolean {
+        var found = foundInput
+        for (f in dir.listFiles()) {
+            if (f.name.equals(".git")) {
+                continue
+            }
+            if (f.isDirectory) {
+                if (checkForStrayOutputFiles(f, found, delete)) {
                     found = true
                 }
             } else if (dependencies.check(f)?.checkedThisTime != true) {
                 if (!found) {
                     found = true
-                    Stdout.println("Warning -- Stray files found in output directory:")
+                    if (!delete) {
+                        Stdout.println("Warning -- Stray files found in output directory:")
+                    }
                 }
-                Stdout.println("    $f")
+                if (delete) {
+                    if (f.delete()) {
+                        System.out.println("Removed $f")
+                        dependencies.remove(f)
+                    } else {
+                        System.out.println("Unable to remove $f")
+                    }
+                } else {
+                    Stdout.println("    $f")
+                }
             }
         }
         return found

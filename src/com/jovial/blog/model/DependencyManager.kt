@@ -42,6 +42,13 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
     }
 
     /**
+     * Remove the given dependencies object, if it exists
+     */
+    fun remove(asset: File) {
+        generatedAssets.remove(asset)
+    }
+
+    /**
      * Read our state from dependencyFile, if it exists.  If not, do nothing.
      */
     fun read() {

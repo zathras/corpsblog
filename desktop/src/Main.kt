@@ -1,9 +1,5 @@
 import com.jovial.blog.Site
-import com.jovial.blog.md.extensions.GalleryExtension
-import com.jovial.blog.md.extensions.VideoExtension
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.Content
-import com.jovial.blog.model.PostContent
 import com.jovial.os.OSUploadFromRemote
 import com.jovial.os.Stdout
 import java.io.File
@@ -14,16 +10,19 @@ import java.io.File
 
 private fun usage() {
     Stdout.println()
-    Stdout.println("Usage:  corpsblog (publish | offline | mail | remote_hack)")
+    Stdout.println("Usage:  corpsblog (publish | offline | mail | cleanup | remote_hack)")
     Stdout.println()
     Stdout.println("    publish <srcdir> <destdir>")
-    Stdout.println("        Ready the target for \"git commit -a\" and \"git push\"")
+    Stdout.println("        Ready the target for \"git commit -a\" and \"git push\".")
     Stdout.println()
     Stdout.println("    offline <srcdir> <destdir>")
-    Stdout.println("        Trial run; don't upload anything (e.g. no YouTube uploads)")
+    Stdout.println("        Trial run; don't upload anything (e.g. no YouTube uploads).")
+    Stdout.println()
+    Stdout.println("    clean <srcdir> <destdir>")
+    Stdout.println("        Generate site and clean up stray files in the output directory.")
     Stdout.println()
     Stdout.println("    mail <srcdir> <destdir>")
-    Stdout.println("        Post to mail list about recent activity (do this after git push)")
+    Stdout.println("        Post to mail list about recent activity (do this after git push).")
     Stdout.println()
     Stdout.println("    remote_hack (advanced)")
     Stdout.println("        The remote shell side of a remote YouTube upload.")
@@ -39,6 +38,7 @@ fun main(args : Array<String>) {
         "remote_hack" -> OSUploadFromRemote(args.drop(1)).run()
         "publish" -> generateSite(true, args.drop(1))
         "offline" -> generateSite(false, args.drop(1))
+        "cleanup" -> cleanupSite(args.drop(1))
         "mail" -> postToMaillist(args.drop(1))
         else -> usage()
     }
@@ -56,7 +56,7 @@ private fun generateSite(publish: Boolean, args: List<String>) : Site {
             inputDir=inputDir,
             outputDir=outputDir,
             blogConfig=blogConfig,
-            publish=publish
+            publishYT=publish
     )
     site.generate()
     site.printNotes()
@@ -66,6 +66,11 @@ private fun generateSite(publish: Boolean, args: List<String>) : Site {
         System.exit(1)
     }
     return site
+}
+
+private fun cleanupSite(args: List<String>) {
+    val site = generateSite(publish=false, args=args)
+    site.deleteStrayFiles()
 }
 
 private fun postToMaillist(args: List<String>) {

@@ -10,7 +10,6 @@ import com.jovial.os.OSFiles
 import com.jovial.util.processFileName
 import java.io.File
 import java.net.URL
-import java.util.*
 
 /**
  * Created by billf on 11/20/16.
@@ -88,7 +87,7 @@ class VideoExtension (val site: Site) : TxtmarkExtension<PostContent>() {
             if (upload == null) {
                 context.videoURLs.add("Pending for $sourceFile")
                 out.append("""<em><a href="http://INVALID">(view on YouTube PENDING)</a></em>""")
-                if (site.publish) {
+                if (site.publishYT) {
                     site.error("Video not uploaded to YouTube:  $destFile")
                 } else {
                     site.note("Video not uploaded to YouTube:  $destFile")
@@ -120,7 +119,7 @@ ${caption}
         if (u != null) {
             return u
         }
-        if (!site.publish) {
+        if (!site.publishYT) {
             return null;
         }
         val postURL = site.blogConfig.siteBaseURL + "posts/${context.postBaseName}.html"
