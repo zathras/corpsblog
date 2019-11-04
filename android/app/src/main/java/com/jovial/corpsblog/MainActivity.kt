@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             val destDirButton : Button = findView(R.id.destDirButton)
             val destDirText : TextView = findView(R.id.destDirText)
             val publishButton : Button = findView(R.id.publishButton)
+            val cleanButton : Button = findView(R.id.cleanButton)
             val mailButton : Button = findView(R.id.mailButton)
             val viewButton : Button = findView(R.id.viewButton)
             val outputText : TextView = findView(R.id.outputText)
@@ -123,6 +124,14 @@ class MainActivity : AppCompatActivity() {
                 Stdout.println("Done site generation.")
             }
         }
+        ui.cleanButton.setOnClickListener {
+            runCorpsblog {
+                Stdout.println()
+                val site = generateSite(false)
+                site.deleteStrayFiles()
+                Stdout.println("Done cleanup.")
+            }
+        }
         ui.mailButton.setOnClickListener {
             runCorpsblog {
                 Stdout.println()
@@ -150,7 +159,7 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             } else {
                 val intent = Intent(this, ViewBlog::class.java)
-                intent.putExtra("url", index.toURL().toString())
+                intent.putExtra("url", index.toURI().toURL().toString())
                 startActivity(intent)
             }
         }
@@ -165,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             inputDir=File(ui.srcDirText.text.toString()),
             outputDir=File(ui.destDirText.text.toString()),
             blogConfig = blogConfig,
-            publish=publish
+            publishYT=publish
         )
         site.generate()
         site.printNotes()
@@ -179,6 +188,7 @@ class MainActivity : AppCompatActivity() {
         ui.srcDirButton.isEnabled = enabled
         ui.destDirButton.isEnabled = enabled
         ui.publishButton.isEnabled = enabled
+        ui.cleanButton.isEnabled = enabled
         ui.mailButton.isEnabled = enabled
         ui.viewButton.isEnabled = enabled
     }

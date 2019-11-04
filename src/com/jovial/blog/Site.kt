@@ -349,7 +349,7 @@ class Site (
         if (done) {
             dependencies.write()
         } else {
-            println("No stray files to remove.")
+            Stdout.println("No stray files to remove.")
         }
     }
 
@@ -366,9 +366,9 @@ class Site (
             return
         }
         if (dir.delete()) {
-            println("Removed empty directory $dir")
+            Stdout.println("Removed empty directory $dir")
         } else {
-            println("Unable to remove empty directory $dir")
+            Stdout.println("Unable to remove empty directory $dir")
         }
     }
 
