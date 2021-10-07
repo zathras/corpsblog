@@ -3,6 +3,7 @@ import com.jovial.blog.model.BlogConfig
 import com.jovial.os.OSUploadFromRemote
 import com.jovial.os.Stdout
 import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Created by w.foote on 11/3/2016.
@@ -27,11 +28,11 @@ private fun usage() {
     Stdout.println("    remote_hack (advanced)")
     Stdout.println("        The remote shell side of a remote YouTube upload.")
     Stdout.println()
-    System.exit(1)
+    exitProcess(1)
 }
 
 fun main(args : Array<String>) {
-    if (args.size == 0) {
+    if (args.isEmpty()) {
         usage()
     }
     when (args[0]) {
@@ -42,7 +43,7 @@ fun main(args : Array<String>) {
         "mail" -> postToMaillist(args.drop(1))
         else -> usage()
     }
-    System.exit(0)
+    exitProcess(0)
 }
 
 private fun generateSite(publish: Boolean, args: List<String>) : Site {
@@ -63,7 +64,7 @@ private fun generateSite(publish: Boolean, args: List<String>) : Site {
     Stdout.println()
     if (site.hasErrors()) {
         site.printErrors()
-        System.exit(1)
+        exitProcess(1)
     }
     return site
 }

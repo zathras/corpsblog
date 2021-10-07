@@ -32,7 +32,7 @@ class BlogConfig(configFile: File) {
     public val shareGitHub : String?
     public val shareFlickr : String?
     public val shareGarmin : String?    // The GPS company.
-    public val shareDisqus : String?    // Blog comments, https://en.wikipedia.org/wiki/DisqusA
+    public val shareDisqus : String?    // Blog comments, https://en.wikipedia.org/wiki/Disqus
                                         // Ad-suported by taking a cut from "reveal," but blogs can opt out.
     public val googleAnalyticsAccount : String?
     public val googleOauthBrowser : String         // Used for Google OAuth login flow.  Defaults to firefox.

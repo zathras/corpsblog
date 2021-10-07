@@ -120,9 +120,9 @@ fun getConnectionReader(conn : HttpURLConnection) : Reader {
                 val s = enc.drop(pos + 8)
                 val p = s.indexOf(";")
                 if (p < 0) {
-                    s.toUpperCase()
+                    s.uppercase(Locale.getDefault())
                 } else {
-                    s.substring(0, p).toUpperCase()
+                    s.substring(0, p).uppercase(Locale.getDefault())
                 }
             }
     try {

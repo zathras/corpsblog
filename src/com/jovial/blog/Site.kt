@@ -12,6 +12,7 @@ import com.jovial.os.OSResources
 import com.jovial.os.Stdout
 import com.jovial.templates.*
 import java.io.*
+import java.util.*
 
 /**
  * Class to generate the site.
@@ -137,9 +138,9 @@ class Site (
             note("$postsSrcDir does not exist.")
         } else {
             val postFiles = postsSrcDir.list().
-                    sortedBy { s -> s.toLowerCase() }.
+                    sortedBy { s -> s.lowercase(Locale.getDefault()) }.
                     filter {
-                        if (!it.toLowerCase().endsWith(".md")) {
+                        if (!it.lowercase(Locale.getDefault()).endsWith(".md")) {
                             if (!File(postsSrcDir, it).isDirectory()) {
                                 Stdout.println("""Skipping file $it in $postsSrcDir:  File name doesn't end in ".md".""")
                                 // Directories are for assets referenced in a post, so we don't isssue a warning.

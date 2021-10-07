@@ -148,10 +148,10 @@ private class ExifReader(val jpeg : DataStream) {
         }
         val e1 = readByte()
         val e2 = readByte()
-        if (e1 != e2 || (e1 != 'M'.toInt() && e2 != 'I'.toInt())) {
-            throw IOException("EXIF endian error:  $e1, $e2 (I is ${'I'.toInt()}, M is ${'M'.toInt()})")
+        if (e1 != e2 || (e1 != 'M'.code && e2 != 'I'.code)) {
+            throw IOException("EXIF endian error:  $e1, $e2 (I is ${'I'.code}, M is ${'M'.code})")
         }
-        bigEndian = e1 != 'I'.toInt()
+        bigEndian = e1 != 'I'.code
         val check = readInt(2)
         if (check != 0x2a) {
             throw IOException("EXIF check error:  $check seen, 0x2a (42) expected")
