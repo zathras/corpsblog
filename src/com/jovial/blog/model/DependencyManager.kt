@@ -24,13 +24,12 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      */
     fun get(asset: File) : AssetDependencies {
         assert(asset.path == asset.canonicalPath);
-        val canon = asset.canonicalFile
-        val result = generatedAssets.get(canon)
+        val result = generatedAssets.get(asset)
         if (result != null) {
             return result
         } else {
             val v = AssetDependencies(asset)
-            generatedAssets.put(canon, v)
+            generatedAssets.put(asset, v)
             return v
         }
     }
@@ -41,7 +40,7 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      */
     fun check(asset: File) : AssetDependencies? {
         assert(asset.path == asset.canonicalPath);
-        return generatedAssets.get(asset.canonicalFile)
+        return generatedAssets.get(asset)
     }
 
     /**
@@ -78,7 +77,7 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
                         val a = adCon.run { AssetDependencies(readAsset) }
                         assign.run {
                             assert(a.generatedAsset.path == a.generatedAsset.canonicalPath);
-                            generatedAssets[cf.run {a.generatedAsset.canonicalFile}] = a
+                            generatedAssets[cf.run {a.generatedAsset}] = a
                         }
                     }
                 }

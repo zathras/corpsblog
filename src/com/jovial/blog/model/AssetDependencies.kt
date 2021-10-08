@@ -62,7 +62,7 @@ class AssetDependencies  {
         checkedThisTime = true
         val newFileTimes = newFiles.map {
             assert(it.path == it.canonicalPath);
-            Pair(it.canonicalFile, it.lastModified())
+            Pair(it, it.lastModified())
         }
         if (newValues != values || newFileTimes != fileTimes) {
             values = newValues
