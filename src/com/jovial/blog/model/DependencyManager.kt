@@ -1,7 +1,6 @@
 package com.jovial.blog.model
 
 import com.jovial.util.JsonIO
-import com.jovial.util.Profiler
 import java.io.*
 import java.util.*
 
@@ -54,40 +53,24 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      * Read our state from dependencyFile, if it exists.  If not, do nothing.
      */
     fun read() {
-        val all = Profiler("read()");
-        val loop = Profiler("loop");
-        val adCon = Profiler("AssetDependencies constructor");
-        val assign = Profiler("assign");
-        val cf = Profiler("cf");
-        all.run {
-            assert(generatedAssets.size == 0)
-            if (dependencyFile.exists()) {
-                val input = dependencyFile.bufferedReader()
+        assert(generatedAssets.size == 0)
+        if (dependencyFile.exists()) {
+            val input = dependencyFile.bufferedReader()
 
-                @Suppress("UNCHECKED_CAST")
-                val json = JsonIO.readJSON(input) as HashMap<String, Any>
-                input.close()
-                if (json["version"] != "1.0") {
-                    throw IOException("Version mismatch:  got ${json["version"]}")
-                }
-                @Suppress("UNCHECKED_CAST")
-                val readAssets = json["generatedAssets"] as List<HashMap<String, Any>>
-                loop.run {
-                    for (readAsset in readAssets) {
-                        val a = adCon.run { AssetDependencies(readAsset) }
-                        assign.run {
-                            assert(a.generatedAsset.path == a.generatedAsset.canonicalPath);
-                            generatedAssets[cf.run {a.generatedAsset}] = a
-                        }
-                    }
-                }
+            @Suppress("UNCHECKED_CAST")
+            val json = JsonIO.readJSON(input) as HashMap<String, Any>
+            input.close()
+            if (json["version"] != "1.0") {
+                throw IOException("Version mismatch:  got ${json["version"]}")
+            }
+            @Suppress("UNCHECKED_CAST")
+            val readAssets = json["generatedAssets"] as List<HashMap<String, Any>>
+            for (readAsset in readAssets) {
+                val a = AssetDependencies(readAsset)
+                assert(a.generatedAsset.path == a.generatedAsset.canonicalPath);
+                generatedAssets[a.generatedAsset] = a
             }
         }
-        all.print()
-        loop.print()
-        adCon.print()
-        assign.print()
-        cf.print()
     }
 
     /**
