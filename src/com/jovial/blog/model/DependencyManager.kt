@@ -1,6 +1,7 @@
 package com.jovial.blog.model
 
 import com.jovial.util.JsonIO
+import com.jovial.util.Profiler
 import java.io.*
 import java.util.*
 
@@ -22,6 +23,7 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      * Get the object that describes the things the provided generated asset depends on.
      */
     fun get(asset: File) : AssetDependencies {
+        assert(asset.path == asset.canonicalPath);
         val canon = asset.canonicalFile
         val result = generatedAssets.get(canon)
         if (result != null) {
@@ -38,6 +40,7 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      * don't create one.
      */
     fun check(asset: File) : AssetDependencies? {
+        assert(asset.path == asset.canonicalPath);
         return generatedAssets.get(asset.canonicalFile)
     }
 
@@ -52,22 +55,40 @@ class DependencyManager (inputDir : File, dependencyFileName : String) {
      * Read our state from dependencyFile, if it exists.  If not, do nothing.
      */
     fun read() {
-        assert(generatedAssets.size == 0)
-        if (dependencyFile.exists()) {
-            val input = dependencyFile.bufferedReader()
-            @Suppress("UNCHECKED_CAST")
-            val json = JsonIO.readJSON(input) as HashMap<String, Any>
-            input.close()
-            if (json["version"] != "1.0") {
-                throw IOException("Version mismatch:  got ${json["version"]}")
-            }
-            @Suppress("UNCHECKED_CAST")
-            val readAssets = json["generatedAssets"] as List<HashMap<String, Any>>
-            for (readAsset in readAssets) {
-                val a = AssetDependencies(readAsset)
-                generatedAssets[a.generatedAsset.canonicalFile] = a
+        val all = Profiler("read()");
+        val loop = Profiler("loop");
+        val adCon = Profiler("AssetDependencies constructor");
+        val assign = Profiler("assign");
+        val cf = Profiler("cf");
+        all.run {
+            assert(generatedAssets.size == 0)
+            if (dependencyFile.exists()) {
+                val input = dependencyFile.bufferedReader()
+
+                @Suppress("UNCHECKED_CAST")
+                val json = JsonIO.readJSON(input) as HashMap<String, Any>
+                input.close()
+                if (json["version"] != "1.0") {
+                    throw IOException("Version mismatch:  got ${json["version"]}")
+                }
+                @Suppress("UNCHECKED_CAST")
+                val readAssets = json["generatedAssets"] as List<HashMap<String, Any>>
+                loop.run {
+                    for (readAsset in readAssets) {
+                        val a = adCon.run { AssetDependencies(readAsset) }
+                        assign.run {
+                            assert(a.generatedAsset.path == a.generatedAsset.canonicalPath);
+                            generatedAssets[cf.run {a.generatedAsset.canonicalFile}] = a
+                        }
+                    }
+                }
             }
         }
+        all.print()
+        loop.print()
+        adCon.print()
+        assign.print()
+        cf.print()
     }
 
     /**

@@ -1,11 +1,7 @@
 package com.jovial.templates
 
 import com.jovial.blog.model.BlogConfig
-import com.jovial.blog.model.PostContent
-import com.jovial.templates.lib.Body
 import com.jovial.templates.lib.BodyTag
-import com.jovial.templates.lib.Element
-import com.jovial.templates.lib.Tag
 
 /**
  * Disqus integration.  Disqus is a system for allowing comments.
@@ -13,8 +9,8 @@ import com.jovial.templates.lib.Tag
  * Created by billf on 11/6/16.
  */
 class Disqus (val config: BlogConfig, val rootPath: String) {
-  public fun generate(tag: BodyTag, pageID: String): Unit = tag.include {
-    val pageIDFixed = pageID.replace('-', '_');
+  fun generate(tag: BodyTag, pageID: String): Unit = tag.include {
+    val pageIDFixed = pageID.replace('-', '_')
     if (config.shareDisqus != null) {
       div (id="disqus_thread") { }
       div (id="cb_disqus_button") {

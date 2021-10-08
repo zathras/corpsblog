@@ -8,7 +8,7 @@ import java.util.*
  * anything changes about a post, that post and anything that references that post will be
  * re-generated, even if the change has no impact on the referrer.  From a performance standpoint,
  * the only really important thing is to avoid re-generating gallery images all the time.  It's
- * nice to avoid gratituously re-generating all of the HTML files, though, so that the timestamps
+ * nice to avoid gratuitously re-generating all the HTML files, though, so that the timestamps
  * on them have some meaning, and the sitemap doesn't claim updates to stuff that hasn't really
  * changed.
  *
@@ -60,7 +60,10 @@ class AssetDependencies  {
      */
     fun changed(newFiles: List<File>, newValues: List<String> = listOf<String>()) : Boolean {
         checkedThisTime = true
-        val newFileTimes = newFiles.map { Pair(it.canonicalFile, it.lastModified()) }
+        val newFileTimes = newFiles.map {
+            assert(it.path == it.canonicalPath);
+            Pair(it.canonicalFile, it.lastModified())
+        }
         if (newValues != values || newFileTimes != fileTimes) {
             values = newValues
             fileTimes = newFileTimes

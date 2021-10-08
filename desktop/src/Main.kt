@@ -50,8 +50,8 @@ private fun generateSite(publish: Boolean, args: List<String>) : Site {
     if (args.size != 2) {
         usage()
     }
-    val inputDir = File(args[0])
-    val outputDir = File(args[1])
+    val inputDir = File(args[0]).canonicalFile;
+    val outputDir = File(args[1]).canonicalFile;
     val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
     val site = Site(
             inputDir=inputDir,

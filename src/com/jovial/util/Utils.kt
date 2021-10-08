@@ -13,7 +13,7 @@ val MMMMyyyyFormat = SimpleDateFormat("MMMM yyyy")
 val ddFormat = SimpleDateFormat("dd")
 val ddMMMMyyyyDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
-private val homeDir = System.getenv("HOME") ?: "/."
+private val homeDir = File(System.getenv("HOME") ?: "/.").canonicalPath;
 // Null home?  I read about this on alt.windows.die.die.die somewhere
 
 /**
@@ -71,9 +71,9 @@ public fun processFileName(name: String, pathMap: Map<String, File>?, pseudoHome
     } else {
         val f = mapPath(name, pathMap)
         if (pseudoHomeDir != null && !f.isAbsolute()) {
-            return File(pseudoHomeDir, name)
+            return File(pseudoHomeDir, name).canonicalFile
         } else {
-            return f
+            return f.canonicalFile
         }
     }
 }

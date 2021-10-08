@@ -171,8 +171,8 @@ class MainActivity : AppCompatActivity() {
         val inputDir=File(ui.srcDirText.text.toString())
         val blogConfig = BlogConfig(File(inputDir, "corpsblog.config"))
         val site = Site(
-            inputDir=File(ui.srcDirText.text.toString()),
-            outputDir=File(ui.destDirText.text.toString()),
+            inputDir=File(ui.srcDirText.text.toString()).canonicalFile,
+            outputDir=File(ui.destDirText.text.toString()).canonicalFile,
             blogConfig = blogConfig,
             publishYT=publish
         )
