@@ -7,7 +7,9 @@ kotlinc -include-runtime -d out/corpsblog.jar \
         `find desktop/src -name '*.kt' -print` \
         `find src -name '*.java' -print`
 javac -d out/java `find src -name '*.java' -print`
-cd out/java
+cd resources
+cp -r * ../out/java
+cd ../out/java
 jar uf ../corpsblog.jar *
 cd ../..
 rm -rf out/java

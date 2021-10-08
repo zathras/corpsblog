@@ -264,10 +264,11 @@ abstract class BodyTag(parent: TagParent, name: String) : TagWithText(parent, na
         val t = initTag(Article(this), init)
         t.attributes += Pair("class", class_)
     }
-    fun button(class_: String?, title: String?, init: Button.() -> Unit) {
+    fun button(class_: String? = null, title: String? = null, onclick: String? = null, init: Button.() -> Unit) {
         val t = initTag(Button(this), init)
         t.addAttribute("class", class_)
         t.addAttribute("title", title)
+        t.addAttribute("onclick", onclick)
     }
     fun section(class_: String, init: Section.() -> Unit) {
         val t = initTag(Section(this), init)

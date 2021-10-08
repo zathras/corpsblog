@@ -15,18 +15,18 @@
     <link href="../images/favicons/manifest.json" rel="manifest"/>
     <link href="../images/favicons/favicon.ico" rel="shortcut icon"/>
     <script type="text/javascript">
-      var baseUrl = 'https://zathras.github.io/corpsblog/';
-      var baseUrlIndex = 'https://zathras.github.io/corpsblog/index.html'; 
+      var baseUrl = 'https://zathras.github.io/corpsblog/test/';
+      var baseUrlIndex = 'https://zathras.github.io/corpsblog/test/index.html'; 
     </script>
     <!--[if lt IE 9]>
     <script src="../js/html5shim.min.js">
     </script>
     <![endif]-->
-    <meta property="og:url" content="https://zathras.github.io/corpsblog/posts/2013-08-28-video.html"/>
+    <meta property="og:url" content="https://zathras.github.io/corpsblog/test/posts/2013-08-28-video.html"/>
     <meta property="og:title" content="Test of Videos"/>
     <meta property="og:description" content="In which videos are tested, both portrait and landscape."/>
     <meta property="og:type" content="blog"/>
-    <meta property="og:image" content="https://zathras.github.io/corpsblog/images/danger.jpg"/>
+    <meta property="og:image" content="https://zathras.github.io/corpsblog/test/images/danger.jpg"/>
   </head>
   <body>
     <span class="mobile btn-mobile-menu">
@@ -55,7 +55,7 @@
               <nav class="cover-navigation cover-navigation--primary">
                 <ul class="navigation">
                   <li class="navigation__item">
-                    <a href="../index.html" title="link to https://zathras.github.io/corpsblog/ blog" class="blog-button">
+                    <a href="../index.html" title="link to https://zathras.github.io/corpsblog/test/ blog" class="blog-button">
                       Main
                     </a>
                   </li>
@@ -166,6 +166,35 @@ hate to overly re-invent that wheel.</p>
 <p>That's all, folks!</p>
 
           </section>
+          <div id="disqus_thread">
+          </div>
+          <div id="cb_disqus_button">
+            <p>
+              <button onclick="cb_show_disqus()">
+                See Comments
+              </button>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(comments via
+              <a href="https://en.wikipedia.org/wiki/Disqus">
+                Disqus
+              </a>
+              )
+            </p>
+          </div>
+          <script type="text/javascript">
+            
+    var disqus_config = function() {
+        this.page.url = 'https://zathras.github.io/corpsblog/test/posts/2013-08-28-video.html';
+        this.page.identifier = '2013_08_28_video';
+    }
+    function cb_show_disqus() {
+        document.getElementById('cb_disqus_button').innerHTML = '';
+        var s = document.createElement('script');
+        s.src = 'https://corpsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (document.head || document.body).appendChild(s);
+    }
+
+          </script>
           <div style="clear: both">
           </div>
           &nbsp;
@@ -187,7 +216,7 @@ hate to overly re-invent that wheel.</p>
       </div>
       <footer class="footer">
         <span class="footer__copyright">
-          &copy; 2019 Bloggy McBloggerson. 
+          &copy; 2021 Bloggy McBloggerson. 
           <a href="../index.html">
             About this site
           </a>

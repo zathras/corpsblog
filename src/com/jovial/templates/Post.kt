@@ -22,7 +22,7 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
   val synopsis : String = content.synopsis
 
     /** Generate the HTML for this blog post */
-  public fun generate(olderPost: String?, newerPost: String?) : HTML = html {
+  public fun generate(olderPost: String?, newerPost: String?, pageID: String) : HTML = html {
     head {
       CommonHead(blogConfig, content.title, content.rootPath, content.hasGallery).generate(this)
       //
@@ -100,7 +100,7 @@ class Post(val blogConfig: BlogConfig, val content: PostContent, val pathTo: Str
               }
               +content.body
             }
-            Disqus(blogConfig, content.rootPath).generate(this)
+            Disqus(blogConfig, content.rootPath).generate(this, pageID)
             if (newerPost != null || olderPost != null) {
               div(style = "clear: both") { }
               +"&nbsp;"

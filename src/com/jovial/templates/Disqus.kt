@@ -13,46 +13,37 @@ import com.jovial.templates.lib.Tag
  * Created by billf on 11/6/16.
  */
 class Disqus (val config: BlogConfig, val rootPath: String) {
-  public fun generate(tag: BodyTag): Unit = tag.include {
+  public fun generate(tag: BodyTag, pageID: String): Unit = tag.include {
+    val pageIDFixed = pageID.replace('-', '_');
     if (config.shareDisqus != null) {
       div (id="disqus_thread") { }
-      script(type="text/javascript") {
-        +"""
-    var disqus_shortname = '${config.shareDisqus}';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); 
-                dsq.type = 'text/javascript';
-                dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function () {
-        var s = document.createElement('script'); s.async = true;
-        s.type = 'text/javascript';
-        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-    }());
-"""
-      }
-      noscript {
-        +"Please enable JavaScript to view the"
-        a(href="http://disqus.com/?ref_noscript") {
-          +"comments."
+      div (id="cb_disqus_button") {
+        p {
+          button(onclick="cb_show_disqus()") {
+            +"See Comments"
+          }
+          +" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(comments via"
+          a(href="https://en.wikipedia.org/wiki/Disqus") {
+            +"Disqus"
+          }
+          +")"
         }
       }
-      a(href="http://disqus.com", class_="dsq-brlink") {
-        +"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See comments"
+      script(type="text/javascript") {
+        +"""
+    var disqus_config = function() {
+        this.page.url = '${config.siteBaseURL}posts/${pageID}.html';
+        this.page.identifier = '${pageIDFixed}';
+    }
+    function cb_show_disqus() {
+        document.getElementById('cb_disqus_button').innerHTML = '';
+        var s = document.createElement('script');
+        s.src = 'https://${config.shareDisqus}.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (document.head || document.body).appendChild(s);
+    }
+"""
       }
     }
   }
 }
-
-/*
-2021:  This works:
-
-
-*/

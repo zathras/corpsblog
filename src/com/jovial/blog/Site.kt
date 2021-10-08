@@ -297,7 +297,7 @@ class Site (
         val dependsOn = dependencies.get(outputFile)
         if (dependsOn.changed(dependencyFiles, dependencyValues)) {
             postOutputDir.mkdirs()
-            val html = p.generate(olderName, newerName)
+            val html = p.generate(olderName, newerName, baseName)
             writeFile(html.toString(), outputFile)
         }
         p.content.discardBody()
